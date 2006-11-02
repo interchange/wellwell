@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>{TITLE}</title>
+<link rel="stylesheet" type="text/css" href="/css/newdemo.css">
+</head>
+<body>
+<div id="left">
+{LEFT}
+</div>
+<div id="body">
+{BODY}
+</div>
+<div id="right">
+{RIGHT}
+</div>
+</body>
+</html>
