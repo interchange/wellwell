@@ -1,0 +1,12 @@
+[set foo]hello_world[/set]
+[compose
+    template="main"
+	title="[if cgi foo]foo[else][L]New Demo[/L][/else][/if]"
+	components.left="cart_tiny=c password_reminder_link"
+	components.right="loginout"
+    components.body="[scratch foo]"
+	attributes.hello_world.size=`$Scratch->{size}`
+	attributes.loginout.scope=minimal
+	attributes.loginout.status="[if session logged_in]user[else]guest[/else][/if]"
+	attributes.c.size=5
+/]
