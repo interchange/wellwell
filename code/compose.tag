@@ -14,8 +14,25 @@ sub {
 	# read template
 	$template_file = $Tag->file($template_file);
 
+	# process attributes
+	my (%attributes);
+
+	if (ref($opt->{attributes}) eq 'HASH') {
+		# Interchange's parser splits up only one level of dots, so
+		# attributes.foo.bar = "com" ends up as foo.bar => com
+		my (@frags);
+
+		for (keys %{$opt->{attributes}}) {
+			@frags = split(/\./, $_);
+		
+			if (@frags == 2) {
+				$attributes{$frags[0]}->{$frags[1]} = $opt->{attributes}->{$_};
+			}
+		}
+	}
+
 	# process components
-	my $components_file;
+	my ($components_file, $component_attributes);
 
 	if (ref($opt->{components}) eq 'HASH') {
 		for (keys %{$opt->{components}}) {
@@ -29,7 +46,18 @@ sub {
 			}
 
 			for my $comp (@components) {
+				my (%var);
 				my ($name, $alias) = split(/=/, $comp, 2);
+
+				$component_attributes = $attributes{$name};
+
+				# temporarily assign variables for component attributes
+				for my $attr (keys %$component_attributes) {
+					if (exists $Variable->{uc($attr)}) {
+						$var{uc($attr)} = $Variable->{uc($attr)};
+					}
+					$Variable->{uc($attr)} = $component_attributes->{$attr};
+				}
 
 				# locate component
 				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
@@ -37,6 +65,15 @@ sub {
 				# add component	
 				push (@content, qq{<div class="$name">} .
 								$Tag->include($components_file) . q{</div>});
+
+				# reset variables
+				for my $attr (keys %$component_attributes) {
+					if (exists $var{uc($attr)}) {
+						$Variable->{uc($attr)} = $var{uc($attr)};
+					} else {
+						delete $Variable->{uc($attr)};
+					}
+				}
 			}
 
 			$opt->{$_} = join('', @content);
