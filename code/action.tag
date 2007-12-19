@@ -19,12 +19,17 @@ sub {
 
 	# compose link
 	if ($type eq 'link') {
-		my $url = $Tag->area({href => 'process',
-							  form => join("\n", @form)});
+		my $url = $Tag->area({href => 'process', form => join("\n", @form)});
 		return qq{<a href="$url">$text</a>};
+
 	} elsif ($type eq 'button') {
-		return $Tag->button({text => $text,
-							 body => join("\n", @form)});
+		return $Tag->button({text => $text, body => join("\n", @form)});
+
+	# bounce page
+	} elsif ($type eq 'bounce') {
+		my $url = $Tag->area({href => 'process', form => join("\n", @form)});
+		my $body = "Status: 302 moved\nLocation: $url";
+		return  $Tag->tag({ op => 'header', body => $body });
 	}
 }
 EOR
