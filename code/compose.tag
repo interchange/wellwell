@@ -9,7 +9,8 @@ sub {
 	$opt->{body} ||= $body;
 
 	# locate template
-	$template_file = "templates/$template";
+	$template ||= $Tag->control('template', 'main');
+	$template_file = "$Variable->{MV_TEMPLATE_DIR}/$template";
 
 	# read template
 	$template_file = $Tag->file($template_file);
@@ -19,7 +20,8 @@ sub {
 
 	if (ref($opt->{attributes}) eq 'HASH') {
 		# Interchange's parser splits up only one level of dots, so
-		# attributes.foo.bar = "com" ends up as foo.bar => com
+		# attributes.foo.bar = "com" ends up as foo.bar => com.
+		# We need to split completely, though.
 		my (@frags);
 
 		for (keys %{$opt->{attributes}}) {

@@ -1,8 +1,10 @@
 <html>
+
 <head>
-<title>{TITLE}</title>
-<link rel="stylesheet" type="text/css" href="/css/newdemo.css">
+	<title>{TITLE}</title>
+	<link rel="stylesheet" type="text/css" href="__DOCROOT__/css/wellwell.css">
 </head>
+
 <body>
 <div id="left">
 {LEFT}
@@ -14,4 +16,5 @@
 {RIGHT}
 </div>
 </body>
+
 </html>
