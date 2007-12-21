@@ -1,0 +1,58 @@
+/* General form style */
+
+fieldset {
+  border: 1px solid #ccc;
+  margin: 15px 0 30px 0;
+  padding: 10px;
+}
+
+legend {
+  font-weight:bold;
+  font-size:110%;
+}
+
+/* Label */
+
+label {
+  display: block;
+  position: relative;
+}
+
+label small {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 80%;
+  color: #666;
+}
+
+/* Other standard elements (that don't need classes) */
+
+input,textarea,select{ 
+  width: 100%;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 3px 0;
+  border: 1px solid #ccc;
+}
+
+/* Checkbox styling */
+  p.checkbox {
+  clear: both;
+  float: none;
+  position: relative;
+}
+
+p.checkbox input {
+  left: 10px;
+  width: 14px;
+  position: absolute;
+  top: 1px;
+}
+
+p.checkbox label {
+  display: block;
+  margin-left: 40px;
+  width: 80%;
+}
+
