@@ -1,0 +1,12 @@
+[tmp]
+[userdb function=logout clear=1]
+[set-cookie name=MV_PASSWORD value=""]
+[/tmp]
+
+<p>You are now succesfully logged out. Do you wish to 
+[action 
+	targets=login 
+	text="log in" 
+	type=link
+]
+?</p>

@@ -1,0 +1,6 @@
+[if session failure]
+<p class="failure">
+<strong>[data session failure]</strong>
+[data base=session field=failure value=""]
+<p>
+[/if]

@@ -1,0 +1,44 @@
+[if session logged_in]
+[action targets="login_already" type=bounce]
+[/if]
+
+<form action="[process]" method="POST">
+<input type="hidden" name="function" value="new_account">
+[form-session-id]
+
+<fieldset>
+<legend>Create new account</legend>
+
+[include components/failure]
+
+<p>
+<label for="mv_username">[L]Username[/L]:</label>
+[formel type=text name=mv_username value=""]
+</p>
+
+<p>
+<label for="mv_password">[L]Password[/L]:</label>
+[formel type=password name=mv_password value=""]
+</p>
+
+<p>
+<label for="mv_password">[L]Verify Password[/L]:</label>
+[formel type=password name=mv_verify value=""]
+</p>
+
+<p>
+[button text="Create Account"]
+[comment]Go to logged_in or back to this component if creation failed[/comment]
+
+[if type=explicit compare="[userdb new_account]"]
+[action targets="logged_in" type=bounce]
+[else]
+[action targets="create_account" type=bounce]
+[/else]
+
+[/if]
+[/button]
+</p>
+
+</fieldset
+</form>
