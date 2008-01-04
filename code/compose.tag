@@ -57,9 +57,13 @@ sub {
 
 			for my $comp (@components) {
 				my (%var);
+				# TODO support multiple aliases
 				my ($name, $alias) = split(/=/, $comp, 2);
 
-				$component_attributes = $attributes{$name};
+				$component_attributes = { 
+					$attributes{$name} ? %{$attributes{$name}} : (),
+					$attributes{$alias} ? %{$attributes{$alias}} : (),
+				};
 
 				# temporarily assign variables for component attributes
 				for my $attr (keys %$component_attributes) {
@@ -77,8 +81,8 @@ sub {
 
 				# add component	
 				push (@content,
-					qq{<div $type="$name">} .
-					( $alias ? qq{<div $type="$alias">} : '' ) .
+					qq{<div $type='$name'>} .
+					( $alias ? qq{<div $type='$alias'>} : '' ) .
 					$Tag->include($components_file) .
 					( $alias ? qq{</div>} : '' ) .
 					q{</div>});
