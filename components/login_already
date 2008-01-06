@@ -1,5 +1,0 @@
-
-<p>[L]You are logged in.[/L]
-</p>
-<p> Do you wish to [action targets="logout" text="logout" type=link]
-and login as another user? </p>
