@@ -1,0 +1,66 @@
+[generate-rand]
+
+
+[if session logged_in]
+[action targets="login_already" type=bounce]
+[/if]
+
+[tmp cookie_username][read-cookie MV_USERNAME][/tmp]
+
+<form action="[process]" method="POST">
+<input type="hidden" name="mv_todo"  value="return">
+<input type="hidden" name="mv_nextpage" value="login">
+[form-session-id]
+
+<fieldset>
+<legend>[L]Sign In[/L]</legend>
+
+[include components/failure]
+
+<p>
+<label for="mv_username">[L]Username[/L]:</label>
+[formel type=text name=mv_username value="[scratch cookie_username]"]
+</p>
+
+<p>
+<label for="mv_password">[L]Password[/L]:</label>
+[formel type=password name=mv_password value=""]
+</p>
+
+[if config CookieLogin]
+<p class="checkbox">
+<input type="hidden" name="mv_cookie_password" value="0">
+[comment]<input type="checkbox" name="mv_cookie_password" value="1" [if scratch cookie_username]CHECKED[/if]>[/comment]
+<input type="checkbox" name="mv_cookie_password" value="1" 
+[if scratch cookie_username]checked[/if]>
+<label for="mv_cookie_password">[L]Remember me?[/L]</label>
+</p>
+[/if]
+
+<p>
+[button text="Sign In"]
+
+[if type=explicit compare="[userdb login]"]
+[action targets="login_already" type=bounce]
+[else]
+[action targets="login" type=bounce]
+[/else]
+[/button]
+</p>
+
+<p>
+[action 
+	targets="create_account"
+	text="Create new account!"
+	type=link
+]
+</p>
+<p>
+[action 
+	targets="lost_password"
+	text="Lost your password?"
+	type=link
+]
+</p>
+</fieldset>
+</form>
