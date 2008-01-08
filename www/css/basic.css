@@ -1,0 +1,59 @@
+/*
+ *
+ * This is a basic CSS template for use with your catalog.
+ * It is not intended to be changed by users. Change other
+ * CSS files instead and apply them to your template.
+ *
+ */
+
+BODY{
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+img {
+	border: 0;
+}
+
+.rowOfBoxes {
+	clear: both;
+}
+
+.quarter, .oneThird, .half, .twoThirds, .fullWidth {
+  margin: 1em 0;
+  float: left;
+}
+
+.quarter {
+  width: 21%;
+  padding: 0 1.9%;
+}
+
+.oneThird {
+  width: 28%;
+  padding: 0 1.9%;
+}
+
+.half {
+  width: 46%;
+  padding: 0 1.9%;
+}
+
+.twoThirds {
+  width: 63%;
+  padding: 0 1.9%;
+}
+
+.fullWidth {
+  width: 96%;
+  padding: 0 1.2em;
+  border-left: none;
+}
+
+.noBorderOnLeft {
+  border-left: none;
+}
+
+.dividingBorderAbove {
+  border-top: 1px;
+}
