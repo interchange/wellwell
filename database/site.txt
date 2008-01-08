@@ -1,0 +1,9 @@
+code	Variable
+SERVER_NAME	localhost
+CGI_URL	/cgi-bin/wellwell
+ORDERS_TO	root@localhost
+MV_COMPONENT_DIR	components
+MV_TEMPLATE_DIR	templates
+DOCROOT	/wellwell
+IMAGE_DIR	__DOCROOT__/images
+CSS_DIR	__DOCROOT__/css
