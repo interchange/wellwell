@@ -2,7 +2,7 @@
 
 <head>
 	<title>{TITLE}</title>
-	<link rel="stylesheet" type="text/css" href="__DOCROOT__/css/wellwell.css">
+	<link rel="stylesheet" type="text/css" href="__CSS_DIR__/wellwell.css">
 </head>
 
 <body>
