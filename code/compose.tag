@@ -16,6 +16,14 @@ sub {
 
 	$opt->{body} ||= $body;
 
+	if( !$Variable->{MV_TEMPLATE_DIR} ){
+		::logError("MV_TEMPLATE_DIR is not set. [compose] cannot function properly without this variable.");
+	}
+
+	if( !$Variable->{MV_COMPONENT_DIR} ){
+		::logError("MV_COMPONENT_DIR is not set. [compose] cannot function properly without this variable.");
+	}
+
 	# locate template
 	$template ||= $Tag->control('template', 'main');
 	$template_file = "$Variable->{MV_TEMPLATE_DIR}/$template";
