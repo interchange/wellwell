@@ -30,6 +30,8 @@ sub {
 		my $url = $Tag->area({href => 'process', form => join("\n", @form)});
 		my $body = "Status: 302 moved\nLocation: $url";
 		return  $Tag->tag({ op => 'header', body => $body });
+	} else {
+		::logError("Type $type is not supported by action tag.");
 	}
 }
 EOR
