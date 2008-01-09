@@ -1,0 +1,3 @@
+Wellwell is a template catalog for Interchange. It's main difference from previous IC demo catalogs that it doesn't tend to be a demo, but rather a frame for building new catalogs. 
+
+It's main building blocks are components, assembled together with [compose] called from within pages.

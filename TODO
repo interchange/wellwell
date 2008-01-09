@@ -1,0 +1,10 @@
+*  Document [compose] and [action] the XMLDOCS way
+
+*  [compose] should support more aliases
+
+*  Find improvements for templating. 
+   Currenty if you put {NAME} inside a template you have to define 
+   a component to link to this inside the page. It should be possible 
+   to call something by default for all pages so you can have ie. 
+   same menu or same header on all pages without writing it in 
+   every page (main point of templates).
