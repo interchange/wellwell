@@ -8,3 +8,12 @@
    to call something by default for all pages so you can have ie. 
    same menu or same header on all pages without writing it in 
    every page (main point of templates).
+
+*  Determine location to hold email templates,... 
+   * templates/email would work if direct inclusion of components would work (too hard to edit for customers?)
+
+*  Enable direct inclusion of components into templates (without compose)
+
+*  Action Tag: it should be possible to assign attributes to targets
+
+*  Enable RT Queue 'wellwell'
