@@ -3,7 +3,7 @@ Make sure user is logged in. In case user is not logged in
 bounce to login page with a notice on what happened.
 [/comment]
 
-[if ! data session logged_in]
+[if !session logged_in]
 [action 
 	targets="login"
 	text="Please login"
