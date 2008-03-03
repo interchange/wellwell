@@ -6,4 +6,4 @@ CGI_URL	/cgi-bin/wellwell
 ORDERS_TO	root@localhost
 DOCROOT	/wellwell
 IMAGE_DIR	__DOCROOT__/images
-CSS_DIR	__DOCROOT__/css
+CSS_URL	/css/wellwell.css

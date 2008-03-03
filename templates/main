@@ -2,14 +2,14 @@
 
 <head>
 	<title>{TITLE}</title>
-	<link rel="stylesheet" type="text/css" href="__CSS_DIR__/wellwell.css">
+	<link rel="stylesheet" type="text/css" href="{CSS_URL}">
 </head>
 
 <body>
 <div id="left">
 {LEFT}
 </div>
-<div id="body">
+<div id="body" style="background-color: yellow;">
 {BODY}
 </div>
 <div id="right">
