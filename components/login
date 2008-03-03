@@ -1,6 +1,3 @@
-[generate-rand]
-
-
 [if session logged_in]
 [action targets="login_already" type=bounce]
 [/if]
