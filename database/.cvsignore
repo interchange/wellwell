@@ -1,1 +1,3 @@
+*.autonumber
+*.gdbm
 site.txt
