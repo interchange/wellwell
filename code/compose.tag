@@ -59,6 +59,8 @@ sub {
 			if ($_ eq 'body' && $CGI->{mv_components}) {
 				# override components 
 				@components = split(/[,\s]+/, $CGI->{mv_components});
+			} elsif (ref($opt->{components}->{$_}) eq 'ARRAY') {
+				@components = @{$opt->{components}->{$_}};
 			} else {
 				@components = split(/[,\s]+/, $opt->{components}->{$_});
 			}
@@ -88,12 +90,17 @@ sub {
 				my $type = $attributes{$alias||$name}{css_type} || 'class';
 
 				# add component	
-				push (@content,
-					qq{<div $type='$name'>} .
-					( $alias ? qq{<div $type='$alias'>} : '' ) .
-					$Tag->include($components_file) .
-					( $alias ? qq{</div>} : '' ) .
-					q{</div>});
+				if (exists $attributes{container}
+					&& $attributes{container} eq '') {
+					push (@content, $Tag->include($components_file));
+				} else {
+					push (@content,
+						qq{<div $type='$name'>} .
+					    ( $alias ? qq{<div $type='$alias'>} : '' ) .
+					    $Tag->include($components_file) .
+					    ( $alias ? qq{</div>} : '' ) .
+					    q{</div>});
+				}
 
 				# reset variables
 				for my $attr (keys %$component_attributes) {
