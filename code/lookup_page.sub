@@ -1,0 +1,44 @@
+Sub lookup_page <<EOS
+sub {
+	my ($name, $q, $set, $set_attr, $template, $selector, %components, %attributes);
+
+	$name = shift;
+
+	$Tag->perl({tables => 'pages page_components attributes'});
+
+	# lookup page and corresponding components
+	$q = qq{select template,component,container,selector from pages P, page_components C where P.name = '$name' and P.name = C.page order by weight};
+
+	$set = $Db{pages}->query({sql => $q, hashref => 1});
+
+	if (@$set) {
+		$template = $set->[0]->{template};
+	} else {
+		# no corresponding page found in database, fallback to missing page
+		return;
+	}
+	
+	for my $href (@$set) {
+		push(@{$components{$href->{container}}}, $href->{component});
+
+		# lookup attributes for this component
+		$q = qq{select name,value from attributes where component = '$href->{component}' and selector = '$href->{selector}'};
+		$set_attr = $Db{pages}->query({sql => $q, hashref => 1});
+
+		for my $href_attr (@$set_attr) {
+			$attributes{$href->{component}}->{$href_attr->{name}} = $href_attr->{value};
+		}
+	}
+
+	# at this point calling $Tag->compose resulted in unknown tag,
+	# so it looks like there is a bug
+
+	$Scratch->{template} = $template;
+	$Scratch->{components} = \%components;
+	$Scratch->{attributes} = \%attributes;
+
+#	$Scratch->{content} = $Tag->compose({template => $template, components => \%components, attributes => \%attributes});
+
+	return(1, 'virtual');
+}
+EOS
