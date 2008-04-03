@@ -1,15 +1,14 @@
 <html>
 
 <head>
-	<title>{TITLE}</title>
-	<link rel="stylesheet" type="text/css" href="{CSS_URL}">
+{HTMLHEAD}
 </head>
 
 <body>
 <div id="left">
 {LEFT}
 </div>
-<div id="body" style="background-color: yellow;">
+<div id="body">
 {BODY}
 </div>
 <div id="right">
