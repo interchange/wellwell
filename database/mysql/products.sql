@@ -7,5 +7,6 @@ CREATE TABLE `products`
   `manufacturer` varchar(255),
   `short_description` text,
   `long_description` text,
+  `price` decimal(11,2) NOT NULL DEFAULT 0,
   PRIMARY KEY (`sku`)
  ); 
