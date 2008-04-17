@@ -295,7 +295,7 @@ print FILE <<"EOF";
 SERVER_NAME\t$server_name
 CGI_URL\t$cgi_url
 ORDERS_TO\t$orders_email
-SQLDSN\tdbi:$db_type_ic:$catalog_name $db_user $db_pass
+SQLDSN\tdbi:$db_type_ic:$db_name $db_user $db_pass
 STATIC_URL\t$static_url
 STATIC_DIR\t$static_dir
 MV_TEMPLATE_DIR\ttemplates
