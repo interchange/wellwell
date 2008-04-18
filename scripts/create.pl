@@ -23,6 +23,7 @@ use warnings;
 use AppConfig qw(:argcount :expand);
 use Getopt::Long;
 use File::Copy;
+use File::NCopy;
 use File::Path;
 use DBIx::Easy;
 
@@ -37,34 +38,35 @@ my $config = new AppConfig (
 	# Database settings
 
 	"create_db!" => { DEFAULT => '1' }, # create db by default
-	"db_admin=s",       # database admin username
-	"db_admin_pass=s",  # database admin password
-	"db_host=s",        # database hostname to connect to
-	"db_user=s",        # database user to be used by ic
-	"db_pass=s",        # database user password
-	"db_type=s",        # pgsql or mysql
-	"db_name=s",        # name of database
-	"db_create_path=s", # path to directory with create statements
+	"db_admin=s",		# database admin username
+	"db_admin_pass=s",	# database admin password
+	"db_host=s",		# database hostname to connect to
+	"db_user=s",		# database user to be used by ic
+	"db_pass=s",		# database user password
+	"db_type=s",		# pgsql or mysql
+	"db_name=s",		# name of database
+	"db_create_path=s",	# path to directory with create statements
 	
 	# Interchange settings
 
-	"catalog_path=s",   # path to catalogs
-	"catalogs_cfg=s",   # location of catalog.cfg file
-	"cgi_url=s",        # cgi url eg. /cgi-bin/ic/
-	"cgi_path=s",       # eg. /var/lib/cgi-bin/ic/
+	"catalog_template=s",	# path to catalogs template
+	"catalog_path=s",	# path to catalogs
+	"catalogs_cfg=s",	# location of catalog.cfg file
+	"cgi_url=s",		# cgi url eg. /cgi-bin/ic/
+	"cgi_path=s",		# eg. /var/lib/cgi-bin/ic/
 
 	# Web server settings
 
-	"web_server=s",     # apache
-	"web_conf_dir=s",   # directory in which to place generated conf
-	"static_url=s",     # static url
-	"static_dir=s",    # static dir (relative to catalog)
+	"web_server=s",		# apache
+	"web_conf_dir=s",	# directory in which to place generated conf
+	"static_url=s",		# static url
+	"static_dir=s",		# static dir (relative to catalog)
 
 	# Catalog settings (settings that have to be set for each cat)
 	
-	"catalog_name=s",   # catalog name
-	"server_name=s",    # server name eg. www.webshop.com
-	"orders_email=s",   # orders email
+	"catalog_name=s",	# catalog name
+	"server_name=s",	# server name eg. www.webshop.com
+	"orders_email=s",	# orders email
 );
 
 $config->file('create.cfg');
@@ -72,6 +74,9 @@ $config->args();
 
 # Check all obligatory configuration settings
 
+if ( !$config->catalog_template() ){
+	die "catalog_path is not defined in your configuration.";
+}
 
 if ( !$config->catalog_path() ){
 	die "catalog_path is not defined in your configuration.";
@@ -105,13 +110,15 @@ if ( ! $config->orders_email() ){
 	die "orders_email is not defined in your configuration.";
 }
 
+my $catalog_template = $config->catalog_template();
+my $catalog_path = $config->catalog_path();
+my $catalogs_cfg = $config->catalogs_cfg();
 my $cgi_path = $config->cgi_path();
 my $cgi_url = $config->cgi_url();
 my $static_dir = $config->static_dir() || 'static';
 my $static_url = $config->static_url() || '/static';
-my $catalog_path = $config->catalog_path();
+
 my $catalog_name = $config->catalog_name();
-my $catalogs_cfg = $config->catalogs_cfg();
 my $server_name = $config->server_name();
 my $orders_email = $config->orders_email();
 
@@ -126,6 +133,25 @@ my $db_create_path = $config->db_create_path || "$catalog_path/$catalog_name/dat
 ## Create needed directories and link file
 ## 
 
+# Check if we are copying a template or we have some var stuff there
+# (could be made to just exclude var?)
+if ( -d "$catalog_template/var/" ){
+	die "var/ exists in your catalog template ($catalog_template). Please remove it before continuing";
+}
+
+if ( -d "$catalog_path/$catalog_name" ){
+	die "There appears to be an existing catalog (or at least a directory of that name) on the location where you wish to create one ($catalog_path/$catalog_name)";
+}
+
+#Create catalog directory
+mkdir("$catalog_path/$catalog_name");
+
+# Copy catalog files from template directory to destination
+my $cp = File::NCopy->new(recursive => 1);
+$cp->copy("$catalog_template/*", "$catalog_path/$catalog_name")
+	|| die "$0: Couldn't create catalog files in $catalog_path/$catalog_name: $!";
+
+# Create var directories and assign proper permissions
 mkpath(
 	[
 		"$catalog_path/$catalog_name/var/tmp",
@@ -133,14 +159,14 @@ mkpath(
 		"$catalog_path/$catalog_name/var/run",
 		"$catalog_path/$catalog_name/var/log",
 	], 0, 0770
-);
+) || die "$0: Couldn't create var directories: $!\n";
 
 # Copy needed vlink file
 copy("$cgi_path/vlink","$cgi_path/$catalog_name")
 	or die "Copying link file failed: $!";
 
 # Add an entry to catalogs.cfg
-open FILE, ">>", "$catalogs_cfg" or die $!;
+open FILE, ">>", "$catalogs_cfg" or die "Cannot open $catalogs_cfg file for writing: $!";
 print FILE "Catalog $catalog_name $catalog_path/$catalog_name $cgi_url/$catalog_name";
 close FILE;
 
@@ -150,7 +176,6 @@ close FILE;
 ## Creating a database (without structures), database user
 ## which will be used by Interchange to connect to the database
 ## and assign privileges to the user.
-
 
 # We have to set a proper database type to indulge DBI.
 # DBI uses Pg name and Interchange uses pgsql,
@@ -234,7 +259,7 @@ if ( $config->create_db() ){
 	my ($dbh, $sth);	
 	$dbh = new DBIx::Easy ($db_type, $db_template, "$db_admin\@$db_host", $db_admin_pass);
 	for my $sql (@create_sqls){
-		$dbh->autodo($sql);
+		$dbh->do_without_transaction($sql) or die $DBI::errstr;
 	}
 }
 
@@ -267,7 +292,7 @@ while (defined(my $file = readdir(DIR))) {
 	$content = "CREATE TABLE $file ( $content )"; # append the create part
 
 	# Execute create statement
-	$dbh->autodo($content);
+	$dbh->do_without_transaction($content);
 	print "SQL $content\n";
 }
 closedir(DIR);
@@ -303,13 +328,6 @@ MV_COMPONENT_DIR\tcomponents
 EOF
 close(FILE);
 
-#
-# Filling in the test data (dump.sql) ?
-#
-
-
-
-
 sub mkpass {
 	my ($length) = @_;
 	$length ||= 1;
@@ -333,7 +351,7 @@ Database server: $db_type
 Database host: $db_host
 Database name: $db_name
 Database username: $db_user
-Database password: $db_pass
+Database password: You can find your pass inside database/site.txt
 
 URL of your catalog: $cat_url
 Filesystem path to your catalog: $cat_path
