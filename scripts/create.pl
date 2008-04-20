@@ -166,6 +166,15 @@ if ( -d $catalog_dir ){
 	die "There appears to be an existing catalog (or at least a directory of that name) on the location where you wish to create one ($catalog_path/$catalog_name)";
 }
 
+# Read catalogs.cfg and check if there is already a catalog by that name
+open FILE, "$catalogs_cfg" or die "Cannot open $catalogs_cfg file for reading: $!";
+while (defined (my $line = <FILE>)) {
+	if ($line =~ /^Catalog $catalog_name /g){
+		die "Catalog named $catalog_name is already defined in $catalogs_cfg";
+	}
+}
+close FILE;
+
 #Create catalog directory
 mkdir($catalog_dir);
 
@@ -184,21 +193,11 @@ mkpath(
 	], 0, 0770
 ) || die "$0: Couldn't create var directories: $!\n";
 
-# make catalog owned by interchange user
-rchown($ic_user,$ic_group,"$catalog_dir");
-
 # Copy needed vlink file
 copy("$cgi_path/vlink","$cgi_path/$catalog_name")
 	or die "Copying link file failed: $!";
-
-# Read catalogs.cfg and check if there is already a catalog by that name
-open FILE, "$catalogs_cfg" or die "Cannot open $catalogs_cfg file for reading: $!";
-while (defined (my $line = <FILE>)) {
-	if ($line =~ /^Catalog $catalog_name /g){
-		die "Catalog named $catalog_name is already defined in $catalogs_cfg";
-	}
-}
-close FILE;
+chmod(0755, "$cgi_path/$catalog_name") 
+	or die "Setting chmod 0755 for $cgi_path/$catalog_name: $!";
 
 # Add an entry to catalogs.cfg
 open FILE, ">>", "$catalogs_cfg" or die "Cannot open $catalogs_cfg file for writing: $!";
@@ -221,7 +220,7 @@ if( $db_type =~ m/pg|postgres/i ){
 	$db_type    = 'Pg';
 	$db_type_ic = 'pgsql';
 }
-elsif( $db_type =~ m/myslq/i){
+elsif( $db_type =~ m/mysql/i){
 	$db_type    = 'mysql';	
 	$db_type_ic = 'mysql';
 }
@@ -266,7 +265,7 @@ if ( $config->create_db() ){
 		# Statements to create database and proper privileges
 		@create_sqls = (
 			"CREATE USER $db_user WITH PASSWORD '$db_pass'",
-			"CREATE DATABASE $db_name",
+			"CREATE DATABASE $db_name WITH ENCODING 'UNICODE'",
 			"GRANT ALL PRIVILEGES ON DATABASE $db_name TO $db_user",
 		);
 
@@ -279,7 +278,7 @@ if ( $config->create_db() ){
 		# Statements to create database and proper privileges
 		@create_sqls = (
 			"CREATE USER $db_user WITH PASSWORD $db_pass",
-			"CREATE DATABASE $db_name",
+			"CREATE DATABASE $db_name CHARACTER SET utf8 COLLATE utf8_general_ci;",
 			"GRANT ALL PRIVILEGES ON DATABASE $db_name TO $db_user;",
 		);
 
@@ -343,17 +342,33 @@ closedir(DIR);
 ## a specific catalog
 ##
 
+my $db_dsn;
+if ( $db_type eq 'Pg' ) {
+	$db_dsn = "dbi:$db_type:dbname=$db_name;host=$db_host $db_user $db_pass \"\" public";
+}
+elsif ( $db_type eq 'mysql' ) {
+	$db_dsn = "dbi:$db_type:database=$db_name;host=$db_host $db_user $db_pass";
+}
+
 open FILE, ">", "$catalog_dir/database/site.txt" or die $!;
 print FILE <<"EOF";
+code	Variable
 SERVER_NAME\t$server_name
-CGI_URL\t$cgi_url
+CGI_URL\t$cgi_url/$catalog_name
 ORDERS_TO\t$orders_email
-SQLDSN\tdbi:$db_type_ic:$db_name $db_user $db_pass
+SQLDSN\t$db_dsn
 STATIC_URL\t$static_url
 STATIC_DIR\t$static_dir
 EOF
 close(FILE);
 
+##
+## Set ownerships and masks
+##
+
+# Set ownerships and masks
+rchown($ic_user,$ic_group,$catalog_dir);
+rchmod($catalog_dir);
 
 # Print out success information
 print completed($db_type, $db_host, $db_name, $db_user, $db_pass, 'heh', 'heh');
@@ -379,11 +394,34 @@ sub rchown {
 		}
 
 	my $uid = getpwnam($user)->uid
-		or die "Couldn't get UID from username";
+		or die "Couldn't get UID from username: $!";
 	my $gid = getgrnam($group)->gid
-		or die "Couldn't get GID from groupname";
+		or die "Couldn't get GID from groupnamei: $!";
 
-	find( sub { chown($uid, $gid, $_); }, "$dir");
+	find( sub { 
+		chown($uid, $gid, $_)	
+			or die "Cannot chown $dir to UID: $uid, GID: $gid: $!";
+	}, "$dir");
+}
+
+# chmod recursively
+sub rchmod {
+	my($dir) = @_;
+	
+	if($dir eq '/'){
+		die "Trying to chmod root dir";
+	}
+
+	find( sub { 
+		if (-d $_){
+			chmod(0770, $_)
+				or die "Cannot chmod $_ to 0770: $!";
+		}
+		else {
+			chmod(0660, $_)
+				or die "Cannot chmod $_ to 0660: $!";
+		}
+	}, "$dir");
 }
 
 # print out completed message
