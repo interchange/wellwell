@@ -110,8 +110,12 @@ if ( ! $config->ic_group() ){
 	die "ic_group is not defined in your configuration.";
 }
 
-if ( !$config->catalog_name() ){
-	die "catalog_name is not defined in your configuration.";
+if ( ! $config->catalog_name() ){
+	die "catalog_name is not defined in your configuration";
+}
+
+if ( $config->catalog_name() !~ /^\w+$/g){
+	die "catalog_name contains invalid characters (only alphanumeric and underscore are allowed)";
 }
 
 if ( ! $config->server_name() ){
