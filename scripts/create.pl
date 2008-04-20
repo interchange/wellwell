@@ -351,8 +351,6 @@ ORDERS_TO\t$orders_email
 SQLDSN\tdbi:$db_type_ic:$db_name $db_user $db_pass
 STATIC_URL\t$static_url
 STATIC_DIR\t$static_dir
-MV_TEMPLATE_DIR\ttemplates
-MV_COMPONENT_DIR\tcomponents
 EOF
 close(FILE);
 
