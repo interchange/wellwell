@@ -77,8 +77,10 @@ my $config = new AppConfig (
 	"orders_email=s",	# orders email
 );
 
-$config->file('create.cfg');
-$config->args();
+$config->file('create.cfg')
+	or die "Problems reading configuration file: $!";
+$config->args()
+	or die "Problem reading arguments: $!";
 
 # Check all obligatory configuration settings
 
