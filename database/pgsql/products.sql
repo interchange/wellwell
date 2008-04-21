@@ -1,4 +1,4 @@
-create table products (
+CREATE TABLE products (
 	"sku" varchar(32) NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"manufacturer" varchar(255),

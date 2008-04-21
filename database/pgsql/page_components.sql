@@ -1,4 +1,4 @@
-create table page_components (
+CREATE TABLE page_components (
 	"page" varchar(255) NOT NULL,
 	"component" varchar(255) NOT NULL,
 	"container" varchar(255) NOT NULL,

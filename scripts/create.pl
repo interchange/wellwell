@@ -25,6 +25,7 @@ use Getopt::Long;
 use File::Copy;
 use File::NCopy;
 use File::Find;
+use File::stat;
 use User::pwent;
 use User::grent;
 use File::Path;
@@ -196,10 +197,8 @@ mkpath(
 ) || die "$0: Couldn't create var directories: $!\n";
 
 # Copy needed vlink file
-copy("$cgi_path/vlink","$cgi_path/$catalog_name")
-	or die "Copying link file failed: $!";
-chmod(0755, "$cgi_path/$catalog_name") 
-	or die "Setting chmod 0755 for $cgi_path/$catalog_name: $!";
+copy_preserved("$cgi_path/vlink","$cgi_path/$catalog_name")
+	or die "Copying $cgi_path/vlink to $cgi_path/$catalog_name failed";
 
 # Add an entry to catalogs.cfg
 open FILE, ">>", "$catalogs_cfg" or die "Cannot open $catalogs_cfg file for writing: $!";
@@ -279,9 +278,9 @@ if ( $config->create_db() ){
 		# HAS TO BE FIXED!
 		# Statements to create database and proper privileges
 		@create_sqls = (
-			"CREATE USER $db_user WITH PASSWORD $db_pass",
-			"CREATE DATABASE $db_name CHARACTER SET utf8 COLLATE utf8_general_ci;",
-			"GRANT ALL PRIVILEGES ON DATABASE $db_name TO $db_user;",
+			"CREATE USER $db_user IDENTIFIED BY '$db_pass'",
+			"CREATE DATABASE $db_name CHARACTER SET utf8 COLLATE utf8_general_ci",
+			"GRANT ALL ON $db_name.* TO $db_user",
 		);
 
 	}
@@ -317,12 +316,8 @@ while (defined(my $file = readdir(DIR))) {
 	#read the file into string
 	my $content = do { local( @ARGV, $/ ) = $file_path ; <> } ;
 	
-	$file=~ s/\.\w+$//; #stripe extension before making it a table name
-	$content = "CREATE TABLE $file ( $content )"; # append the create part
-
 	# Execute create statement
 	$dbh->do_without_transaction($content);
-	print "SQL $content\n";
 }
 closedir(DIR);
 
@@ -375,6 +370,13 @@ rchmod($catalog_dir);
 # Print out success information
 print completed($db_type, $db_host, $db_name, $db_user, $db_pass, 'heh', 'heh');
 
+
+
+##
+## Helper functions
+##
+
+
 # generate random password
 sub mkpass {
 	my ($length) = @_;
@@ -424,6 +426,19 @@ sub rchmod {
 				or die "Cannot chmod $_ to 0660: $!";
 		}
 	}, "$dir");
+}
+
+# copy preserving ownership and permissions
+sub copy_preserved {
+	my($source,$dest) = @_;
+
+	if ( system("cp -p $source $dest") eq 0 ){
+		return $dest;
+	}
+	else {
+		return 0;
+	}
+
 }
 
 # print out completed message
