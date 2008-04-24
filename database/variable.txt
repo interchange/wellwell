@@ -3,3 +3,4 @@ MV_TEMPLATE_DIR	templates
 MV_COMPONENT_DIR	components
 IMAGE_DIR	__DOCROOT__/static/images
 CSS_URL	/static/css/wellwell.css
+MODULES	content
