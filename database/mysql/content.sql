@@ -4,7 +4,8 @@ CREATE TABLE `content` (
   `uid` int unsigned NOT NULL,
   `title` varchar(255) NOT NULL,
   `body` longtext NOT NULL,
+  `locale` varchar(255) NOT NULL default 'en_US',
   `created` int unsigned NOT NULL,
   PRIMARY KEY (`code`),
   KEY (`type`)
-);
+) CHARACTER SET utf8;
