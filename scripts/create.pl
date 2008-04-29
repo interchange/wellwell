@@ -266,8 +266,7 @@ if ( $config->create_db() ){
 		# Statements to create database and proper privileges
 		@create_sqls = (
 			"CREATE USER $db_user WITH PASSWORD '$db_pass'",
-			"CREATE DATABASE $db_name WITH ENCODING 'UNICODE'",
-			"GRANT ALL PRIVILEGES ON DATABASE $db_name TO $db_user",
+			"CREATE DATABASE $db_name WITH OWNER = $db_user ENCODING = 'UTF8'",
 		);
 
 	}
