@@ -5,7 +5,7 @@ CREATE TABLE `content` (
   `title` varchar(255) NOT NULL,
   `body` longtext NOT NULL,
   `locale` varchar(255) NOT NULL default 'en_US',
-  `created` int unsigned NOT NULL,
+  `created` datetime NOT NULL,
   PRIMARY KEY (`code`),
   KEY (`type`)
 ) CHARACTER SET utf8;
