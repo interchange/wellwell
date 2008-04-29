@@ -5,6 +5,6 @@ CREATE TABLE "content" (
   "title" varchar(255) NOT NULL,
   "body" text NOT NULL,
   "locale" varchar(255) NOT NULL DEFAULT 'en_US'::character varying,
-  "created" timestampz NOT NULL,
+  "created" timestamp NOT NULL,
   PRIMARY KEY ("code")
 );
