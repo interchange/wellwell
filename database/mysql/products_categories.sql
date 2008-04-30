@@ -1,5 +1,4 @@
-CREATE TABLE `categories` (
-  `name` varchar(255) NOT NULL,
-  `category_id` int unsigned NOT NULL,
-  `parent` int unsigned NOT NULL
+CREATE TABLE `products_categories` (
+  `sku` varchar(32) NOT NULL,
+  `category` int unsigned NOT NULL,
 ) CHARACTER SET utf8;
