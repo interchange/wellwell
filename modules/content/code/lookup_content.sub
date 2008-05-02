@@ -3,6 +3,7 @@ sub {
 	my ($name, $q, $set, $content_ref);
 
 	$name = shift;
+	$name =~ s%^content/%%;
 
 	$Tag->perl({tables => 'content'});
 
