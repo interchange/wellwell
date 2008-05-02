@@ -2,7 +2,8 @@
 [set size]8[/set]
 [compose
 	title="[if cgi foo]foo[else][L]New Demo[/L][/else][/if]"
-	components.left="cart_tiny=c password_reminder_link"
+	components.htmlhead="htmlhead"
+	components.left="menu"
 	components.right="loginout"
         components.body="[scratch foo]"
 	attributes.hello_world.size=`$Scratch->{size}`
