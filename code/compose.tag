@@ -47,6 +47,17 @@ sub {
 		}
 	}
 
+	# override attributes from CGI variables
+	# for example: mv_attribute=htmlhead.title=Homepage
+	
+	if ($CGI->{mv_attribute}) {
+		for (@{$CGI_array->{mv_attribute}}) {
+			if (/^(.+?)\.(.+?)=(.*)$/) {
+				$attributes{$1}->{$2} = $3;
+			}
+		}
+	}
+
 	# process components ([compose components.placeholder='COMP_SPEC'...])
 	# placeholder => "{NAME}" within template file
 	# COMP_SPEC => "component1=alias1 c2=a2, c3 c4, c5"
