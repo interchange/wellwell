@@ -1,3 +1,6 @@
-[query sql="select * from content order by created desc" list=1]
+[query sql="select * from content order by created desc" list=1 ml="__CONTENT_FRONTPAGE_POSTS__"]
+[list]
 <a href="[area content/[sql-code]]">[sql-param title]</a><br>
+[/list]
+[more-list][more][/more-list]
 [/query]
