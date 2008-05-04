@@ -1,14 +1,9 @@
-[set foo]hello_world[/set]
-[set size]8[/set]
 [compose
-	components.htmlhead="htmlhead"
 	components.left="menu"
 	components.right="loginout"
-        components.body="[scratch foo]"
-	attributes.htmlhead.title="[if cgi foo]foo[else][L]New Demo[/L][/else][/if]"
-	attributes.hello_world.size=`$Scratch->{size}`
-	attributes.loginout.scope=minimal
-	attributes.loginout.status="[if session logged_in]user[else]guest[/else][/if]"
-	attributes.c.size=5
-	css_url=`$Variable->{CSS_URL}`
+
+	components.htmlhead="htmlhead"
+	attributes.htmlhead.title="Well Well Shop"
+
+        components.body="product_list"
 /]
