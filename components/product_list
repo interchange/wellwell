@@ -1,0 +1,18 @@
+[query
+	sql='
+	SELECT sku,name,description,price FROM products,images
+	'
+	list=1
+]
+[list]
+
+<div class="image">
+
+</div>
+
+<h3>[sql-param manufacturer] [sql-param name]</h3>
+<p class="description"> [sql-param description] </p>
+<p class="price"> [sql-param price] </p>
+
+[/list]
+[/query]
