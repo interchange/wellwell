@@ -8,7 +8,7 @@ sub {
 	for my $module (@modules) {
 		if ($sub = $Config->{Sub}->{"lookup_$module"}) {
 			($retval, $page) = $sub->($name);
-		Log("Return from $module: $retval $page");
+
 			if ($retval) {
 				return ($retval, $page);
 			}
@@ -26,6 +26,7 @@ sub {
 		$Tag->perl({tables => 'products'});
 
 		if ($Db{products}->record_exists($sku)) {
+			$Session->{arg} = $sku;
 			return (1, $Config->{Special}->{flypage});
 		}
 	}
