@@ -348,13 +348,13 @@ elsif ( $db_type eq 'mysql' ) {
 
 open FILE, ">", "$catalog_dir/database/site.txt" or die $!;
 print FILE <<"EOF";
-code	Variable
-SERVER_NAME\t$server_name
-CGI_URL\t$cgi_url/$catalog_name
-ORDERS_TO\t$orders_email
+code\tVariable\tcomment
+SERVER_NAME\t$server_name\tName of the server
+CGI_URL\t$cgi_url/$catalog_name\tURL to the CGI linker
+ORDERS_TO\t$orders_email\tEmail to send orders to
 SQLDSN\t$db_dsn
-STATIC_URL\t$static_url
-STATIC_DIR\t$static_dir
+STATIC_URL\t$static_url\tURL of the static content directory
+STATIC_DIR\t$static_dir\tPath to the static content directory (relative to catalog directory)
 EOF
 close(FILE);
 
