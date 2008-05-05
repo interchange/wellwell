@@ -1,4 +1,4 @@
-[fly-list code="__SKU__"]
+[fly-list code="[either][data session arg][or]__SKU__[/either]"]
 
 <h2> [item-field manufacturer] [item-field name] </h2>
 
