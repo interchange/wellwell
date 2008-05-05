@@ -3,7 +3,7 @@
 <h2> [item-field manufacturer] [item-field name] </h2>
 
 <ul>
-<li><strong>[price code="__SKU__"]</strong></li>
+<li><strong>[item-price]</strong></li>
 <li>Qty: |INPUT|  |Add to cart button|
 </li>
 </ul>
