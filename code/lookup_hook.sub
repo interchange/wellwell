@@ -8,10 +8,25 @@ sub {
 	for my $module (@modules) {
 		if ($sub = $Config->{Sub}->{"lookup_$module"}) {
 			($retval, $page) = $sub->($name);
-		
+		Log("Return from $module: $retval $page");
 			if ($retval) {
 				return ($retval, $page);
 			}
+		}
+	}
+
+	# finally assume that link contains SKU at the end
+	my (@parts, $sku);
+
+	@parts = grep {/\S/} split(/\//, $name);
+
+	if (@parts > 1) {
+		$sku = pop(@parts);
+
+		$Tag->perl({tables => 'products'});
+
+		if ($Db{products}->record_exists($sku)) {
+			return (1, $Config->{Special}->{flypage});
 		}
 	}
 }
