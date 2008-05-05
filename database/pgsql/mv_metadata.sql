@@ -22,4 +22,4 @@ CREATE TABLE mv_metadata
   "display_filter" varchar(255),
   "extended" text,
   CONSTRAINT mv_metadata_pkey PRIMARY KEY ("code")
-) WITHOUT OIDS;
+);

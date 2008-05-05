@@ -6,4 +6,4 @@ CREATE TABLE menus
   "url" varchar(255),
   "menu_name" varchar(64),
   CONSTRAINT menu_pkey PRIMARY KEY (code)
-) WITHOUT OIDS;
+);

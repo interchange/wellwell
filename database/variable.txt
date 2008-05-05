@@ -1,6 +1,7 @@
-code	Variable
-MV_TEMPLATE_DIR	templates
-MV_COMPONENT_DIR	components
-IMAGE_DIR	__DOCROOT__/static/images
-CSS_URL	/static/css/wellwell.css
-MODULES	content
+code	Variable	comment
+MV_TEMPLATE_DIR	templates	Directory with templates
+MV_COMPONENT_DIR	components	Directory with components
+IMAGE_URL	/images	STATIC_URL relative path of image url
+IMAGE_DIR	/images	STATIC_DIR relative path of image directory
+MODULES	content	List of modules used in this catalog
+CSS_URL	/css/container.css	Relative to STATIC_URL
