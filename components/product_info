@@ -1,0 +1,20 @@
+[fly-list code="__SKU__"]
+
+<h2> [item-field manufacturer] [item-field name] </h2>
+
+<ul>
+<li><strong>[price code="__SKU__"]</strong></li>
+<li>Qty: |INPUT|  |Add to cart button|
+</li>
+</ul>
+
+<h3>[L]Quick Overview[/L]</h3>
+<p>
+[item-field description]
+</p>
+<h3>[L]Product Description[/L]</h3>
+<p>
+[item-field long_description]
+</p>
+
+[/fly-list]
