@@ -1,19 +1,58 @@
 /*
  *
  * This is a basic CSS template for use with your catalog.
- * It is not intended to be changed by users. Change other
- * CSS files instead and apply them to your template.
+ * Please include additional style definitions in other files, and
+ * keep this file as simple as possible.
+ *
+ * Tuning tips:
+ *  * Change all occurences of 220px to some other number to change width of left navigation.
+ *  * Change all occurences of 27% to some other number to change width of right navigation.
+ * 
  *
  */
 
-body {
-	margin: 0 0 0 0;
-	padding: 0 0 0 0;
-}
 
+
+
+/*
+ * Page layout and general stuff
+ */
+
+body {
+	margin: 0;
+	padding: 0;
+}
 img {
 	border: 0;
 }
+div#header {
+	position:relative;
+}
+div#wrapper {
+	float:left;width:100%;
+}
+div#body {
+	margin: 0 27% 0 220px;
+}
+div#left {
+	float:left;
+	width:220px;
+	margin-left:-100%;
+}
+div#right {
+	float:left;
+	width:27%;
+	margin-left:-27%;
+}
+div#footer {
+	clear:left;
+	width:100%;
+}
+
+
+/*
+ * Basic layout building blocks
+ */
 
 .rowOfBoxes {
 	clear: both;
@@ -57,3 +96,4 @@ img {
 .dividingBorderAbove {
   border-top: 1px;
 }
+

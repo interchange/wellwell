@@ -1,0 +1,12 @@
+body {
+	font-family: Tahoma, 'Trebuchet MS', trebuchet, sans-serif;
+	color: Black;
+	font-size: 12px;
+	font-style: normal;
+	background: White;
+}
+
+div#container {
+	width: 90%;
+	margin: 0 auto;
+}

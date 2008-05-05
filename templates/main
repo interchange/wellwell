@@ -6,14 +6,14 @@
 </head>
 
 <body>
-<div id="left">
-{LEFT}
-</div>
-<div id="body">
-{BODY}
-</div>
-<div id="right">
-{RIGHT}
+<div id="container">
+	<div id="header"> {HEADER} </div>
+	<div id="wrapper">
+		<div id="body">	{BODY} </div>
+	</div>
+	<div id="left">	{LEFT} </div>
+	<div id="right"> {RIGHT} </div>
+	<div id="footer"> {FOOTER} </div>	
 </div>
 </body>
 
