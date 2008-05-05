@@ -1,4 +1,4 @@
-*  Document [compose] and [action] the XMLDOCS way
+*  Document [compose] the XMLDOCS way
 
 *  [compose] should support more aliases
 
@@ -17,8 +17,6 @@
 *  Action Tag: it should be possible to assign attributes to targets
 
 *  Enable RT Queue 'wellwell'
-
-* Make prefix/suffix in display_menu configurable
 
 * Gettext support, possibly with strings in the database
 
