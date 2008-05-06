@@ -5,6 +5,5 @@ CREATE TABLE products (
   "description" text,
   "long_description" text,
   "price" numeric(11,2) NOT NULL DEFAULT 0,
-  "image" int4 NOT NULL DEFAULT 0,
   CONSTRAINT products_pkey PRIMARY KEY (sku)
 );

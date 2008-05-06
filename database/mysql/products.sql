@@ -6,7 +6,6 @@ CREATE TABLE `products`
   `description` text,
   `long_description` text,
   `price` decimal(11,2) NOT NULL DEFAULT 0,
-  `image` int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`sku`)
  ) CHARACTER SET utf8;
  
