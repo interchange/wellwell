@@ -1,1 +1,13 @@
-[display_menu name=main]
+<ul>
+[tree
+        table=menus
+        master=parent
+        start="0"
+        subordinate=code
+        full=1
+]
+[if-item-param mv_up]<ul>[/if-item-param]
+[if-item-param mv_down]</ul>[/if-item-param]
+<li>[item-param name]</li>
+[/tree]
+</ul>
