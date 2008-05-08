@@ -4,6 +4,6 @@
 Submitted by [user name {UID}] on [time format="%e-%b-%Y" time={CREATED}].
 </span>
 <div class="contentbody">
-{BODY}
+[filter text2html]{BODY}[/filter]
 </div>
 [/uc-attr-list]
