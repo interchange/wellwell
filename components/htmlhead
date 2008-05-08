@@ -2,6 +2,6 @@
 <meta name="description" content="__PAGE_DESCRIPTION__">
 <meta name="keywords" content="__PAGE_KEYWORDS__">
 <meta name="copyright" content="__COPYRIGHT__">
-<link rel="shortcut icon" href="/favicon.ico">
+<link rel="shortcut icon" href="__IMAGE_URL__/style/favicon.ico">
 <title>__TITLE__</title>
-<link rel="stylesheet" type="text/css" href="__CSS_URL__">
+<link rel="stylesheet" type="text/css" href="__CSS_URL__/container.css">

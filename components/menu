@@ -5,9 +5,10 @@
         start="0"
         subordinate=code
         full=1
+	where="menu_name='__NAME__'"
 ]
 [if-item-param mv_up]<ul>[/if-item-param]
 [if-item-param mv_down]</ul>[/if-item-param]
-<li>[item-param name]</li>
+<li><a href='[area href="[item-param url]"]'>[item-param name]</a></li>
 [/tree]
 </ul>
