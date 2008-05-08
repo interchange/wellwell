@@ -353,12 +353,6 @@ SERVER_NAME\t$server_name\tName of the server
 CGI_URL\t$cgi_url/$catalog_name\tURL to the CGI linker
 ORDERS_TO\t$orders_email\tEmail to send orders to
 SQLDSN\t$db_dsn
-STATIC_URL\t$static_url\tURL of the static content directory
-STATIC_DIR\t$static_dir\tPath to the static content directory (relative to catalog directory)
-IMAGE_URL\t/images\tURL of image directory
-IMAGE_DIR\t$static_dir/images\tSTATIC_DIR relative path of image directory
-CSS_URL\t$static_url/css\tURL of the CSS files
-CSS_DIR\t$static_dir/css\tPath to CSS directory (relative to catalog path)
 EOF
 close(FILE);
 
