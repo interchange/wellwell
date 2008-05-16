@@ -5,5 +5,6 @@ CREATE TABLE "images"
   "format" char(3),
   "created" timestamp,
   "author" int4,
+  "inactive" bool DEFAULT false,
   CONSTRAINT images_pkey PRIMARY KEY ("code")
 );

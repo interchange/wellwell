@@ -5,5 +5,6 @@ CREATE TABLE `images`
   `format` char(3),
   `created` datetime,
   `author` int unsigned,
+  `inactive` boolean DEFAULT FALSE,
   PRIMARY KEY (`code`)
 )  CHARACTER SET utf8;
