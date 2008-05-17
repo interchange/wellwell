@@ -24,11 +24,11 @@
 # size         - Name of the image size. An entry has to exist in image_sizes table.
 #
 #
-UserTag image_list Order where key key_field join_table size
+UserTag image_list Order where key key_field join_table size ml
 UserTag image_list HasEndTag 
 UserTag image_list Routine <<EOR
 sub {
-	my ($where, $key, $key_field, $join_table, $size, $body) = @_;
+	my ($where, $key, $key_field, $join_table, $size, $matchlimit, $body) = @_;
 
 	if($where){
 		$where = " AND $where ";
@@ -58,13 +58,13 @@ sub {
 		}
 
 		foreach my $result (@$results){
-			$result->{'img-src'} = 
-				"<img src=\"$Variable->{IMAGE_URL}/$result->{'image'}/$size.$result->{'format'}\">";
+			$result->{'img-src'} = qq{<img src="$Variable->{IMAGE_URL}/$result->{'image'}/$size.$result->{'format'}">};
 		}
 	}
 
 	return $Tag->loop({
 		prefix => 'image-list',
+		ml => $matchlimit,
 		object => 
 		{
 			mv_results => $results,
