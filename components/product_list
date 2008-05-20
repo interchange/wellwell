@@ -1,18 +1,11 @@
-[query
-	sql='
-	SELECT sku,name,description,price FROM products,images
-	'
-	list=1
-]
-[list]
+[product-list category=2]
 
 <div class="image">
 
 </div>
 
-<h3>[sql-param manufacturer] [sql-param name]</h3>
-<p class="description"> [sql-param description] </p>
-<p class="price"> [sql-param price] </p>
+<h3>[item-field manufacturer] [item-field name]</h3>
+<p class="description"> [item-description] </p>
+<p class="price"> [item-price] </p>
 
-[/list]
-[/query]
+[/product-list]
