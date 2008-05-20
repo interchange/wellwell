@@ -1,4 +1,4 @@
-[product-list category=2]
+[product-list category=__CATEGORY__]
 
 <div class="image">
 
