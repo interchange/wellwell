@@ -61,7 +61,7 @@ sub {
 	$prefix ||= 'product-list';
 
 	if ($category){
-		$category = " WHERE pc.category='$category' ";
+		$category = " AND pc.category='$category' ";
 	}
 
 	$Tag->perl( {tables => 'products product_categories'} );
@@ -70,7 +70,7 @@ sub {
 	my $sql = qq{
 		SELECT p.sku,p.manufacturer,p.name,p.description,p.price
 		FROM products p LEFT OUTER JOIN product_categories pc
-		ON p.sku=pc.sku $category
+		ON p.sku=pc.sku WHERE p.inactive IS FALSE $category
 		};
 
 	my @results = $db->query({sql => $sql});
