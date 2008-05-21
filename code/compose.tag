@@ -40,7 +40,6 @@ sub {
 		# Interchange's parser splits up only one level of dots, so
 		# attributes.foo.bar = "com" ends up as foo.bar => com.
 		# We need arbitrary levels.
-		my (@frags);
 
 		for my $k (keys %{$opt->{attributes}}) {
 			dots2hash(\%attributes, $opt->{attributes}->{$k}, split /\./, $k);
