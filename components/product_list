@@ -4,9 +4,9 @@
 
 </div>
 
-<h3>[item-field manufacturer] [item-field name]</h3>
-<p class="description"> [item-description] </p>
-<p class="price"> [item-price] </p>
+<h3>[product-list-field manufacturer] [product-list-field name]</h3>
+<p class="description"> [product-list-description] </p>
+<p class="price"> [product-list-price] </p>
 [/list]
 [no-match]
 [L]No products found in this category.[/L]

@@ -7,7 +7,7 @@ image_batch_resize - Resize images according to list from database, and store th
 
 =head1 SYNOPSIS
 
-[image_batch_resize 1]
+[image_batch_resize code]
 
 =head1 DESCRIPTION
 
