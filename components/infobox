@@ -1,0 +1,11 @@
+[if session failure]
+<p class="failure">
+<strong>[data session failure]</strong>
+[data base=session field=failure value=""]
+<p>
+[elsif errors]
+<p class="failure">
+[error auto=1]
+</p>
+[/elsif]
+[/if]

@@ -57,6 +57,21 @@ sub {
 		}
 	}
 
+	# automatic components
+	if ($Variable->{MV_COMPONENT_AUTO}) {
+		my @auto = split(/[,\s]+/, $Variable->{MV_COMPONENT_AUTO});
+
+		for (@auto) {
+			my ($ph, $c) = split(/[=:]/);
+	
+			if (exists $opt->{components}->{$ph}) {
+				$opt->{components}->{$ph} = "$c $opt->{components}->{$ph}";
+			} else {
+			    $opt->{components}->{$ph} = $c;
+			}
+		}
+	}
+
 	# process components ([compose components.placeholder='COMP_SPEC'...])
 	# placeholder => "{NAME}" within template file
 	# COMP_SPEC => "component1=alias1 c2=a2, c3 c4, c5"
