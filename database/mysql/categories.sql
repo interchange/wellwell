@@ -3,6 +3,6 @@ CREATE TABLE `categories` (
   `name` varchar(255) NOT NULL,
   `parent` int unsigned NOT NULL,
   `priority` int NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `uri` varchar(255) NOT NULL,
   PRIMARY KEY (`code`)
 ) CHARACTER SET utf8;
