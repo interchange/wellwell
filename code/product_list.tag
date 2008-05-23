@@ -9,7 +9,7 @@ product_list - Displays a list of products
 
 =head1 SYNOPSIS
 
-[product-list category prefix] ... [/product-list]
+[product-list category] ... [/product-list]
 
 =head1 DESCRIPTION
 
@@ -25,7 +25,7 @@ Display only products from this category.
 
 =item prefix
 
-List prefix
+List prefix.
 
 =back
 
