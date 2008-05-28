@@ -1,7 +1,7 @@
 CREATE TABLE `image_sizes`
 (
   `name` varchar(64) NOT NULL,
-  `width` unsigned int,
-  `height` unsigned int,
+  `width` int unsigned,
+  `height` int unsigned,
   PRIMARY KEY (`name`)
 )  CHARACTER SET utf8;
