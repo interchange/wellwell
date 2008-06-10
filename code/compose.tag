@@ -4,8 +4,12 @@ UserTag compose AddAttr
 UserTag compose Routine <<EOR
 sub dots2hash {
 	my ($h, $v, @k) = @_;
+	my ($skey);
+
 	while (@k > 1) {
-		$h = $h->{shift @k} = {};
+		$skey = shift @k;
+		$h->{$skey} ||= {};
+		$h = $h->{$skey};
 	}
 	$h->{shift @k} = $v;
 }
