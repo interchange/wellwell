@@ -106,7 +106,7 @@ sub {
 			my $row = $$rows[0];
 	
 			my $name = $row->{$display_field};
-			$name =~ s/\W/$nonword_fill/g;
+			$name =~ s/\W+/$nonword_fill/g;
 			$name =~ tr/[A-Z]/[a-z]/;
 
 			unshift(@parents, $name);
