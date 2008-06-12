@@ -15,7 +15,7 @@ Generates an URL for hierarchical structures such as categories and menus. Uses 
 
 This tag is normally used in an Interchange job, which fills the entire table, or as a part of administration interface (where you run it when you add or edit a category, for example).
 
-The URL is retreived by using an ActionMap or a similar approach to display the page.
+The URL is retrieved by using an ActionMap or a similar approach to display the page.
 
 The active settings are:
 
