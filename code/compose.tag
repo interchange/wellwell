@@ -19,6 +19,7 @@ sub {
 	my ($template_file);
 
 	$opt->{body} ||= $body;
+	$opt->{local_body} = $opt->{body};
 
 	if( !$Variable->{MV_TEMPLATE_DIR} ){
 		::logError("MV_TEMPLATE_DIR is not set. [compose] cannot function properly without this variable.");
@@ -28,12 +29,14 @@ sub {
 		::logError("MV_COMPONENT_DIR is not set. [compose] cannot function properly without this variable.");
 	}
 
-	# locate template
-	$template ||= $Tag->control('template', 'main');
-	$template_file = "$Variable->{MV_TEMPLATE_DIR}/$template";
+	unless( $template_file = $opt->{template_file} ) {
+		# locate template
+		$template ||= $Tag->control('template', 'main');
+		$template_file = "$Variable->{MV_TEMPLATE_DIR}/$template";
 
-	# read template
-	$template_file = $Tag->file($template_file);
+		# read template
+		$template_file = $Tag->file($template_file);
+	}
 
 	# process attributes ([compose attributes.COMPONENT.OPTION='VALUE'...])
 	# COMPONENT => filename in components/
@@ -63,15 +66,17 @@ sub {
 
 	# automatic components
 	if ($Variable->{MV_COMPONENT_AUTO}) {
-		my @auto = split(/[,\s]+/, $Variable->{MV_COMPONENT_AUTO});
+		my @auto = split(/\s+/, $Variable->{MV_COMPONENT_AUTO});
 
 		for (@auto) {
-			my ($ph, $c) = split(/[=:]/);
-	
-			if (exists $opt->{components}->{$ph}) {
-				$opt->{components}->{$ph} = "$c $opt->{components}->{$ph}";
-			} else {
-			    $opt->{components}->{$ph} = $c;
+			my ($ph, $c) = split(/[=:]/, $_, 2); # i.e. body=c1,c2=a2
+
+			for my $sc (reverse split(/,+/, $c)) {
+				if (exists $opt->{components}->{$ph}) {
+					$opt->{components}->{$ph} = "$sc $opt->{components}->{$ph}";
+				} else {
+						$opt->{components}->{$ph} = $sc;
+				}
 			}
 		}
 	}
@@ -112,21 +117,24 @@ sub {
 					$Variable->{uc($attr)} = $component_attributes->{$attr};
 				}
 
-				# locate component
-				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
-
 				# figure out whether to output class= or id=
 				my $type = $attributes{$alias||$name}{css_type} || 'class';
 
+				# locate component
+				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
+
 				# add component	
+				my $component_content = ( $_ eq 'body' and $name eq 'local_body' ) ? 
+					$opt->{local_body} : $Tag->include($components_file);
+				
 				if (exists $attributes{container}
 					&& $attributes{container} eq '') {
-					push (@content, $Tag->include($components_file));
+					push (@content, $component_content);
 				} else {
 					push (@content,
 						qq{<div $type='$name'>} .
 					    ( $alias ? qq{<div $type='$alias'>} : '' ) .
-					    $Tag->include($components_file) .
+					    $component_content .
 					    ( $alias ? qq{</div>} : '' ) .
 					    q{</div>});
 				}
