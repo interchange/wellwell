@@ -19,6 +19,7 @@ sub {
 	my ($template_file);
 
 	$opt->{body} ||= $body;
+	# preserve local body even after components.body=, as user might want it
 	$opt->{local_body} = $opt->{body};
 
 	if( !$Variable->{MV_TEMPLATE_DIR} ){
