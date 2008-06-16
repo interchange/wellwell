@@ -2,7 +2,8 @@
 [tree
         table=menus
         master=parent
-        start="0"
+        start=0
+				sort=code
         subordinate=code
         full=1
 	where="menu_name='__NAME__'"
