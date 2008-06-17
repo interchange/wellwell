@@ -44,6 +44,16 @@ sub {
 	# OPTION/VALUE => arbitrary option/value
 	my (%attributes);
 
+	# automatic attributes
+	if ($Variable->{MV_ATTRIBUTE_AUTO}) {
+		my @auto = split(/\s+/, $Variable->{MV_ATTRIBUTE_AUTO});
+
+		for (@auto) {
+			my ($ph, $c) = split(/[=:]/, $_, 2);
+			dots2hash(\%attributes, $c, split /\./, $ph);
+		}
+	}
+
 	if (ref($opt->{attributes}) eq 'HASH') {
 		# Interchange's parser splits up only one level of dots, so
 		# attributes.foo.bar = "com" ends up as foo.bar => com.
