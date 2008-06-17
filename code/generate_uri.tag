@@ -23,7 +23,7 @@ The active settings are:
 
 =item table
 
-Table contatining the hierarchical structure
+Table containing the hierarchical structure
 
 =item key_field
 
