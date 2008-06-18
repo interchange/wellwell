@@ -11,9 +11,6 @@
  *
  */
 
-
-
-
 /*
  * Page layout and general stuff
  */
@@ -97,3 +94,25 @@ div#footer {
   border-top: 1px;
 }
 
+/**
+ *
+ * Styles of basic components
+ *
+ **/
+
+/* Information box for displaying errors and warnings */
+.infobox .errors{
+	border:solid 1px #CC0000;
+	background:#F7CBCA;
+	color:#CC0000;
+	padding:4px;
+	text-align:center;
+}
+
+.infobox .warnings{
+	border:solid 1px #349534;
+	background:#C9FFCA;
+	color:#008000;
+	padding:4px;
+	text-align:center;
+}
