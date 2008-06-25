@@ -3,7 +3,7 @@
         table=menus
         master=parent
         start=0
-				sort=code
+				sort=weight
         subordinate=code
         full=1
 	where="menu_name='__NAME__'"
