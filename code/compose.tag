@@ -138,8 +138,8 @@ sub {
 				my $component_content = ( $_ eq 'body' and $name eq 'local_body' ) ? 
 					$opt->{local_body} : $Tag->include($components_file);
 				
-				if (exists $attributes{container}
-					&& $attributes{container} eq '') {
+				if (exists $component_attributes->{container}
+					&& $component_attributes->{container} eq '') {
 					push (@content, $component_content);
 				} else {
 					push (@content,
