@@ -1,0 +1,28 @@
+/*
+ *
+ * Infobox for displaying status messages on site
+ *
+ */
+
+
+.infobox {
+	margin: 3px;
+	font-size: 12px;
+}
+
+.infobox .errors{
+	border:solid 1px #CC0000;
+	background:#F7CBCA;
+	color:#CC0000;
+	padding:4px;
+	text-align:left;
+}
+
+.infobox .warnings{
+	border:solid 1px #349534;
+	background:#C9FFCA;
+	color:#008000;
+	padding:4px;
+	text-align:left;
+}
+
