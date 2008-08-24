@@ -72,7 +72,6 @@ sub {
 		FROM products p LEFT OUTER JOIN product_categories pc
 		ON p.sku=pc.sku WHERE p.inactive IS NOT TRUE $category
 		};
-	::logError($sql);
 	my @results = $db->query({sql => $sql});
 
 	return $Tag->loop({
