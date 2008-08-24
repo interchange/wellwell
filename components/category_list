@@ -1,0 +1,19 @@
+[query sql="select code,name from categories where code=__CATEGORY__" list=1]
+[list]
+<h2>[sql-param name]</h2>
+<ul>
+[tree
+        table=categories
+        master=parent
+        start=[sql-param code]
+	sort=name
+        subordinate=code
+        full=1
+]
+[if-item-param mv_up]<ul>[/if-item-param]
+[if-item-param mv_down]</ul>[/if-item-param]
+<li><a href='[area href="[item-param uri]"]'>[item-param name]</a></li>
+[/tree]
+</ul>
+[/list]
+[/query]
