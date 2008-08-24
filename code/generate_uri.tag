@@ -1,4 +1,5 @@
 UserTag generate_uri Order table
+UserTag generate_uri AddAttr
 UserTag generate_uri Documentation <<EOD
 
 =head1 NAME
@@ -49,6 +50,14 @@ What should be used to fill nonword characters in URI (whitespaces,...). Default
 
 How to divide elements. Defaults to slash ('/').
 
+=item prefix
+
+Prefix to be added to each generated URI, usually used with ActionMap.
+
+=item display_key
+
+Display the value of key element as last part of URI. Defaults to yes.
+
 =back
 
 =head1 EXAMPLES
@@ -80,6 +89,8 @@ sub {
 	my $uri_field = $opt->{'uri_field'} || 'uri';
 	my $nonword_fill = $opt->{'nonword_fill'} || '_';
 	my $dir_divider = $opt->{'dir_divider'} || '/';
+	my $prefix = $opt->{'prefix'};
+	my $display_key = $opt->{'display_key'} || '1';
 
 	$Tag->perl({tables => $table});
 	$db = $Db{$table};
@@ -115,6 +126,14 @@ sub {
 		};
 
 		&$sub ($level, $row->{$key_field});
+		
+		if ($prefix) {
+			unshift(@parents, $prefix);
+		}
+		if ($display_key) {
+			push(@parents, $row->{$key_field});
+		}
+
 		$uri = join( $dir_divider, @parents );
 
 		# Insert the URI into database
