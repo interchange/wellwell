@@ -70,9 +70,9 @@ sub {
 	my $sql = qq{
 		SELECT p.sku,p.manufacturer,p.name,p.description,p.price
 		FROM products p LEFT OUTER JOIN product_categories pc
-		ON p.sku=pc.sku WHERE p.inactive IS FALSE $category
+		ON p.sku=pc.sku WHERE p.inactive IS NOT TRUE $category
 		};
-
+	::logError($sql);
 	my @results = $db->query({sql => $sql});
 
 	return $Tag->loop({
