@@ -8,3 +8,4 @@ CREATE TABLE menus
   "weight" int4 NOT NULL DEFAULT 0,
   CONSTRAINT menu_pkey PRIMARY KEY (code)
 );
+CREATE INDEX idx_menus_menu_name ON menus (menu_name);
