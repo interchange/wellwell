@@ -6,5 +6,6 @@ CREATE TABLE `menus`
   `url` varchar(255),
   `menu_name` varchar(64),
   `weight` int unsigned NOT NULL DEFAULT 0,
-  KEY (`code`)
+  PRIMARY KEY (`code`),
+  KEY (`menu_name`)
 ) CHARACTER SET utf8;
