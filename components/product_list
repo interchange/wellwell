@@ -1,14 +1,34 @@
-[product-list category=__CATEGORY__]
+[query sql="select name from categories where code='__CATEGORY__'" list=1]
 [list]
-<div class="image">
+<h2>[sql-param name]</h2>
+[/list]
+[/query]
 
-</div>
+[product-list category="__CATEGORY__" ml=4 more=1 form="category=__CATEGORY__"]
+[list]
+
+<div class="oneThird">
+
+<p class="image">
+<img src="static/tmp/sku.jpg" alt="[product-field manufacturer] [product-field name]">
+</p>
 
 <h3>[product-field manufacturer] [product-field name]</h3>
-<p class="description"> [product-description] </p>
-<p class="price"> [product-price] </p>
+<p class="description">
+[product-field description]
+</p>
+<ul class="price">
+<li>[currency][product-price][/currency] EUR</li>
+</ul>
+</div>
+
 [/list]
-[no-match]
-[L]No products found in this category.[/L]
-[/no-match]
+
+<div class="more">
+[more-list]
+[more]
+[/more-list]
+</div>
+
+
 [/product-list]
