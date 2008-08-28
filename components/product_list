@@ -10,7 +10,15 @@
 <div class="oneThird">
 
 <p class="image">
-<img src="static/tmp/sku.jpg" alt="[product-field manufacturer] [product-field name]">
+[image-list 
+	where='i.inactive IS false AND ji.main IS TRUE' 
+	join_table='product_images' 
+	key_field='sku'
+	key='[sql-param code]'
+	size='small'
+]
+	[image-list-param img-src]
+[/image-list]
 </p>
 
 <h3>[product-field manufacturer] [product-field name]</h3>
