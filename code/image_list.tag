@@ -25,6 +25,7 @@
 #
 #
 UserTag image_list Order where key key_field join_table size ml
+UserTag image_list AddAttr
 UserTag image_list HasEndTag 
 UserTag image_list Routine <<EOR
 sub {
