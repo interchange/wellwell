@@ -5,5 +5,6 @@ CREATE TABLE categories
   "parent" int4,
   "priority" int4,
   "uri" varchar(255),
+  "inactive" bool DEFAULT false,
   CONSTRAINT categories_pkey PRIMARY KEY ("code")
 );
