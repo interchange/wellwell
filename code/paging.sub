@@ -1,0 +1,69 @@
+Sub paging <<EOS
+sub {
+	my ($next, $prev, $page, $border, $border_selected, $opt, $r) = @_;
+
+    	my $q;
+	
+	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
+	return '' unless $q->{matches} > $q->{mv_matchlimit}
+		and $q->{mv_matchlimit} > 0;
+
+	my ($pages, $first, $curpage, $url, @links, @more, $base_url, $prefix, $suffix, $session, $form_arg, $nav, $ml, $matches);
+
+	$ml = $q->{mv_matchlimit};
+	$matches = $q->{matches};
+	$pages = $matches / $ml;
+	if ($matches % $ml) {
+        	$pages++;
+	}
+
+	$first = $q->{mv_first_match} || 0;
+
+	$session = $q->{mv_cache_key};
+
+	$prefix = q{<div id="pagenumbers"><ul>};
+	$suffix = q{</ul></div>};
+
+	$search_page = $q->{mv_search_page} || $Tag->var('MV_PAGE',1);
+
+	$form_arg = qq{mv_more_ip=1\nmv_nextpage=$search_page};
+	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
+	$form_arg .= "\n$opt->{form}" if $opt->{form};
+	::Log("form in paging is : $opt->{form}");
+	$base_url = $Session->{last_url};
+	$base_url =~ s%^/%%;
+
+	for (my $i = 1; $i <= $pages; $i++) {
+    		$start = ($i - 1) * $ml;
+		if ($start eq $first) {
+			# current page
+			$curpage = $i;
+			$links[$i] = '';
+			next;
+		}
+		$end = $start + $ml - 1;
+		if ($end > $matches) {
+			$end = matches;
+		}
+	    	$nav = join(':', $session, $start, $start + ($ml-1), $ml);
+		$url = $Tag->area({href => "scan/MM=$nav", form => $form_arg});
+	    	$links[$i] = $url;
+	}
+
+	for (my $i = 1; $i <= $pages; $i++) {
+    		if ($links[$i]) {
+			push(@more, qq{<li><a href="$links[$i]">$i</a></li>});
+		}
+		else {
+			push(@more, qq{<li class="down">$i</li>});
+		}
+    	}
+
+	unless ($curpage == int($pages)) {
+		$url = $links[$curpage+1];
+		push(@more, qq{<li><a href="$url">next &gt;</a></li>});
+	}
+
+	return $prefix . join(' ', @more) . $suffix;
+}
+EOS
