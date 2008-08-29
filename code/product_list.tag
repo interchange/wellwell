@@ -27,6 +27,10 @@ Display only products from this category.
 
 List prefix.
 
+=item ml
+
+How many matches to display on one page
+
 =back
 
 =head1 EXAMPLES
@@ -59,29 +63,28 @@ sub {
 	my ($category, $opt, $body) = @_;
 	my $output;
 	my $prefix = $opt->{prefix} || 'product';
-
+	my $ml = $opt->{ml} || $opt->{mv_matchlimit} || 0;
+	my $more = $opt->{more} || 1;
+	my $form = $opt->{form};
 	if ($category){
 		$category = " AND pc.category='$category' ";
 	}
 
 	$Tag->perl( {tables => 'products product_categories'} );
-	my $db = $Db{products};
-
 	my $sql = qq{
 		SELECT p.sku,p.manufacturer,p.name,p.description,p.price
 		FROM products p LEFT OUTER JOIN product_categories pc
 		ON p.sku=pc.sku WHERE p.inactive IS NOT TRUE $category
 		};
-	my @results = $db->query({sql => $sql});
 
-	return $Tag->loop({
+	return $Tag->query({
 		prefix => $prefix,
-		object => 
-		{
-			mv_results => $results[0],
-			mv_field_names => $results[1],
-			mv_field_hash => $results[2],
-		},
+		more_routine => 'paging',
+		form => $form,
+		ml => $ml,
+		more => $more,
+		sql => $sql,
+		list => 1,
 		body => $body
 	});
 }
