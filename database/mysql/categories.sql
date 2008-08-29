@@ -4,6 +4,6 @@ CREATE TABLE `categories` (
   `parent` int unsigned NOT NULL,
   `priority` int NOT NULL,
   `uri` varchar(255) NOT NULL,
-  `inactive` boolean DEFAULT FALSE,
+  `inactive` boolean NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`code`)
 ) CHARACTER SET utf8;
