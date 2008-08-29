@@ -9,6 +9,7 @@
 	sort=name
         subordinate=code
         full=1
+	where="inactive IS false"
 ]
 [if-item-param mv_up]<ul>[/if-item-param]
 [if-item-param mv_down]</ul>[/if-item-param]
