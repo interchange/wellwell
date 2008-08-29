@@ -1,0 +1,11 @@
+ActionMap  category   <<EOR
+sub{
+	my $category = shift;
+	my @cats = split('/', $category);
+	$category = pop(@cats);
+
+	$CGI->{category}=$category;
+	$CGI->{mv_nextpage} = 'product_list';
+	return 1;
+}
+EOR
