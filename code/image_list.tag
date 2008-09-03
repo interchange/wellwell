@@ -29,7 +29,7 @@ UserTag image_list AddAttr
 UserTag image_list HasEndTag 
 UserTag image_list Routine <<EOR
 sub {
-	my ($where, $key, $key_field, $join_table, $size, $matchlimit, $body) = @_;
+	my ($where, $key, $key_field, $join_table, $size, $matchlimit, $opt, $body) = @_;
 
 	if($where){
 		$where = " AND $where ";
