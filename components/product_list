@@ -4,39 +4,41 @@
 [/list]
 [/query]
 
-[product-list category="__CATEGORY__" ml=4 more=1 form="category=__CATEGORY__"]
-[list]
+[product-list category="__CATEGORY__" ml=10 more=1 form="category=__CATEGORY__" prefix="prod"]
+[prod-list]
 
 <div class="oneThird">
 
 <p class="image">
 [image-list 
-	where='i.inactive IS false AND ji.main IS TRUE' 
+	where='i.inactive IS NOT TRUE AND ji.main IS TRUE' 
 	join_table='product_images' 
 	key_field='sku'
-	key='[sql-param code]'
+	key='[prod-field sku]'
 	size='small'
+
 ]
+[list]
 	[image-list-param img-src]
+[/list]
 [/image-list]
 </p>
 
-<h3>[product-field manufacturer] [product-field name]</h3>
+<h3>[prod-field manufacturer] [prod-field name]</h3>
 <p class="description">
-[product-field description]
+[prod-field description]
 </p>
 <ul class="price">
-<li>[currency][product-price][/currency] EUR</li>
+<li>[currency][prod-price][/currency] EUR</li>
 </ul>
 </div>
 
-[/list]
+[/prod-list]
 
 <div class="more">
 [more-list]
 [more]
 [/more-list]
 </div>
-
 
 [/product-list]
