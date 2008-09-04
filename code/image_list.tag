@@ -40,7 +40,7 @@ sub {
 	}
 
 	$Tag->perl( {tables => 'images product_images'} );
-	my $db = $Db{products};
+	my $db = $Db{images};
 
 	my $sql = qq{
 		SELECT *

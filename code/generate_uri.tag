@@ -12,7 +12,7 @@ generate-uri - Generates a pretty URL for a hierarchical structure and stores it
 
 =head1 DESCRIPTION
 
-Generates an URL for hierarchical structures such as categories and menus. Uses parent field in the table to get the parents to the root item and generates a pretty url (parents_parent/parent/child). This url is stored in the same table (usually in the URL field). 
+Generates an URL for hierarchical structures such as categories and menus. If it is defined, it can use parent field in the table to get the parents to the root item and generate a pretty url (parents_parent/parent/child). This url is stored in the same table (usually in the URL field). 
 
 This tag is normally used in an Interchange job, which fills the entire table, or as a part of administration interface (where you run it when you add or edit a category, for example).
 
@@ -34,9 +34,9 @@ Name of the field having the key element. Defaults to 'code'
 
 Field from which the pretty URL is generated from. Defaults to 'name'
 
-=item parent_field
+=item parent
 
-Name of the field having the parent key. Defaults to 'parent'
+Name of the field having the parent key. If it is not defined, generate_uri won't try to traverse the table recursively, but will instead use just display and key field for generating URI.
 
 =item uri_field
 
@@ -64,7 +64,7 @@ Display the value of key element as last part of URI. Defaults to yes.
 
 [generate_uri categories]
 
-[generate_uri table='articles' display_field='title' key_field='article_id' parent_field='parent_article']
+[generate_uri table='articles' display_field='title' key_field='article_id' parent='parent_article']
 
 =head2 
 
@@ -82,20 +82,20 @@ EOD
 UserTag generate_uri Routine <<EOR
 sub {
 	my ($table, $opt) = @_;
-	my ($db, @parents, $level, $name, $uri);
+	my ($db, @parents, $level, $name, $uri, $sql);
 	my $key_field = $opt->{'key_field'} || 'code';
 	my $display_field = $opt->{'display_field'} || 'name';
-	my $parent_field = $opt->{'parent_field'} || 'parent';
+	my $parent = $opt->{'parent'} || "''";
 	my $uri_field = $opt->{'uri_field'} || 'uri';
 	my $nonword_fill = $opt->{'nonword_fill'} || '_';
 	my $dir_divider = $opt->{'dir_divider'} || '/';
 	my $prefix = $opt->{'prefix'};
 	my $display_key = $opt->{'display_key'} || '1';
-
+	
 	$Tag->perl({tables => $table});
 	$db = $Db{$table};
-
-	my $sql = qq{SELECT $key_field,$display_field,$parent_field FROM $table};
+	
+	$sql = qq{SELECT $key_field,$display_field,$parent FROM $table};
 	my $rows = $db->query({sql => $sql, hashref => 1});
 
 	foreach my $row (@$rows){
@@ -106,27 +106,27 @@ sub {
 		$sub = sub {
 			my ($level, $code) = @_;	
 			return 1 unless $code;
-	
+		
 			my $sql = qq{
-				SELECT $key_field, $display_field, $parent_field 
+				SELECT $key_field, $display_field, $parent 
 				FROM $table 
 				WHERE $key_field = '$code'
 			};
-
+	
 			my $rows = $db->query({sql => $sql, hashref => 1});
 			my $row = $$rows[0];
-	
+		
 			my $name = $row->{$display_field};
 			$name =~ s/\W+/$nonword_fill/g;
 			$name =~ tr/[A-Z]/[a-z]/;
-
+	
 			unshift(@parents, $name);
-
-			$sub->($level+1, $row->{$parent_field});
+	
+			$sub->($level+1, $row->{$parent});
 		};
 
 		&$sub ($level, $row->{$key_field});
-		
+
 		if ($prefix) {
 			unshift(@parents, $prefix);
 		}
