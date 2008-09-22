@@ -1,0 +1,28 @@
+ActionMap login <<EOA
+sub {
+	$Tag->perl({tables => 'users'});
+
+	$CGI->{mv_nextpage} = 'login';
+
+	if ($Session->{logged_in}) {
+		$Tag->warnings({message => 'You are already logged in as user %s',
+			param => $Session->{username}});
+		return 1;
+	}
+
+	# look for user submission
+	if (exists $CGI->{mv_username}) {
+		$Tag->perl({tables => 'users'});
+
+		$ret = $Tag->userdb({function => 'login'});
+
+		if ($ret) {
+			$Tag->warnings('Logged in successfully.');
+		} else {
+			$Tag->error({name => login, set => $Session->{failure}});
+		}
+	}
+
+	return 1;
+}
+EOA

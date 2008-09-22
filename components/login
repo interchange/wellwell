@@ -1,7 +1,6 @@
 [tmp cookie_username][read-cookie MV_USERNAME][/tmp]
 
-<form action="[process]" method="POST">
-<input type="hidden" name="mv_todo"  value="return">
+<form action="[area login]" method="POST">
 <input type="hidden" name="mv_nextpage" value="login">
 [form-session-id]
 
@@ -11,7 +10,6 @@
 [if session logged_in]
 <p>[msg arg.0="[data session username]"]You are already logged in as user %s.[/msg]</p>
 [else]
-[include components/failure]
 
 <p>
 <label for="mv_username">[L]Username[/L]:</label>
@@ -35,13 +33,6 @@
 
 <p>
 [button text="Sign In"]
-
-[if type=explicit compare="[userdb login]"]
-[action targets="login_already" type=bounce]
-[else]
-[action targets="login" type=bounce]
-[/else]
-[/if]
 [/button]
 </p>
 

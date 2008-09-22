@@ -1,7 +1,4 @@
-[if session logged_in]
-[action targets="login_already" type=bounce]
-[/if]
-
+[if !session logged_in]
 <form action="[process]" method="POST">
 <input type="hidden" name="function" value="new_account">
 [form-session-id]
@@ -42,3 +39,4 @@
 
 </fieldset>
 </form>
+[/if]
