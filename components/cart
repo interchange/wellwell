@@ -1,0 +1,22 @@
+<form action="[area cart]" method="post">
+<table class="cart">
+<tr class="header">
+<th>[L]Remove[/L]</th>
+<th>[L]Name[/L]</th>
+<th>[L]Quantity[/L]</th>
+<th>[L]Price[/L]</th>
+<th>[L]Subtotal[/L]<th>
+</tr>
+[item-list]
+<tr>
+<td><input type="submit" name="zero[quantity-name]" value="X">
+<td>[item-field name]</td>
+<td>[item-quantity]</td>
+<td>[item-price]</td>
+<td>[item-subtotal]</td>
+</tr>
+[/item-list]
+</table>
+<input type="submit" name="recalculate" value="[L]Recalculate[/L]">
+<input type="submit" value="[L]Checkout[/L]">
+</form>
