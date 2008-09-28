@@ -1,0 +1,17 @@
+ActionMap logout <<EOA
+sub {
+	my $ret;
+
+	$CGI->{mv_nextpage} = 'login';
+
+	$ret = $Tag->userdb({function => 'logout'});
+
+	if ($ret) {
+		$Tag->warnings('Logged out successfully');
+	} else {
+		$Tag->error({name => logout, set => $Session->{failure}});
+	}
+
+	return 1;
+}
+EOA
