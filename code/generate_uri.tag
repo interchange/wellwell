@@ -58,6 +58,10 @@ Prefix to be added to each generated URI, usually used with ActionMap.
 
 Display the value of key element as last part of URI. Defaults to yes.
 
+=item key
+
+Generate URI only for record with key.
+
 =back
 
 =head1 EXAMPLES
@@ -90,12 +94,18 @@ sub {
 	my $nonword_fill = $opt->{'nonword_fill'} || '_';
 	my $dir_divider = $opt->{'dir_divider'} || '/';
 	my $prefix = $opt->{'prefix'};
-	my $display_key = $opt->{'display_key'} || '1';
-	
+	my $display_key = defined $opt->{'display_key'} ? $opt->{'display_key'} :  '1';
+
 	$Tag->perl({tables => $table});
 	$db = $Db{$table};
+
+	if ($opt->{key}) {
+		$sql = qq{SELECT $key_field,$display_field,$parent FROM $table WHERE $key_field = } . $db->quote($opt->{key});
+	}
+	else {
+		$sql = qq{SELECT $key_field,$display_field,$parent FROM $table};
+	}
 	
-	$sql = qq{SELECT $key_field,$display_field,$parent FROM $table};
 	my $rows = $db->query({sql => $sql, hashref => 1});
 
 	foreach my $row (@$rows){
