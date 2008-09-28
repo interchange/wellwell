@@ -15,6 +15,19 @@ sub {
 		}
 	}
 
+	# check if it matches category URI
+	my $set;
+
+	$Tag->perl({tables => 'categories'});
+	
+	$set = $Db{categories}->query(q{select code from categories where uri = '%s'},
+								  $name);
+
+	if (@$set == 1) {
+		$CGI->{category} = $set->[0]->[0];
+		return(1, 'overview');
+	}
+	
 	# finally assume that link contains SKU at the end
 	my (@parts, $sku);
 
