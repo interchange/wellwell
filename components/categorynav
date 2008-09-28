@@ -1,0 +1,11 @@
+[query sql="select name,uri from categories" list=1]
+[on-match]
+<ul>
+[/on-match]
+[list]
+<li><a href="[area href="[sql-param uri]"]">[sql-param name]</a></li>
+[/list]
+[on-match]
+</ul>
+[/on-match]
+[/query]
