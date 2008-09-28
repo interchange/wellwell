@@ -1,0 +1,50 @@
+Sub backend <<EOS
+sub {
+	my ($name, @args) = split(/\//, shift);
+	my (@fields, @values);
+Log("Backend: ", join(",", @args));
+	unless ($Tag->acl('check')) {
+		$Tag->error({name => 'backend',
+			set => 'Access denied'});
+		$CGI->{mv_nextpage} = 'login';
+		return 1;
+	}
+	
+	if ($args[0] eq 'categories') {
+		$Tag->perl({tables => 'categories'});
+		@fields = qw/name/;
+		
+		if ($args[1]) {			
+			if ($Tag->env('REQUEST_METHOD') eq 'POST') {
+				for (@fields) {
+					push(@values, $CGI->{$_});
+				}
+
+				$Db{categories}->set_slice($args[1], \@fields, \@values);
+
+				# update uri
+				$Tag->generate_uri({table => 'categories', key => $args[1],
+								   display_key => 0});
+
+				$CGI->{mv_nextpage} = 'backend/categories/list';
+				return 1;
+			}
+			elsif ($rowref = $Db{categories}->row_hash($args[1])) {
+				$CGI->{category} = $args[1];
+				
+				for (@fields) {
+					$Values->{$_} = $rowref->{$_};
+				}
+
+				$CGI->{mv_nextpage} = "backend/categories/edit";
+				return 1;
+			}
+		} else {
+			$CGI->{mv_nextpage} = 'backend/categories/list';
+			return 1;
+		}
+	}			
+}
+EOS
+
+ActionMap backend backend

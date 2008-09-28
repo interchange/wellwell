@@ -1,0 +1,4 @@
+[form
+	component="backend_edit"
+	label="Edit Category #__KEY__"
+]	

@@ -1,0 +1,8 @@
+<table>
+<tr><th>Name</th></tr>
+[query sql="select * from categories" list=1]
+[list]
+<tr><td>[sql-param name]</td><td><a href="[area href="backend/categories/[sql-code]"]>[L]Edit[/L]</a></td></td></tr>
+[/list]
+[/query]
+</table>
