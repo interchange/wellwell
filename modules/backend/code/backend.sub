@@ -2,7 +2,7 @@ Sub backend <<EOS
 sub {
 	my ($name, @args) = split(/\//, shift);
 	my (@fields, @values);
-Log("Backend: ", join(",", @args));
+
 	unless ($Tag->acl('check')) {
 		$Tag->error({name => 'backend',
 			set => 'Access denied'});
