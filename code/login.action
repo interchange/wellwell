@@ -14,7 +14,14 @@ sub {
 	if (exists $CGI->{mv_username}) {
 		$Tag->perl({tables => 'users'});
 
-		$ret = $Tag->userdb({function => 'login'});
+		if ($CGI->{mv_username} =~ /\@/) {
+			# login with email address
+			$Tag->userdb({function => 'login'});
+		} else {
+			# login with username
+			$Tag->userdb({function => 'login',
+				indirect_login => 'username'});
+		}
 
 		if ($ret) {
 			$Tag->warnings('Logged in successfully.');
