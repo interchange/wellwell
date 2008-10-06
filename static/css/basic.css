@@ -45,7 +45,9 @@ div#footer {
 	clear:left;
 	width:100%;
 }
-
+div.more {
+	clear:left;
+}
 
 /*
  * Basic layout building blocks
