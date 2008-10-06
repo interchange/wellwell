@@ -27,7 +27,7 @@
 [product-field description]
 </p>
 <ul class="price">
-<li>[currency][product-price][/currency] EUR</li>
+<li>[product-price]</li>
 </ul>
 </div>
 
