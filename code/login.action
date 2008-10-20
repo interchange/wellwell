@@ -1,5 +1,7 @@
 ActionMap login <<EOA
 sub {
+	my $ret;
+	
 	$Tag->perl({tables => 'users'});
 
 	$CGI->{mv_nextpage} = 'login';
@@ -16,11 +18,11 @@ sub {
 
 		if ($CGI->{mv_username} =~ /\@/) {
 			# login with email address
-			$Tag->userdb({function => 'login'});
+			$ret = $Tag->userdb({function => 'login',
+						 indirect_login => 'email'});
 		} else {
 			# login with username
-			$Tag->userdb({function => 'login',
-				indirect_login => 'username'});
+			$ret = $Tag->userdb({function => 'login'});
 		}
 
 		if ($ret) {
