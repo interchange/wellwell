@@ -1,9 +1,4 @@
-[if session failure]
-	<div class="errors">
-	<strong>[data session failure]</strong>
-	[data base=session field=failure value=""]
-	</div>
-[elsif errors]
+[if errors]
 	<div class="errors">
 	<ul>
 	<li>
@@ -11,9 +6,7 @@
 	</li>
 	</ul>
 	</div>
-[/elsif]
 [/if]
-
 [if warnings]
 	<div class="warnings">
 	[warning auto=1]
