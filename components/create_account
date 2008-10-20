@@ -1,40 +1,32 @@
 [if !session logged_in]
-<form action="[process]" method="POST">
-<input type="hidden" name="function" value="new_account">
+<form action="[area href="register"]" method="POST">
 [form-session-id]
 
 <fieldset>
 <legend>Create new account</legend>
 
-[include components/failure]
-
 <p>
-<label for="mv_username">[L]Username[/L]:</label>
+<label for="mv_username">[L]Username[/L]:</label><br>
 [formel type=text name=mv_username value=""]
 </p>
 
 <p>
-<label for="mv_password">[L]Password[/L]:</label>
+<label for="email">[L]Email address[/L]:</label><br>
+[formel type=text name=email value=""]
+</p>
+
+<p>
+<label for="mv_password">[L]Password[/L]:</label><br>
 [formel type=password name=mv_password value=""]
 </p>
 
 <p>
-<label for="mv_password">[L]Verify Password[/L]:</label>
+<label for="mv_verify">[L]Confirm password[/L]:</label><br>
 [formel type=password name=mv_verify value=""]
 </p>
 
 <p>
-[button text="Create Account"]
-[comment]Go to logged_in or back to this component if creation failed[/comment]
-
-[if type=explicit compare="[userdb new_account]"]
-[action targets="logged_in" type=bounce]
-[else]
-[action targets="create_account" type=bounce]
-[/else]
-
-[/if]
-[/button]
+<input type="submit" value="[L]Create Account[/L]">
 </p>
 
 </fieldset>

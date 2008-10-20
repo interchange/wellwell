@@ -1,0 +1,41 @@
+ActionMap register <<EOA
+sub {
+	$Tag->perl({tables => 'users'});
+
+	$CGI->{mv_nextpage} = 'register';
+
+	if ($Session->{logged_in}) {
+		$Tag->warnings({message => 'You are already logged in as user %s',
+			param => $Session->{username}});
+		return 1;
+	}
+
+	if ($Tag->env('REQUEST_METHOD') eq 'POST') {
+		# process registration 
+		my $ret;
+
+		$Tag->update('values');
+
+		if ($Tag->run_profile({name => 'register', cgi => 1})) {
+#			Log("Register profile check succeeded.");	
+			$ret = $Tag->userdb({function => 'new_account'});
+			if ($ret) {
+#				Log("New account created.");
+				$CGI->{mv_nextpage} = 'myaccount';
+			} 
+			else {
+				$Tag->error({name => 'register',
+					set => q{Account creation failed. Please contact our support team.}});
+				Log("Account creation failed: %s", $Session->{failure});
+				$CGI->{mv_nextpage} = 'register';
+			}			
+		} 
+		else {
+#			Log("Register profile check failed.");
+#			Log("Errors: " . uneval($Session->{errors}));
+		}
+	}	
+
+	return 1;
+}
+EOA
