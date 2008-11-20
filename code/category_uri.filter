@@ -1,0 +1,12 @@
+# simple filter to turn category name into part of URI
+
+CodeDef category_uri Filter
+CodeDef category_uri Routine <<EOR
+sub {
+	my $val = shift;
+	$val =~ s/\W+/_/g;
+	$val = lc($val);
+	return $val;
+}
+EOR
+
