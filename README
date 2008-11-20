@@ -7,8 +7,12 @@ It's main building blocks are components, assembled together with [compose] call
 Goals
 *****
 
-* KISS instead of convoluted ITL code.
+* KISS instead of convoluted ITL code
 * Death of [process].
+* More flexible routes.
+
+In consequence this deprecates the following tags in this scope:
+[button], [image].
 
 Users
 *****
@@ -23,4 +27,11 @@ Automatic components/attributes
 
 MV_COMPONENT_AUTO
 MV_ATTRIBUTE_AUTO
+
+Routes
+******
+
+More flexible routes needs modifications to Interchange itself, but here we go:
+
+- complementing record files with record macros
 
