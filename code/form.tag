@@ -5,7 +5,67 @@ sub {
 	my ($name, $opt) = @_;
 	my @out;
 
-	$Tag->perl({tables => 'form_elements form_attributes'});
+	$Tag->perl({tables => 'form_series form_elements form_attributes'});
+
+	if ($name) {
+		# produce one form out of a series
+		my ($series_qtd, $set, $pos, $pos_max);
+
+		$series_qtd = $Db{form_series}->quote($name);
+		$set = $Db{form_series}->query({sql => qq{select * from form_series where name = $series_qtd order by position}, hashref => 1});
+		
+		# ensure that we don't run out of the form series
+		$pos_max = @$set;
+
+		unless (ref($Session->{form_series}) eq 'HASH') {
+			$Session->{form_series} = {};
+		}
+
+		if ($CGI->{series} eq $name) {
+			if ($Session->{form_series}->{$name} <= $pos_max) {
+				$Session->{form_series}->{$name} += 1;
+			}
+		} else {
+			$Session->{form_series}->{$name} = 1;
+		}
+		$pos = $Session->{form_series}->{$name};
+
+		for (@$set) {
+			if ($_->{position} == $pos - 1) {
+				if ($_->{profile}) {
+					unless ($Tag->run_profile({name => $_->{profile}, cgi => 1})) {
+						$Session->{form_series}->{$name} -= 1;
+						$Tag->update('values');
+						return $Tag->form({series => $name, label => $_->{label},
+						component => $_->{component}});
+					}
+				}
+				if ($_->{save}) {
+					my (@save, $tag, $ret);
+
+					@save = split(/,/, $_->{save});
+					$tag = shift(@save);
+					$ret = $Tag->$tag(@save);
+				}
+			} 
+			elsif ($_->{position} == $pos) {
+				if ($_->{load}) {
+					my (@load, $tag, $ret);
+
+					@load = split(/,/, $_->{load});
+					$tag = shift(@load);
+					$ret = $Tag->$tag(@load);
+				}
+				return $Tag->form({series => $name, label => $_->{label},
+					component => $_->{component}});
+			}
+		}
+
+		$Tag->error({name => 'form', set => "Missing form $name, position $pos"});
+		return;
+	}
+
+
 
 	push(@out, '<fieldset>');
 
@@ -65,17 +125,22 @@ sub {
 	push(@out, '</fieldset>');
 
 	unless ($opt->{partial}) {
-		my ($out, $url, $action, $sid, $body);
+		my ($out, $url, $action, $sid, $series, $body);
 
 		$action = $Tag->area({href => substr($Session->{last_url},1),
 							  match_security => 1});
 		$sid = $Tag->form_session_id();
+
+		if ($opt->{series}) {
+			$series = qq{<input type="hidden" name="series" value="$opt->{series}">
+};	
+		}
+
 		$body = join("\n", @out);
 	
 		$out = <<EOT;
 <form action="$action" method="post">
-$sid
-$body
+$series$sid$body
 <input type="submit" name="submit" value="OK">
 </form>
 EOT
