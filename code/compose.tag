@@ -16,7 +16,18 @@ sub dots2hash {
 
 sub {
 	my ($template, $opt, $body) = @_;
-	my ($template_file);
+	my (%forms, $template_file);
+
+	if ($opt->{forms}) {
+		# process forms first
+		for my $k (keys %{$opt->{forms}}) {
+			dots2hash(\%forms, $opt->{forms}->{$k}, split /\./, $k);
+		}
+
+		for my $k (keys %forms) {
+			$forms{$k}->{content} = $Tag->form({name => $k});
+		}
+	}
 
 	$opt->{body} ||= $body;
 	# preserve local body even after components.body=, as user might want it
@@ -112,6 +123,13 @@ sub {
 
 			for my $comp (@components) {
 				my (%var);
+
+				if ($forms{$comp}) {
+					# use precalculated form
+					push(@content, $forms{$comp}->{content});
+					next;
+				}
+
 				# TODO support multiple aliases
 				my ($name, $alias) = split(/=/, $comp, 2);
 
