@@ -135,9 +135,19 @@ sub {
 				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
 
 				# add component	
-				my $component_content = ( $_ eq 'body' and $name eq 'local_body' ) ? 
-					$opt->{local_body} : $Tag->include($components_file);
-				
+				my $component_content;
+
+				if ($_ eq 'body' and $name eq 'local_body' ) {
+					$component_content = $opt->{local_body};
+				} else {
+					$component_content =  $Tag->include($components_file);
+
+					unless (defined $component_content && $name ne 'local_body') {
+						Log("Component $name from $components_file not found");
+						$Tag->error({name => 'component', set => "Component $name not found."});
+					}
+				}
+
 				if (exists $component_attributes->{container}
 					&& $component_attributes->{container} eq '') {
 					push (@content, $component_content);
