@@ -11,6 +11,8 @@ CREATE TABLE addresses (
   zip varchar(16) NOT NULL DEFAULT '',
   city varchar(255) NOT NULL DEFAULT '',
   country char(3) NOT NULL DEFAULT '',
+  phone varchar(32) NOT NULL DEFAULT '',
+  fax varchar(32) NOT NULL DEFAULT '',
   CONSTRAINT addresses_pkey PRIMARY KEY (aid)
 );
 
