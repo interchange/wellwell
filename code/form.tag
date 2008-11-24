@@ -3,9 +3,11 @@ UserTag form AddAttr
 UserTag form Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
-	my @out;
+	my ($form_name, @out);
 
 	$Tag->perl({tables => 'form_series form_elements form_attributes'});
+
+	$form_name = $opt->{component};
 
 	if ($name) {
 		# produce one form out of a series
@@ -118,6 +120,7 @@ sub {
 		push (@out, $Tag->display({name => $elref->{name},
 								   type => $elref->{widget} || 'text',
 								   value => $value,
+								   form_name => $form_name,
 								   %attributes}));
 		push (@out, '<br/>');
 	}
@@ -139,7 +142,7 @@ sub {
 		$body = join("\n", @out);
 	
 		$out = <<EOT;
-<form action="$action" method="post">
+<form action="$action" method="post" name="$form_name">
 $series$sid$body
 <input type="submit" name="submit" value="OK">
 </form>
