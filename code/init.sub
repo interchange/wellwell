@@ -1,3 +1,11 @@
+UserTag mangle_path Order path
+UserTag mangle_path Routine <<EOR
+sub {
+	my $path = shift;
+	$Vend::FinalPath = $path;
+}
+EOR
+
 Sub init <<EOS
 sub {
 	if ($Tag->env('REQUEST_METHOD') eq 'POST') {
@@ -5,13 +13,12 @@ sub {
 		my ($form_name);
 
 		if ($form_name = $CGI->{series}) {
-			my $t = $Tag->time();
-			Log("Processin form $CGI->{series} in autoload at $t");
 			$Tag->tmp('forms', {});
 			$Scratch->{forms}->{$form_name} = $Tag->form({name => $form_name});
-			Log("Forms: " . uneval($Scratch->{forms}));			
+			if ($CGI->{mv_nextpage}) {
+				$Tag->mangle_path($CGI->{mv_nextpage});
+			}
 		}
-		Log ("Form submission");
 	}	
 }
 EOS
