@@ -1,3 +1,8 @@
+===  <WARNING>  ===
+We don't pay any heed to backward compatibility for Wellwell until
+it is announced as stable and mature enough.
+===  </WARNING> ===
+
 Wellwell is a composition framework for Interchange. 
 
 It's main difference from previous IC demo catalogs that it doesn't tend to be a demo, but rather a frame for building new catalogs. 
