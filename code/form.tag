@@ -114,9 +114,9 @@ sub {
 
 		if ($elref->{label} =~ /\S/) {
 			$label = "$elref->{label}$append$opt->{appendlabel}";
+			push (@out, qq{<label for="$elref->{name}">$label</label>});
 		}
 		
-		push (@out, qq{<label for="$elref->{name}">$label</label>});
 		push (@out, $Tag->display({name => $elref->{name},
 								   type => $elref->{widget} || 'text',
 								   value => $value,
