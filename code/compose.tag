@@ -25,7 +25,12 @@ sub {
 		}
 
 		for my $k (keys %forms) {
-			$forms{$k}->{content} = $Tag->form({name => $k});
+			if ($Scratch->{forms}->{$k}) {
+				# form intercepted by autoload
+				$forms{$k}->{content} = $Scratch->{forms}->{$k};
+			} else {
+				$forms{$k}->{content} = $Tag->form({name => $k});
+			}
 		}
 	}
 

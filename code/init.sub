@@ -1,0 +1,17 @@
+Sub init <<EOS
+sub {
+	if ($Tag->env('REQUEST_METHOD') eq 'POST') {
+		# form submission, interception possible
+		my ($form_name);
+
+		if ($form_name = $CGI->{series}) {
+			my $t = $Tag->time();
+			Log("Processin form $CGI->{series} in autoload at $t");
+			$Tag->tmp('forms', {});
+			$Scratch->{forms}->{$form_name} = $Tag->form({name => $form_name});
+			Log("Forms: " . uneval($Scratch->{forms}));			
+		}
+		Log ("Form submission");
+	}	
+}
+EOS
