@@ -1,0 +1,47 @@
+CodeDef reviews_rating Widget
+CodeDef reviews_rating Routine <<EOR
+sub {
+	my ($opt) = @_;
+	my ($name, %img, $max_rating, $js, $pic, @out);
+
+	$name = $opt->{name};
+
+	$max_rating = $opt->{max_rating} || $Variable->{REVIEWS_MAX_RATING};
+	$cur_rating = int($opt->{value}) || 0;
+
+	for (qw/empty full/) {
+		$img{"rating_path_$_"} = $opt->{"img_rating_$_"} || $Variable->{'REVIEWS_IMG_RATING_' . uc($_)};
+		if ($img{"rating_path_$_"} =~ m%^/%) {
+			$img{"rating_$_"} = $img{"rating_path_$_"};
+		} else {
+			$img{"rating_$_"} = $Config->{ImageDir} . 'reviews/' . $img{"rating_path_$_"};
+		}
+	}
+
+	# JavaScript snippet
+	$js = <<EOS;
+<script type="text/javascript" src="/js/reviews/reviews_rating.js"></script>
+<script type="text/javascript">
+var reviews_rating;
+reviews_rating = reviews_rating_setup('$name', 'reviews_rating', $max_rating, $cur_rating, '$img{rating_empty}', '$img{rating_full}');
+</script>
+EOS
+
+	push(@out, $js);
+
+	# hidden fields to keep rating and sku
+	push(@out, qq{<input type="hidden" name="$name" value="$cur_rating">});
+	
+	for (1 .. $max_rating) {
+		if ($cur_rating >= $_) {
+			$pic = $img{rating_path_full};
+		} else {
+			$pic = $img{rating_path_empty};
+		}
+
+		push(@out, qq{<a href="javascript: reviews_rating.rate($_, '$opt->{form_name}')"><img src="reviews/$pic" id="reviews_rating$_" border="0"></a>});
+	}
+
+	return join(' ', @out);
+}
+EOR

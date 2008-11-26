@@ -1,0 +1,24 @@
+[reviews function="list" sku="__SKU__"]
+[on-match]
+<table>
+[/on-match]
+[list]
+<tr><td>
+<p>
+From:<br>
+Entered: [item-param created]<br>
+</p>
+<p>
+</p>
+</td><td>
+<h3>[item-param title]</h3>
+<p>
+[item-param review]
+</p>
+</td>
+</tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
+[/reviews]

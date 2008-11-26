@@ -1,0 +1,11 @@
+Sub reviews <<EOS
+sub {
+	my ($name, @args) = split(/\//, shift);
+
+	if ($args[1] eq 'create') {
+		$Values->{sku} = $args[0];
+		$CGI->{mv_nextpage} = 'reviews/create';
+		return 1;
+	}
+}
+EOS

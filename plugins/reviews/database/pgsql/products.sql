@@ -1,0 +1,1 @@
+ALTER TABLE products ADD COLUMN rating float NOT NULL DEFAULT 0;
