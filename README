@@ -4,15 +4,27 @@ It's main difference from previous IC demo catalogs that it doesn't tend to be a
 
 It's main building blocks are components, assembled together with [compose] called from within pages.
 
+Flaws in Standard / Interchange
+*******************************
+
+* two shopping carts components  to maintain
+
 Goals
 *****
 
-* KISS instead of convoluted ITL code
+* No stone will be left unturned.
+* KISS instead of convoluted ITL code in standard and predecessors.
 * Death of [process].
 * More flexible routes.
 
 In consequence this deprecates the following tags in this scope:
 [button], [image].
+
+Prerequisites
+*************
+
+Interchange 5.7.1 and:
+	Dispatch.pm 1.103
 
 Users
 *****
@@ -28,6 +40,13 @@ Automatic components/attributes
 MV_COMPONENT_AUTO
 MV_ATTRIBUTE_AUTO
 
+Processing
+**********
+
+1. Autoload
+Autoload checks for form submissions so we can reroute the request based on
+certain conditions.
+
 Routes
 ******
 
@@ -35,3 +54,8 @@ More flexible routes needs modifications to Interchange itself, but here we go:
 
 - complementing record files with record macros
 
+Modules for Composition Framework
+*********************************
+
+Vend::Compose::Address => addresses, [address]
+Vend::Compose::Taxonomy
