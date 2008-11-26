@@ -21,6 +21,7 @@ Goals
 * KISS instead of convoluted ITL code in standard and predecessors.
 * Death of [process].
 * More flexible routes.
+* Keep core of WellWell small, use plugins for extended functionality.
 
 In consequence this deprecates the following tags in this scope:
 [button], [image].
@@ -44,6 +45,14 @@ Automatic components/attributes
 
 MV_COMPONENT_AUTO
 MV_ATTRIBUTE_AUTO
+
+Plugins
+*******
+
+Plugins are living in the plugins subdirectory of wellwell.
+
+Plugins are activated by adding them to PLUGINS variable
+(comma separated list of plugins).
 
 Processing
 **********
