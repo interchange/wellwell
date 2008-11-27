@@ -5,6 +5,6 @@ CREATE TABLE reviews (
   created timestamp NOT NULL,
   rating integer NOT NULL DEFAULT 0,
   title varchar(255) NOT NULL DEFAULT '',
-  review text NOT NULL DEFAULT '',
-  KEY(sku)  
+  review text NOT NULL DEFAULT ''
 );
+CREATE INDEX reviews_sku ON reviews(sku);
