@@ -1,12 +1,12 @@
 Sub lookup_hook <<EOS
 sub {
-	my ($name, @modules, $sub, $retval, $page);
+	my ($name, @plugins, $sub, $retval, $page);
 
 	$name = shift;
-	@modules = split(/,/, $Variable->{MODULES});
+	@plugins = split(/,/, $Variable->{PLUGINS});
 
-	for my $module (@modules) {
-		if ($sub = $Config->{Sub}->{"lookup_$module"}) {
+	for my $plugin (@plugins) {
+		if ($sub = $Config->{Sub}->{"lookup_$plugin"}) {
 			($retval, $page) = $sub->($name);
 
 			if ($retval) {
