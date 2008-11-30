@@ -29,7 +29,6 @@ sub {
 	$form_arg = qq{mv_more_ip=1\nmv_nextpage=$search_page};
 	$form_arg .= "\npf=$q->{prefix}" if $q->{prefix};
 	$form_arg .= "\n$opt->{form}" if $opt->{form};
-	::Log("form in paging is : $opt->{form}");
 	$base_url = $Session->{last_url};
 	$base_url =~ s%^/%%;
 
