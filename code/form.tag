@@ -128,9 +128,16 @@ sub {
 	push(@out, '</fieldset>');
 
 	unless ($opt->{partial}) {
-		my ($out, $url, $action, $sid, $series, $body);
+		my ($out, $url, $action, $sid, $series, $body, $page);
 
-		$action = $Tag->area({href => substr($Session->{last_url},1),
+		if ($CGI->{mv_nextpage}) {
+			$page = $CGI->{mv_nextpage};
+		} 
+		else {
+			$page = substr($Session->{last_url},1);
+		}
+
+		$action = $Tag->area({href => $page,
 							  match_security => 1});
 		$sid = $Tag->form_session_id();
 
