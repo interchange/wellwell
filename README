@@ -92,3 +92,8 @@ Modules for Composition Framework
 
 Vend::Compose::Address => addresses, [address]
 Vend::Compose::Taxonomy
+
+Features
+********
+
+- deal gracefully with discontinued items (through order_missing SpecialSub)

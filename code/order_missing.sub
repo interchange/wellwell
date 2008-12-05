@@ -1,0 +1,8 @@
+Sub <<EOS
+sub order_missing {
+	$Tag->error({name => 'order',
+		set => "Product $code has been discontinued.<br>$hint"});
+	
+	return 1;
+}
+EOS
