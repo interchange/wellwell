@@ -29,8 +29,9 @@ In consequence this deprecates the following tags in this scope:
 Prerequisites
 *************
 
-Interchange 5.7.1 and:
+Interchange 5.7.1 and at least:
 	Dispatch.pm 1.103
+	Order.pm 2.104
 
 Users
 *****
@@ -53,6 +54,24 @@ Plugins are living in the plugins subdirectory of wellwell.
 
 Plugins are activated by adding them to PLUGINS variable
 (comma separated list of plugins).
+
+Please read the README for the plugin first and follow the
+instructions before activating the plugin.
+
+Paging
+******
+
+Paging can be controlled by passing parameters to [searchcontainer].
+
+paging_startlinks => always show # links at the beginning
+paging_endlinks => always show # links at the end
+paging_slidelength => length of sliding window
+
+Example:
+96 pages, startlinks 3, endlinks 1, slidelength 5
+
+page 1 shows: 1,2,3,4,5,..,96
+page 8 shows: 1,2,3,..,6,7,8,9,10,..,96
 
 Processing
 **********
