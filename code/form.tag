@@ -39,7 +39,7 @@ sub {
 						$Session->{form_series}->{$name} -= 1;
 						$Tag->update('values');
 						return $Tag->form({series => $name, label => $_->{label},
-						component => $_->{component}});
+						component => $_->{component}, inner => $opt->{inner}});
 					}
 				}
 				if ($_->{save}) {
@@ -59,7 +59,8 @@ sub {
 					$ret = $Tag->$tag(@load);
 				}
 				return $Tag->form({series => $name, label => $_->{label},
-					component => $_->{component}});
+					component => $_->{component},
+					inner => $opt->{inner}});
 			}
 		}
 
@@ -128,7 +129,7 @@ sub {
 	push(@out, '</fieldset>');
 
 	unless ($opt->{partial}) {
-		my ($out, $url, $action, $sid, $series, $body, $page);
+		my ($out, $url, $action, $sid, $series, $body, $page, $innerprefix, $innersuffix);
 
 		if ($CGI->{mv_nextpage}) {
 			$page = $CGI->{mv_nextpage};
@@ -146,11 +147,22 @@ sub {
 };	
 		}
 
+		if ($opt->{inner}->{id}) {
+			$innerprefix = qq{<div id="$opt->{inner}->{id}">};
+			$innersuffix = q{</div>};
+		}
+
+		if ($opt->{inner}->{class}) {
+			$innerprefix = qq{<div class="$opt->{inner}->{class}">};
+			$innersuffix = q{</div>};
+		}
+
 		$body = join("\n", @out);
 	
 		$out = <<EOT;
 <form action="$action" method="post" name="$form_name">
-$series$sid$body
+$series$sid
+$innerprefix$body$innersuffix
 <input type="submit" name="submit" value="OK">
 </form>
 EOT
