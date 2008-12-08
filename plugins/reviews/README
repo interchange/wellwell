@@ -1,0 +1,14 @@
+Before activating this plugin, please perform the following steps:
+
+- run SQL commands from database/mysql resp. database/pgsql
+
+- link JavaScript directory
+  cd wellwell/static/js
+  ln -s ../../plugins/reviews/static/js reviews
+
+- define image variables properly (REVIEWS_IMG_RATING_*)
+
+Notes:
+
+Autoload init routine from WellWell needs to be present.
+
