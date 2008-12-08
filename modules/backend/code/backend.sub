@@ -43,7 +43,13 @@ sub {
 			$CGI->{mv_nextpage} = 'backend/categories/list';
 			return 1;
 		}
-	}			
+	} else {
+		$Tag->perl({tables => 'categories'});
+		$CGI->{mv_nextpage} = 'backend/products/list';
+		return 1;
+	}
+
+	return 1;
 }
 EOS
 
