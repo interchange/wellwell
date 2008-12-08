@@ -29,7 +29,8 @@ sub {
 				# form intercepted by autoload
 				$forms{$k}->{content} = $Scratch->{forms}->{$k};
 			} else {
-				$forms{$k}->{content} = $Tag->form({name => $k});
+				$forms{$k}->{content} = $Tag->form({name => $k,
+					template => $forms{$k}->{template}});
 			}
 		}
 	}
