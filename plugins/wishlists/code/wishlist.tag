@@ -42,6 +42,12 @@ sub {
 								name => $name);
 		}
 
+		# check whether product is within wishlist
+		if ($Db{cart_products}->record_exists([$wishlist_code, $sku])) {
+			$Tag->error({name => $sku, set => 'Product already in wishlist'});
+			return;
+		}
+
 		# add product to wishlist
 		$Db{cart_products}->set_slice([$wishlist_code, $sku], {position => 0});
 		return;
