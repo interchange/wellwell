@@ -14,6 +14,15 @@ sub {
 
 	$Tag->perl({tables => 'products carts cart_products'});
 
+	# check whether wishlist exists
+	my ($qname, $set, $wishlist_code);
+
+	$qname = $Db{carts}->quote($name);
+	$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and name = $qname}); 
+	if (@$set) {
+		$wishlist_code = $set->[0]->[0];
+	}
+
 	if ($function eq 'create') {
 		my $pref;
 
@@ -25,43 +34,34 @@ sub {
 			return;
 		}
 
-		# check whether wishlist exists
-		my ($qname, $set, $code);
-
-		$qname = $Db{carts}->quote($name);
-
-		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and name = $qname}); 
-
-		if (@$set) {
-			$code = $set->[0]->[0];
-		}
-		else {
-			$code = $Db{carts}->autosequence();
-			$Db{carts}->set_slice($code, uid => $Session->{username},
+		# create new wishlist if necessary
+		unless ($wishlist_code) {
+			$wishlist_code = $Db{carts}->autosequence();
+			$Db{carts}->set_slice($wishlist_code, uid => $Session->{username},
 								created => time(),
 								name => $name);
 		}
 
 		# add product to wishlist
-		$Db{cart_products}->set_slice([$code, $sku], {position => 0});
+		$Db{cart_products}->set_slice([$wishlist_code, $sku], {position => 0});
+		return;
+	}
+
+	unless ($wishlist_code) {
+		$Tag->error({name => 'wishlist', set => 'Wishlist is missing.'});
+		return;
+	}
+
+	elsif ($function eq 'remove') {
+		# remove product from wishlist
+		$Db{cart_products}->delete_record([$wishlist_code, $sku]);
 	}
 	elsif ($function eq 'list') {
-		# check whether wishlist exists
-		my ($qname, $set, $code);
+		# list products from wishlist
+		my $sql = qq{select sku from cart_products where cart = $wishlist_code order by position};
 
-		$qname = $Db{carts}->quote($name);
-
-		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and name = $qname}); 
-
-		if (@$set) {
-			$code = $set->[0]->[0];
-			my $sql = qq{select sku from cart_products where cart = $code order by position};
-			return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
+		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
-		}
-		else {
-			$Tag->error("Wishlist is missing.");
-		}
 	}
 }
 EOR

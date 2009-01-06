@@ -18,6 +18,12 @@ sub {
 		return 1;
 	}
 
+	# whether to delete stuff from wishlist
+	if ($CGI->{remove}) {
+		Log("Deleting $CGI->{delete} from wishlist.");
+		$Tag->wishlist('remove', $CGI->{remove});
+	}
+
 	# show wishlist for the current user
 	$CGI->{mv_nextpage} = 'wishlists/list';
 	return 1;	
