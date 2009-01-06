@@ -5,7 +5,7 @@ CREATE TABLE products (
   "description" text,
   "long_description" text,
   "price" numeric(11,2) NOT NULL DEFAULT 0,
-  "taxrate" numeric(4,2) NOT NULL DEFAULT 0;
+  "taxrate" numeric(4,2) NOT NULL DEFAULT 0,
   "inactive" bool DEFAULT false,
   CONSTRAINT products_pkey PRIMARY KEY (sku)
 );
