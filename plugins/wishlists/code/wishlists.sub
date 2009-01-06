@@ -1,0 +1,25 @@
+Sub wishlists <<EOS
+sub {
+	my $page = shift;
+	my ($name, @args) = split(/\//, $page);
+
+	unless ($Session->{logged_in}) {
+		$Tag->warnings('Please login first.');
+		$CGI->{mv_nextpage} = 'login';
+		$Scratch->{login_target} = '';
+		$Scratch->{login_bounce} = $page;
+		return 1;
+	}
+
+	if ($args[0] eq 'create') {
+		$Values->{sku} = $args[1];
+		$Tag->wishlist('create', $Values->{sku});
+		$CGI->{mv_nextpage} = 'wishlists/create';
+		return 1;
+	}
+
+	# show wishlist for the current user
+	$CGI->{mv_nextpage} = 'wishlists/list';
+	return 1;	
+}
+EOS
