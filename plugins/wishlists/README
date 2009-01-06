@@ -1,0 +1,4 @@
+In order to use this plugin please allow time operation in safe mode by adding
+the following directive to interchange.cfg:
+
+SafeUntrap time
