@@ -10,6 +10,8 @@ sub {
 	$Tag->update('values');
 
 	if ($function eq 'create') {
+		my $perm;
+
 		$review{uid} = $Scratch->{uid} || 0;
 		$review{created} = $Tag->time({body => '%Y-%m-%d %H:%M:%S'});
 
@@ -18,6 +20,13 @@ sub {
 		}
 		for (qw/name title/) {
 			$review{$_} = $Values->{$_} || '';
+		}
+
+		$perm = $Tag->acl({function => 'check',
+						   permission => ['enter_reviews_without_approval', 'enter_reviews']});
+
+		if ($perm eq 'enter_reviews_without_approval') {
+			$review{public} = 1;
 		}
 		
 		$code = $Db{reviews}->set_slice('', %review);
@@ -59,12 +68,17 @@ sub {
 		# set defaults for the review form
 		$Values->{rating} = 0;
 
-		for (qw/title review name/) {
+		for (qw/title review/) {
 			$Values->{$_} = '';
+		}
+
+		if ($Session->{logged_in}) {
+			$Values->{name} = $Tag->uc_attr_list({hash => $Values,
+												  body => $Variable->{REVIEWS_DISPLAY_NAME}});
 		}
 	}
 	elsif ($function eq 'list') {
-		my $sql = qq{select title,name,review,rating,created,uid from reviews where sku = '$sku'};
+		my $sql = qq{select title,name,review,rating,created,uid from reviews where sku = '$sku' and public is TRUE};
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 			body => $body});
 	}
