@@ -1,0 +1,6 @@
+__NAME__ register
+username=required Username field is required.
+email=email_only
+mv_password=length [either][userdb function=option name=passminlen][or]4[/either] 
+mv_verify=match mv_password The specified passwords do not match.
+__END__
