@@ -172,16 +172,19 @@ sub {
 					}
 				}
 
-				if (exists $component_attributes->{container}
-					&& $component_attributes->{container} eq '') {
-					push (@content, $component_content);
-				} else {
-					push (@content,
-						qq{<div $type='$name'>} .
-					    ( $alias ? qq{<div $type='$alias'>} : '' ) .
-					    $component_content .
-					    ( $alias ? qq{</div>} : '' ) .
-					    q{</div>});
+				if ($component_content =~ /\S/
+					|| ! $component_attributes->{skipblank}) {
+					if (exists $component_attributes->{container}
+						&& $component_attributes->{container} eq '') {
+						push (@content, $component_content);
+					} else {
+						push (@content,
+							qq{<div $type='$name'>} .
+					    	( $alias ? qq{<div $type='$alias'>} : '' ) .
+						    $component_content .
+						    ( $alias ? qq{</div>} : '' ) .
+						    q{</div>});
+					}
 				}
 
 				# reset variables
