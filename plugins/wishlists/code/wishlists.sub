@@ -18,9 +18,16 @@ sub {
 		return 1;
 	}
 
+	# whether to move stuff from wishlist to cart
+	if ($CGI->{movetocart}) {
+		for (@{$CGI_array->{sku}}) {
+			$Tag->addtocart($_, 1);
+			$Tag->wishlist('remove', $_);
+		}
+	}
+
 	# whether to delete stuff from wishlist
 	if ($CGI->{remove}) {
-		Log("Deleting $CGI->{delete} from wishlist.");
 		$Tag->wishlist('remove', $CGI->{remove});
 	}
 
