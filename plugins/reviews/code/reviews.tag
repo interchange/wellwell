@@ -37,7 +37,7 @@ sub {
 		return $code;
 	}
 	elsif ($function eq 'display') {
-		my ($rating, @out);
+		my ($rating, @out, %img);
 
 		if ($opt->{rating}) {
 			$rating = $opt->{rating};
@@ -52,13 +52,22 @@ sub {
 				return qq{<a href="$url">Enter First Review</a>};
 			}
 		}
+
+		for (qw/empty full/) {
+			$img{"rating_path_$_"} = $opt->{"img_rating_$_"} || $Variable->{'REVIEWS_IMG_RATING_' . uc($_)};
+			if ($img{"rating_path_$_"} =~ m%^/%) {
+				$img{"rating_$_"} = $img{"rating_path_$_"};
+			} else {
+				$img{"rating_$_"} = $Config->{ImageDir} . 'reviews/' . $img{"rating_path_$_"};
+			}
+		}	
 		
 		for (1 .. $Variable->{REVIEWS_MAX_RATING}) {
 			if ($rating >= $_) {
-				push @out, qq{<img src="/images/reviews/$Variable->{REVIEWS_IMG_RATING_FULL}">};
+				push @out, qq{<img src="$img{'rating_full'}">};
 			}
 			else {
-				push @out, qq{<img src="/images/reviews/$Variable->{REVIEWS_IMG_RATING_EMPTY}">};
+				push @out, qq{<img src="$img{'rating_empty'}">};
 			}
 		}
 		
