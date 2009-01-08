@@ -39,7 +39,7 @@ EOS
 			$pic = $img{rating_path_empty};
 		}
 
-		push(@out, qq{<a href="javascript: reviews_rating.rate($_, '$opt->{form_name}')"><img src="reviews/$pic" id="reviews_rating$_" border="0"></a>});
+		push(@out, qq{<a href="javascript: reviews_rating.rate($_, '$opt->{form_name}')"><img src="$pic" id="reviews_rating$_" border="0"></a>});
 	}
 
 	return join(' ', @out);
