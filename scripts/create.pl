@@ -29,7 +29,7 @@ use File::stat;
 use User::pwent;
 use User::grent;
 use File::Path;
-use DBIx::Easy;
+use DBIx::Easy 0.18;
 
 my $config = new AppConfig (
 	{
