@@ -3,7 +3,7 @@ sub {
 	# always update values and set targetpage first
 	$Tag->update('values');
 
-	$CGI->{mv_nextpage} = 'shoppingcart';
+	$CGI->{mv_nextpage} = 'cart';
 
 	# recalculate function?	
 	if ($CGI->{recalculate}) {
