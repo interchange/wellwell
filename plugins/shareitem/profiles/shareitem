@@ -1,0 +1,16 @@
+__NAME__ shareitem
+[if cgi email]
+email=email_only Please enter a valid email address.
+[else]
+email=required Please enter an email address.
+[/else]
+[/if]
+name=required Please enter your name.
+[if cgi recipient]
+recipient=email_only Please enter a valid recipient address.
+[else]
+recipient=required Please enter an recipient address.
+[/else]
+[/if]
+remarks=required Please enter remarks about the item.
+__END__

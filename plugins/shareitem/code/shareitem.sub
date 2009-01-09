@@ -1,0 +1,31 @@
+Sub shareitem <<EOS
+sub {
+	my ($name, @args) = split(/\//, shift);
+	my ($sku);
+	
+	$sku = $args[0] || $CGI->{sku};
+
+	# verify that this is an existing product
+	$Tag->perl({tables => 'products'});
+
+	if ($sku) {
+		unless ($Db{products}->record_exists($sku)) {
+			$Tag->error({name => $sku,
+				set => 'Product has been discontinued.'});
+			# fall back to homepage
+			$CGI->{mv_nextpage} = 'index';
+			return 1;
+		}
+	} else {
+		$Tag->error({name => 'shareitem',
+			set => 'No item to share.'});
+		$CGI->{mv_nextpage} = 'index';
+		return 1;
+	}
+
+	# simply go to shareitem page
+	$CGI->{sku} = $sku;
+	$CGI->{mv_nextpage} = 'shareitem';
+	return 1;
+}
+EOS
