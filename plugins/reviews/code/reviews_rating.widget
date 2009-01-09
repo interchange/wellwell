@@ -34,9 +34,9 @@ EOS
 	
 	for (1 .. $max_rating) {
 		if ($cur_rating >= $_) {
-			$pic = $img{rating_path_full};
+			$pic = $img{rating_full};
 		} else {
-			$pic = $img{rating_path_empty};
+			$pic = $img{rating_empty};
 		}
 
 		push(@out, qq{<a href="javascript: reviews_rating.rate($_, '$opt->{form_name}')"><img src="$pic" id="reviews_rating$_" border="0"></a>});
