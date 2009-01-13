@@ -12,3 +12,5 @@ Notes:
 
 Autoload init routine from WellWell needs to be present.
 
+The enter_reviews_without_approval permission is required to make reviews
+public immediately.
