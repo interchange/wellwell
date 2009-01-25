@@ -22,3 +22,5 @@
 
 * Alias [comment] to [c] and support [l bla bla /] (if not yet supported)
   in addition to the usual [l]bla bla[/l]
+
+* Migrate to Git. Soon!
