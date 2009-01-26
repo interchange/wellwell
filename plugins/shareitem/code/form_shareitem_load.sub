@@ -1,0 +1,6 @@
+Sub form_shareitem_load <<EOS
+sub {
+	$Tag->shareitem({function => 'init'});
+	return 1;
+}
+EOS

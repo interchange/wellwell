@@ -1,0 +1,6 @@
+Sub form_shareitem_save <<EOS
+sub {
+	$Tag->shareitem({function => 'send'});
+	return {page => $Values->{sku}};
+}
+EOS
