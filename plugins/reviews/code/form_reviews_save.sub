@@ -1,0 +1,9 @@
+Sub form_reviews_save <<EOS
+sub {
+	my ($code);
+
+	$Tag->reviews('create');
+
+	return {page => $Values->{sku}};
+}
+EOS
