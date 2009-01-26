@@ -2,10 +2,21 @@ Sub reviews <<EOS
 sub {
 	my ($name, @args) = split(/\//, shift);
 
-	if ($args[1] eq 'create') {
+	if ($args[0] eq 'create'
+		&& $CGI->{sku}) {
+		$Values->{sku} = $args[0];
+		$CGI->{mv_nextpage} = 'reviews/create';
+	}
+	elsif ($args[1] eq 'create') {
 		$Values->{sku} = $args[0];
 		$CGI->{mv_nextpage} = 'reviews/create';
 		return 1;
 	}
+	else {
+		Log("No action found for $name and @args");
+		return;
+	}
+
+	return 1;
 }
 EOS
