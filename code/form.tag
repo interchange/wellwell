@@ -3,18 +3,17 @@ UserTag form AddAttr
 UserTag form Routine <<EOR
 sub {
 	my ($name, $opt) = @_;
-	my ($form_name, @out);
+	my ($form_name, @out_title, @out, @out_fields, @out_end, $required_fields);
 
-	$Tag->perl({tables => 'form_series form_elements form_attributes'});
+	$Tag->perl({tables => 'form_series form_components form_elements form_attributes'});
 
-	$form_name = $opt->{component};
+	$form_name = $opt->{part};
 
 	if ($name) {
 		# produce one form out of a series
-		my ($series_qtd, $set, $pos, $pos_max);
+		my ($set, $back, $pos, $pos_max);
 
-		$series_qtd = $Db{form_series}->quote($name);
-		$set = $Db{form_series}->query({sql => qq{select * from form_series where name = $series_qtd order by position}, hashref => 1});
+		$set = $Tag->form_list($name);
 		
 		# ensure that we don't run out of the form series
 		$pos_max = @$set;
@@ -30,21 +29,61 @@ sub {
 		} else {
 			$Session->{form_series}->{$name} = 1;
 		}
+
+		# request to move back (button or image)
+		if ($CGI->{series_back}) {
+			$back = 1;
+		}
+		elsif ($CGI->{'series_back.x'}) {
+			$back = 1;
+		}
+
+		if ($back) {
+			if ($Session->{form_series}->{$name} > 2) {
+				$Session->{form_series}->{$name} -= 2;
+			} else {
+				$back = 0;
+			}
+		}
+
 		$pos = $Session->{form_series}->{$name};
+
+		# always update value space first
+		$Tag->update('values');
 
 		for (@$set) {
 			if ($_->{position} == $pos - 1) {
-				if ($_->{profile}) {
+				next if $back;
+
+				if ($_->{profile} && ! $back) {
 					unless ($Tag->run_profile({name => $_->{profile}, cgi => 1})) {
 						$Session->{form_series}->{$name} -= 1;
-						$Tag->update('values');
+						$Tag->tmp('series_part', $_->{part});
 						return $Tag->form({series => $name, 
 							label => $_->{label},
-							component => $_->{component}, 
-							from_file => $_->{from_file},
-							template => $opt->{template}});
+							part => $_->{part}, 
+							template => $opt->{template} || $_->{template}});
 					}
 				}
+				# check for appropriate hook for saving
+				my ($hook, $hooksub, $hookret);
+
+				$hook = join('_', 'form', $name, 'save');
+				$hooksub = $Config->{Sub}{$hook};
+
+				if ($hooksub) {
+					$hookret = $hooksub->();
+
+					if ($hookret->{page}) {
+						$CGI->{mv_nextpage} = $hookret->{page};
+						return;
+					}
+				}
+				else {
+					Log("Hook $hook not found.");
+				}
+
+				# this is legacy code, will be removed in favor of hooks
 				if ($_->{save}) {
 					my (@save, $tag, $ret);
 
@@ -54,6 +93,20 @@ sub {
 				}
 			} 
 			elsif ($_->{position} == $pos) {
+				# check for appropriate hook for loading
+				my ($hook, $hooksub, $hookret);
+
+				$hook = join('_', 'form', $name, 'load');
+				$hooksub = $Config->{Sub}{$hook};
+
+				if ($hooksub) {
+					$hookret = $hooksub->();
+				}
+				else {
+					Log("Hook $hook not found.");
+				}
+
+				# this is legacy code, will be removed in favor of hooks
 				if ($_->{load}) {
 					my (@load, $tag, $ret);
 
@@ -61,10 +114,10 @@ sub {
 					$tag = shift(@load);
 					$ret = $Tag->$tag(@load);
 				}
+				$Tag->tmp('series_part', $_->{part});
 				return $Tag->form({series => $name, label => $_->{label},
-					component => $_->{component},
-					from_file => $_->{from_file},
-					template => $opt->{template}});
+					part => $_->{part},
+					template => $opt->{template} || $_->{template}});
 			}
 		}
 
@@ -72,47 +125,40 @@ sub {
 		return;
 	}
 
-	if ($opt->{from_file}) {
-		# load component from file
-		my $content;
-
-		$content = $Tag->include("$Variable->{MV_COMPONENT_DIR}/$opt->{component}");
-		push(@out, $content);
-	} else {
-		push(@out, '<fieldset>');
+		push(@out_title, '<fieldset>');
 
 		# label for form elements
 		if ($opt->{label}) {
 			if ($opt->{anchor}) {
-				push(@out, qq{<legend><a name="$opt->{anchor}">$opt->{label}</a></legend>});
+				push(@out_title, qq{<legend><a name="$opt->{anchor}">$opt->{label}</a></legend>});
 			}
 			else {
-				push(@out, qq{<legend>$opt->{label}</legend>});
+				push(@out_title, qq{<legend>$opt->{label}</legend>});
 			}
 		}
 
 		if ($opt->{prepend}) {
-			push(@out, $opt->{prepend});
+			push(@out_title, $opt->{prepend});
 		}
 	
 		# form elements
 		my ($elset, $attrset, $qcomp);
 
-		$qcomp = $Db{form_elements}->quote($opt->{component});
+		$qcomp = $Db{form_elements}->quote($opt->{part});
 
 		$elset = $Db{form_elements}->query({sql => qq{select name,label,widget from form_elements where component = $qcomp order by priority desc}, hashref => 1});
 
 		for my $elref (@$elset) {
 			# fetch attributes for form element
-			my %attributes;
+			my (%attributes, $required);
 		
-			$attrset = $Db{form_attributes}->query(q{select attribute,value from form_attributes where name = '%s' and component = '%s'}, $elref->{name}, $opt->{component});
+			$attrset = $Db{form_attributes}->query(q{select attribute,value from form_attributes where name = '%s' and component = '%s'}, $elref->{name}, $opt->{part});
 			for (@$attrset) {
 				$attributes{$_->[0]} = $_->[1];
 			}
 
 			# determine current value
-			my $value = $Tag->filter('encode_entities', $Values->{$elref->{name}});
+			my $value = $Values->{$elref->{name}};
 
 			# "display" form element
 			my $label = '';
@@ -120,21 +166,34 @@ sub {
 		
 			if (delete $attributes{profile} eq 'required') {
 				$append = q{<span class="required">*</span>};
+				$required = 1;
+				$required_fields++;
 			}
 
 			if ($elref->{label} =~ /\S/) {
 				$label = "$elref->{label}$append$opt->{appendlabel}";
 			}
-			push (@out, qq{<label for="$elref->{name}">$label</label>});
-			push (@out, $Tag->display({name => $elref->{name},
+			push (@out_fields, qq{<label for="$elref->{name}">$label</label>});
+			push (@out_fields, $Tag->display({name => $elref->{name},
 									   type => $elref->{widget} || 'text',
 									   value => $value,
+									   class => $required ? 'required' : '',
 									   form_name => $form_name,
 									   %attributes}));
-			push (@out, '<br/>');
+			my $error = $Tag->error({name => $elref->{name},
+								show_error => 1});
+
+			if ($error) {
+				push (@out_fields, qq{<span class="errors">$error</span>});
+			}
+
+			push (@out_fields, '<br/>');
 		}
 
-		push(@out, '</fieldset>');
+		push(@out_end, '</fieldset>');
+
+	unless (@$elset) {
+		@out = ();
 	}
 
 	unless ($opt->{partial}) {
@@ -152,7 +211,20 @@ sub {
 			return;
 		}
 
-		if ($CGI->{mv_nextpage}) {
+		# read components
+		my (%fhash, $set, $content);
+
+		$set = $Db{form_components}->query(q{select component,location from form_components where name = '%s' and part = '%s' order by priority desc}, $opt->{series}, $opt->{part});
+
+		for (@$set) {
+			$content = $Tag->include("$Variable->{MV_COMPONENT_DIR}/$_->[0]");
+			$fhash{$_->[1]} .= $content;
+		}
+
+		if ($opt->{page}) {
+			$page = $opt->{page};
+		}
+		elsif ($CGI->{mv_nextpage}) {
 			$page = $CGI->{mv_nextpage};
 		}
 		else {
@@ -168,16 +240,23 @@ sub {
 };	
 		}
 
-		my %fhash;
+		@out = (@out_title, @out_fields, @out_end);
 
 		$fhash{top} = <<EOT;
 <form action="$action" method="post" name="$form_name">
 $series$sid
 EOT
 
-		$fhash{body} = join("\n", @out);
+		$fhash{title} = join("\n", @out_title);
+		$fhash{fields} = join("\n", @out_fields);
+		$fhash{end} = join("\n", @out_end);
+
+		$fhash{body} .= join("\n", @out);
+
 		$fhash{submit} = q{<input type="submit" name="submit" value="OK">};
 		$fhash{bottom} = q{</form>};
+
+		$fhash{required} = $required_fields;
 
 		$out = $Tag->uc_attr_list({hash => \%fhash, body => $t_template});
 
