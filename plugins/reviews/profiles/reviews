@@ -1,6 +1,6 @@
 __NAME__ reviews
-rating=natural Please select a rating.
-title=required Please enter review title.
-review=required Please enter your review.
+rating=natural [L]Please select a rating.[/L]
+title=required [L]Please enter review title.[/L]
+review=required [L]Please enter your review.[/L]
 &success [cgi sku]
 __END__
