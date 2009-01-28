@@ -16,11 +16,7 @@
 
 *  Action Tag: it should be possible to assign attributes to targets
 
-*  Enable RT Queue 'wellwell'
-
 * Gettext support, possibly with strings in the database
 
 * Alias [comment] to [c] and support [l bla bla /] (if not yet supported)
   in addition to the usual [l]bla bla[/l]
-
-* Migrate to Git. Soon!
