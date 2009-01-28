@@ -1,0 +1,21 @@
+Sub content <<EOS
+sub {
+	my $url = shift;
+	my @parts = split(/\//, $url);
+
+	if ($parts[1] =~ /^(\d+)$/) {
+		$CGI->{mv_nextpage} = 'content/display';
+		$CGI->{code} = $1;
+	}
+	else {
+		if ($parts[$#parts] =~ /^(\d+)$/) {
+			$CGI->{code} = pop(@parts);
+			$url = join('/', @parts);
+		}
+
+		$CGI->{mv_nextpage} = $url;
+	}
+
+	return 1;
+}
+EOS

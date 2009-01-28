@@ -1,0 +1,16 @@
+Sub form_content_edit_load <<EOS
+sub {
+	my (@fields, @content);
+Log("Loading form");
+	@fields = qw/title body uri/;
+
+	$Tag->perl({tables => 'content'});
+	
+	@content = $Db{content}->get_slice($CGI->{code}, \@fields);
+
+	for (my $i = 0; $i <= @fields; $i++) {
+		$Values->{$fields[$i]} = $content[$i];
+	}
+	
+}
+EOS

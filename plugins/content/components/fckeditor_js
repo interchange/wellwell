@@ -1,0 +1,17 @@
+<script type="text/javascript">
+    _editor_url = "/fckeditor/";
+
+ function addLoadEvent(func) {
+	var oldonload = window.onload;
+	if (typeof window.onload != 'function') {
+		window.onload = func;
+	} else {
+		window.onload = function() {
+		oldonload();
+		func();
+		}
+	}
+   }
+</script>
+<script type="text/javascript" src="/fckeditor/fckeditor.js"></script>
+

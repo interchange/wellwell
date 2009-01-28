@@ -1,0 +1,6 @@
+[compose 
+    components.body="content_edit"
+    forms.content_edit.name="content_edit"
+]
+
+

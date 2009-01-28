@@ -1,0 +1,12 @@
+[query sql="select * from content" list=1]
+[on-match]
+<table>
+<tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th></tr>
+[/on-match]
+[list]
+<tr><td><a href="[area content/[sql-code]]">[sql-param title]</a></td><td>[sql-param uid]</td></tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
+[/query]
