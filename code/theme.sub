@@ -1,0 +1,14 @@
+Sub theme <<EOS
+sub {
+	my ($function, @args) = @_;
+	my ($sub);
+
+	# just call provided function for now :-)
+	unless ($sub = $Config->{Sub}{"theme_$function"}) {
+		Log("Theming function $function not found.");
+		return;
+	}
+
+	return $sub->(@args);
+}
+EOS

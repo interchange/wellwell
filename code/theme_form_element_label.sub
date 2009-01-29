@@ -1,0 +1,13 @@
+#
+# Parameters are:
+#
+# name - Element name
+# label - Element label
+
+Sub theme_form_element_label <<EOS 
+sub {
+	my ($name, $label) = @_;
+Log("TFEL: $name $label");
+	return qq{<label for="$name">$label</label>};
+}
+EOS

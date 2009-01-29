@@ -5,7 +5,7 @@ sub {
 	my ($name, $opt) = @_;
 	my ($form_name, @out_title, @out, @out_fields, @out_end, $required_fields);
 
-	$Tag->perl({tables => 'form_series form_components form_elements form_attributes'});
+	$Tag->perl({tables => 'form_series form_components form_elements form_attributes', subs => 1});
 
 	$form_name = $opt->{part};
 
@@ -173,7 +173,7 @@ sub {
 			if ($elref->{label} =~ /\S/) {
 				$label = "$elref->{label}$append$opt->{appendlabel}";
 			}
-			push (@out_fields, qq{<label for="$elref->{name}">$label</label>});
+			push (@out_fields, theme('form_element_label', $elref->{name}, $label));
 			push (@out_fields, $Tag->display({name => $elref->{name},
 									   type => $elref->{widget} || 'text',
 									   value => $value,
