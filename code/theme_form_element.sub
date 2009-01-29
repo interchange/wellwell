@@ -12,9 +12,9 @@ sub {
 	my ($name, $label, $type, $value, $attributes) = @_;
 	my ($out);
 	
-	$out = theme('form_element_label', $elref->{name}, $label);
-	$out .= theme('form_element_field', $elref->{name},
-				   	$elref->{widget} || 'text',
+	$out = theme('form_element_label', $name, $label);
+	$out .= theme('form_element_field', $name,
+				   	$type,
 					$value,
 					$attributes);
 
