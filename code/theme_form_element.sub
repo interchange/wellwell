@@ -1,0 +1,25 @@
+#
+# Parameters are:
+#
+# name - Element name
+# label - Element label
+# type - Element type
+# value - Element value
+# attributes - Hash with attributes
+
+Sub theme_form_element <<EOS
+sub {
+	my ($name, $label, $type, $value, $attributes) = @_;
+	my ($out);
+	
+	$out = theme('form_element_label', $name, $label);
+	$out .= theme('form_element_field', $name,
+				   	$type,
+					$value,
+					$attributes);
+
+	$out .= '<br/>';
+	
+	return $out;
+}
+EOS

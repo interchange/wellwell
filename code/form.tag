@@ -177,8 +177,7 @@ sub {
 			my $error = $Tag->error({name => $elref->{name},
 				show_error => 1});
 
-			push (@out_fields, theme('form_element_label', $elref->{name}, $label));
-			push (@out_fields, theme('form_element_field', $elref->{name},
+			push (@out_fields, theme('form_element', $elref->{name}, $label,
 				   	$elref->{widget} || 'text',
 					$value,
 					{class => $required ? 'required' : '',
@@ -186,7 +185,6 @@ sub {
 					error => $error,
 					%attributes}));
 
-			push (@out_fields, '<br/>');
 		}
 
 		push(@out_end, '</fieldset>');
