@@ -173,19 +173,18 @@ sub {
 			if ($elref->{label} =~ /\S/) {
 				$label = "$elref->{label}$append$opt->{appendlabel}";
 			}
-			push (@out_fields, theme('form_element_label', $elref->{name}, $label));
-			push (@out_fields, $Tag->display({name => $elref->{name},
-									   type => $elref->{widget} || 'text',
-									   value => $value,
-									   class => $required ? 'required' : '',
-									   form_name => $form_name,
-									   %attributes}));
-			my $error = $Tag->error({name => $elref->{name},
-								show_error => 1});
 
-			if ($error) {
-				push (@out_fields, qq{<span class="errors">$error</span>});
-			}
+			my $error = $Tag->error({name => $elref->{name},
+				show_error => 1});
+
+			push (@out_fields, theme('form_element_label', $elref->{name}, $label));
+			push (@out_fields, theme('form_element_field', $elref->{name},
+				   	$elref->{widget} || 'text',
+					$value,
+					{class => $required ? 'required' : '',
+					form_name => $form_name,
+					error => $error,
+					%attributes}));
 
 			push (@out_fields, '<br/>');
 		}

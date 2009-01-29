@@ -1,0 +1,26 @@
+#
+# Parameters are:
+#
+# name - Element name
+# type - Element type
+# value - Element value
+# attributes - Hash with attributes
+
+Sub theme_form_element_field <<EOS
+sub {
+	my ($name, $type, $value, $attributes) = @_;
+	my ($out);
+
+	$out = $Tag->display({name => $name,
+					   	type => $type,
+					   	value => $value,
+						%$attributes});
+
+	if ($attributes->{error}) {
+		$out .= qq{<span class="errors">$attributes->{error}</span>};
+	}
+
+	return $out;
+}
+EOS
+
