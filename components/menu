@@ -1,15 +1,22 @@
-<ul>
-[tree
-        table=menus
-        master=parent
-        start=0
-				sort=weight
-        subordinate=code
-        full=1
-	where="menu_name='__NAME__'"
-]
-[if-item-param mv_up]<ul>[/if-item-param]
-[if-item-param mv_down]</ul>[/if-item-param]
-<li><a href='[area href="[item-param url]"]'>[item-param name]</a></li>
-[/tree]
-</ul>
+[perl tables="menus users roles user_roles permissions"]
+my ($menu_name, $joiner, @entries);
+
+$menu_name = $Variable->{NAME} || 'main';
+$joiner = exists $Variable->{JOINER} ? $Variable->{JOINER} : '&nbsp;|&nbsp;';
+$style = $Variable->{STYLE};
+
+my ($set, $url);
+$set = $Db{menus}->query(q{select name,url,permission from menus where menu_name = '%s' order by weight desc,name}, $menu_name);
+
+for (@$set) {
+	next unless $Tag->acl('check', $_->[2]);
+	$url = $Tag->area({href => $_->[1]});
+
+	push (@entries, qq{<a href="$url"><span>$_->[0]</span></a>});
+}
+
+if (@entries && $style eq 'list') {
+	return '<ul>' . join('', map {"<li>$_</li>"} @entries) . '</ul>';
+}
+return join($joiner, @entries);
+[/perl]
