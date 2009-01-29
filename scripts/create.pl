@@ -243,9 +243,6 @@ if ( $config->create_db() ){
 		$db_admin_pass = $config->db_admin_pass();
 	}
 
-
-	#print "pass: $db_admin_pass"; #DEBUG
-
 	if ( ! $config->db_admin() ){
 
 		if ( $db_type eq 'Pg' ) {
@@ -254,8 +251,13 @@ if ( $config->create_db() ){
 		elsif ( $db_type eq 'mysql' ) {
 			$db_admin = 'root';
 		}
-	}
+    }
+    else {
+       $db_admin = $config->db_admin();
+    }
 	
+    #print "user: $db_admin, pass: $db_admin_pass"; #DEBUG
+
 	# Now actually create database and users
 	my @create_sqls, my $db_template;
 
