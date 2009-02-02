@@ -2,7 +2,7 @@ CodeDef reviews_rating Widget
 CodeDef reviews_rating Routine <<EOR
 sub {
 	my ($opt) = @_;
-	my ($name, %img, $max_rating, $js, $pic, @out);
+	my ($name, %img, $max_rating, $cur_rating, $js, $pic, @out);
 
 	$name = $opt->{name};
 

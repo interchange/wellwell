@@ -1,7 +1,7 @@
 Sub backend <<EOS
 sub {
 	my ($name, @args) = split(/\//, shift);
-	my (@fields, @values);
+	my (@fields, @values, $rowref);
 
 	unless ($Tag->acl('check')) {
 		$Tag->error({name => 'backend',
