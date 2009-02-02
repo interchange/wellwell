@@ -72,7 +72,7 @@ sub {
 				$hooksub = $Config->{Sub}{$hook};
 
 				if ($hooksub) {
-					$hookret = $hooksub->();
+					$hookret = $hooksub->($_->{part});
 
 					if ($hookret->{page}) {
 						$CGI->{mv_nextpage} = $hookret->{page};
@@ -100,7 +100,7 @@ sub {
 				$hooksub = $Config->{Sub}{$hook};
 
 				if ($hooksub) {
-					$hookret = $hooksub->();
+					$hookret = $hooksub->($_->{part});
 				}
 				else {
 					Log("Hook $hook not found.");
