@@ -146,7 +146,7 @@ sub {
 
 		$qcomp = $Db{form_elements}->quote($opt->{part});
 
-		$elset = $Db{form_elements}->query({sql => qq{select name,label,widget from form_elements where component = $qcomp order by priority desc}, hashref => 1});
+		$elset = $Db{form_elements}->query({sql => qq{select name,label,widget from form_elements where component = $qcomp order by priority desc, code asc}, hashref => 1});
 
 		for my $elref (@$elset) {
 			# fetch attributes for form element
