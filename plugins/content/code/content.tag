@@ -1,9 +1,10 @@
 UserTag content Order function code
 UserTag content AddAttr
+UserTag content HasEndTag
 UserTag content Routine <<EOR
 sub {
-	my ($function, $code, $opt) = @_;
-	my ($ctref, $out);
+	my ($function, $code, $opt, $body) = @_;
+	my ($ctref, $out, %content);
 
 	$Tag->perl({tables => 'content'});
 
@@ -45,15 +46,20 @@ sub {
 
 		if ($Tag->acl({function => 'check', permission => \@edit_perms})) {
 			$uri = $Tag->area({href => "content/edit/$ctref->{code}"});
-			$out .= qq{<a href="$uri">Edit</a>};
+			$content{edit_link} = qq{<a href="$uri">Edit</a>};
 		}
 	}
 
 	unless ($opt->{no_title}) {
-		$out .= $ctref->{title};
+		$content{title} = $ctref->{title};
 	}
 
-	$out .= $ctref->{body};
-	return $out;
+	$content{body} = $ctref->{body};
+
+	if ($body) {
+		return $Tag->uc_attr_list({hash => \%content, body => $body});
+	}
+
+	return $content{edit_link} . $content{title} . $content{body};
 }
 EOR
