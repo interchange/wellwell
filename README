@@ -47,6 +47,19 @@ Automatic components/attributes
 MV_COMPONENT_AUTO
 MV_ATTRIBUTE_AUTO
 
+Forms
+*****
+
+Template
+--------
+
+Forms are build from templates as well. The default template is located at:
+
+templates/form
+
+Alternative templates can be specified in table form_series, field
+template.
+
 Plugins
 *******
 
