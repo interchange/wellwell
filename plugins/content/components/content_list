@@ -1,10 +1,15 @@
+<a href="[area content/edit]">[L]Add new content[/L]</a>
 [query sql="select * from content" list=1]
 [on-match]
 <table>
-<tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th></tr>
+<tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th><th>[L]Date[/L]</th></tr>
 [/on-match]
 [list]
-<tr><td><a href="[area content/[sql-code]]">[sql-param title]</a></td><td>[sql-param uid]</td></tr>
+<tr>
+<td><a href="[area content/[sql-code]]">[sql-param title]</a></td>
+<td>[user name [sql-param uid]]</td>
+<td>[sql-param created]</td>
+</tr>
 [/list]
 [on-match]
 </table>
