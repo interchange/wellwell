@@ -1,0 +1,22 @@
+[comment]
+- needs Vend::AnyData
+- symlink database/standard to standard/products
+[/comment]
+[anydata table="standard_products" format="TAB" name="database/standard/products.txt" hide=1]
+[query table="standard_products" sql="select * from standard_products" hashref="products"/]
+[perl tables="products"]
+my ($sku, %count);
+
+for my $productref (@{$Tmp->{products}}) {
+	$sku = delete $productref->{sku};
+
+	$Db{products}->set_slice($sku,
+							 name => $productref->{title},
+							 description => $productref->{description},
+							 price => $productref->{price},
+							 inactive => $productref->{inactive});
+	$count{products}++;
+}
+
+return "$count{products} products migrated.";
+[/perl]
