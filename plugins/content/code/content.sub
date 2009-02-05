@@ -7,13 +7,15 @@ sub {
 		$CGI->{mv_nextpage} = 'content/display';
 		$CGI->{code} = $1;
 	}
-	else {
+	elsif ($parts[1]) {
 		if ($parts[$#parts] =~ /^(\d+)$/) {
 			$CGI->{code} = pop(@parts);
 			$url = join('/', @parts);
 		}
 
 		$CGI->{mv_nextpage} = $url;
+	} else {
+		$CGI->{mv_nextpage} = 'content/recent';
 	}
 
 	return 1;
