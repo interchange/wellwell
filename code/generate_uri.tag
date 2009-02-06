@@ -14,7 +14,10 @@ generate-uri - Generates a pretty URL for a hierarchical structure and stores it
 
 Generates an URL for hierarchical structures such as categories and menus. If it is defined, it can use parent field in the table to get the parents to the root item and generate a pretty url (parents_parent/parent/child). This url is stored in the same table (usually in the URL field). 
 
-This tag is normally used in an Interchange job, which fills the entire table, or as a part of administration interface (where you run it when you add or edit a category, for example).
+This tag is normally used in an Interchange job, which fills the entire table, or as a part of administration interface (where you run it when you add or edit a category, for example). 
+
+Existing URLs are not overwritten unless explicitly requested by the
+override parameter.
 
 The URL is retrieved by using an ActionMap or a similar approach to display the page.
 
@@ -64,6 +67,12 @@ Generate URI only for record with key.
 
 =back
 
+=item overwrite
+
+Overwrite existing URIs.
+
+=back
+
 =head1 EXAMPLES
 
 [generate_uri categories]
@@ -102,8 +111,11 @@ sub {
 	if ($opt->{key}) {
 		$sql = qq{SELECT $key_field,$display_field,$parent FROM $table WHERE $key_field = } . $db->quote($opt->{key});
 	}
-	else {
+	elsif ($opt->{overwrite}) {
 		$sql = qq{SELECT $key_field,$display_field,$parent FROM $table};
+	}
+	else {
+		$sql = qq{SELECT $key_field,$display_field,$parent FROM $table WHERE $uri_field = ''};
 	}
 	
 	my $rows = $db->query({sql => $sql, hashref => 1});
@@ -146,9 +158,8 @@ sub {
 
 		$uri = join( $dir_divider, @parents );
 
-		# Insert the URI into database
-		my %columns = ( uri => $uri );
-		$db->set_slice($row->{$key_field}, \%columns);
+		# Update URI in database
+		$db->set_field($row->{$key_field}, $uri_field, $uri);
 	}
 	return 1;
 }
