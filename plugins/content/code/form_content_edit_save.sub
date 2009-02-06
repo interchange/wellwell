@@ -8,7 +8,11 @@ sub {
 	}
 	$content{uid} = $Session->{username} || 0;
 	$content{type} = 'page';
-	$content{created} = 0;
+
+	# store timestamp
+	unless ($CGI->{code}) {
+		$content{created} = $Tag->time({format => '%s'});
+	}
 
 	$Tag->perl({tables => 'content'});
 	
