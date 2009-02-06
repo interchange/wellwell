@@ -8,7 +8,7 @@
 <tr>
 <td><a href="[area content/[sql-code]]">[sql-param title]</a></td>
 <td>[user name [sql-param uid]]</td>
-<td>[sql-param created]</td>
+<td>[time time="[sql-param created]"]%A, %e.%B %Y[/time] </td>
 </tr>
 [/list]
 [on-match]
