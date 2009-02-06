@@ -6,6 +6,6 @@ CREATE TABLE content (
   body text NOT NULL,
   uri varchar(255) NOT NULL,
   locale varchar(255) NOT NULL DEFAULT 'en_US',
-  created timestamp NOT NULL,
+  created integer NOT NULL DEFAULT 0,
   PRIMARY KEY (code)
 );

@@ -6,7 +6,7 @@ CREATE TABLE content (
   body longtext NOT NULL,
   uri varchar(255) NOT NULL,
   locale varchar(255) NOT NULL default 'en_US',
-  created datetime NOT NULL,
+  created integer NOT NULL DEFAULT 0,
   PRIMARY KEY (code),
   KEY (type)
 );
