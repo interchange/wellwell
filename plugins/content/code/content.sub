@@ -18,6 +18,8 @@ sub {
 		$CGI->{mv_nextpage} = 'content/recent';
 	}
 
+	$Values->{code} = $CGI->{code};
+
 	return 1;
 }
 EOS
