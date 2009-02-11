@@ -4,8 +4,8 @@
 [/comment]
 [anydata table="standard_products" format="TAB" name="database/standard/products.txt" hide=1]
 [query table="standard_products" sql="select * from standard_products" hashref="products"/]
-[perl tables="products"]
-my ($sku, %count);
+[perl tables="products categories product_categories" short_errors="1"]
+my ($sku, %count, $group, %prod_groups, $cat, %categories, $code);
 
 for my $productref (@{$Tmp->{products}}) {
 	$sku = delete $productref->{sku};
@@ -16,6 +16,31 @@ for my $productref (@{$Tmp->{products}}) {
 							 price => $productref->{price},
 							 inactive => $productref->{inactive});
 	$count{products}++;
+
+	next if $productref->{inactive};
+
+	# create categories
+	$group = $productref->{prod_group};
+	$cat = $productref->{category};
+
+	if ($group =~ /\S/) {
+		# determine/create first level category (product group)
+		unless (exists $prod_groups{$group}) {
+			$prod_groups{$group} = $Tag->category_master($group, 0, 'category');
+		}
+		$code = $prod_groups{$group};
+
+		if ($cat =~ /\S/) {
+			# determine/create second level category
+			unless (exists $categories{$cat}) {
+				$categories{$cat} = $Tag->category_master($cat, $code, 'category');
+			}
+			$code = $categories{$cat};
+		}
+
+		# let product join this category
+		$Db{product_categories}->query(qq{insert into product_categories values('%s', %s, '%s')}, $sku, $code, 'category');
+	}
 }
 
 return "$count{products} products migrated.";
