@@ -152,7 +152,7 @@ sub {
 			# fetch attributes for form element
 			my (%attributes, $required);
 		
-			$attrset = $Db{form_attributes}->query(q{select attribute,value from form_attributes where name = '%s' and component = '%s'}, $elref->{name}, $opt->{part});
+			$attrset = $Db{form_attributes}->query(q{select attribute,value from form_attributes where name = '%s' and (component = '' or component = '%s') order by component asc}, $elref->{name}, $opt->{part});
 			for (@$attrset) {
 				$attributes{$_->[0]} = $_->[1];
 			}

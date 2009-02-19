@@ -60,6 +60,28 @@ templates/form
 Alternative templates can be specified in table form_series, field
 template.
 
+Attributes
+----------
+
+Every form element can have a set of attributes, stored in the form_attributes
+table. They are working pretty much the same as in the metadata table for the
+Interchange UI.
+
+Attributes can be applied for every form element with a certain name:
+
+wellwell=> select * from form_attributes where name = 'country';
+ code |  name   | component |  attribute   |                           value                            
+------+---------+-----------+--------------+------------------------------------------------------------
+   32 | country |           | lookup_query | SELECT code,name FROM country ORDER BY priority DESC, name
+
+Or only for a certain from:
+
+wellwell=> select * from form_attributes where component = 'content_edit';
+ code | name |  component   | attribute | value 
+------+------+--------------+-----------+-------
+   30 | uri  | content_edit | width     | 200
+   31 | body | content_edit | height    | 400
+
 Plugins
 *******
 
