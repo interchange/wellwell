@@ -4,7 +4,7 @@ UserTag content HasEndTag
 UserTag content Routine <<EOR
 sub {
 	my ($function, $code, $opt, $body) = @_;
-	my ($ctref, $out, %content);
+	my ($ctref, $out, %content, $istemplate);
 
 	$Tag->perl({tables => 'content'});
 
@@ -62,8 +62,24 @@ sub {
 		}
 	}
 
+	# Determine whether content is a template or just text
+	if (ref($opt->{params}) eq 'HASH') {
+		$istemplate = 1;
+	}
+
 	if ($body) {
+		if ($istemplate) {
+			for (keys %{$opt->{params}}) {
+				$content{$_} = $opt->{params}->{$_};
+			}
+		}
+
 		return $Tag->uc_attr_list({hash => \%content, body => $body});
+	}
+
+	if ($istemplate) {
+		$content{body} = $Tag->uc_attr_list({hash => $opt->{params},
+			body => $content{body}});
 	}
 
 	return $content{edit_link} . $content{title} . $content{body};
