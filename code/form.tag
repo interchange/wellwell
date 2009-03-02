@@ -211,7 +211,7 @@ sub {
 		# read components
 		my (%fhash, $set, $content);
 
-		$set = $Db{form_components}->query(q{select component,location from form_components where name = '%s' and part = '%s' order by priority desc}, $opt->{series}, $opt->{part});
+		$set = $Db{form_components}->query(q{select component,location from form_components where name = '%s' and (part = '%s' or part = '') order by priority desc}, $opt->{series}, $opt->{part});
 
 		for (@$set) {
 			$content = $Tag->include("$Variable->{MV_COMPONENT_DIR}/$_->[0]");
