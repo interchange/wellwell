@@ -57,6 +57,7 @@ sub {
 
 				if ($_->{profile} && ! $back) {
 					unless ($Tag->run_profile({name => $_->{profile}, cgi => 1})) {
+						Log("Errors: " . uneval($Session->{errors}));
 						$Session->{form_series}->{$name} -= 1;
 						$Tag->tmp('series_part', $_->{part});
 						return $Tag->form({series => $name, 
@@ -125,17 +126,7 @@ sub {
 		return;
 	}
 
-		push(@out_title, '<fieldset>');
-
-		# label for form elements
-		if ($opt->{label}) {
-			if ($opt->{anchor}) {
-				push(@out_title, qq{<legend><a name="$opt->{anchor}">$opt->{label}</a></legend>});
-			}
-			else {
-				push(@out_title, qq{<legend>$opt->{label}</legend>});
-			}
-		}
+		push(@out_title, theme('form_title', $name, $opt->{label}, $opt));
 
 		if ($opt->{prepend}) {
 			push(@out_title, $opt->{prepend});

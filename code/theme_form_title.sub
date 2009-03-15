@@ -1,0 +1,17 @@
+Sub theme_form_title <<EOS
+sub {
+	my ($form, $label, $attributes) = @_;
+	my $title;
+
+	if ($label) {
+		if ($attributes->{anchor}) {
+			$title = qq{<a name="$attributes->{anchor}">$label</a>};
+			}
+		else {
+			$title = $label;
+		}
+	}
+
+	return $title;
+}
+EOS
