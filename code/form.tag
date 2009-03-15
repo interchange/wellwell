@@ -57,7 +57,6 @@ sub {
 
 				if ($_->{profile} && ! $back) {
 					unless ($Tag->run_profile({name => $_->{profile}, cgi => 1})) {
-						Log("Errors: " . uneval($Session->{errors}));
 						$Session->{form_series}->{$name} -= 1;
 						$Tag->tmp('series_part', $_->{part});
 						return $Tag->form({series => $name, 
