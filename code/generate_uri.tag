@@ -45,6 +45,10 @@ Name of the field having the parent key. If it is not defined, generate_uri won'
 
 Name of the field where the URI will be stored to
 
+=item filter
+
+Filter name which is called to turn names into URIs. Overrides nonword_fill.
+
 =item nonword_fill
 
 What should be used to fill nonword characters in URI (whitespaces,...). Defaults to underscore.
@@ -139,9 +143,12 @@ sub {
 			my $row = $$rows[0];
 		
 			my $name = $row->{$display_field};
-			$name =~ s/\W+/$nonword_fill/g;
-			$name =~ tr/[A-Z]/[a-z]/;
-	
+			if ($opt->{filter}) {
+				$name = $Tag->filter($opt->{filter}, $name);
+			} else {
+				$name =~ s/\W+/$nonword_fill/g;
+				$name =~ tr/[A-Z]/[a-z]/;
+			}
 			unshift(@parents, $name);
 	
 			$sub->($level+1, $row->{$parent});
