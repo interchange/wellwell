@@ -125,7 +125,7 @@ sub {
 		return;
 	}
 
-		push(@out_title, theme('form_title', $name, $opt->{label}, $opt));
+		push(@out_title, theme('form_title', $opt->{part}, $opt->{label}, $opt));
 
 		if ($opt->{prepend}) {
 			push(@out_title, $opt->{prepend});
