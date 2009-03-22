@@ -22,7 +22,24 @@ sub {
 			$Session->{form_series} = {};
 		}
 
-		if ($CGI->{series} eq $name) {
+		if ($CGI->{form_series_jump}) {
+			my @line = grep {$_->{part} eq $CGI->{form_series_jump}} @$set;
+
+			if (@line) {
+				if ($line[0]->{position} < $Session->{form_series}->{$name}) {
+					# backward jumps are fine
+					$back = $Session->{form_series}->{$name} - $line[0]->{position};
+				}
+				else {
+					# ignore invalid jump
+					Log ("Invalid jump to $CGI->{form_series}->{$name} detected.");
+				}
+			}
+			else {
+				# ignore invalid jump
+				Log ("Invalid jump to $CGI->{form_series}->{$name} detected.");
+			}
+		} elsif ($CGI->{series} eq $name) {
 			if ($Session->{form_series}->{$name} <= $pos_max) {
 				$Session->{form_series}->{$name} += 1;
 			}
@@ -76,20 +93,14 @@ sub {
 
 					if ($hookret->{page}) {
 						$CGI->{mv_nextpage} = $hookret->{page};
+						if ($hookret->{jump}) {
+							$CGI->{form_series_jump} = $hookret->{jump};
+						}
 						return;
 					}
 				}
 				else {
 					Log("Hook $hook not found.");
-				}
-
-				# this is legacy code, will be removed in favor of hooks
-				if ($_->{save}) {
-					my (@save, $tag, $ret);
-
-					@save = split(/,/, $_->{save});
-					$tag = shift(@save);
-					$ret = $Tag->$tag(@save);
 				}
 			} 
 			elsif ($_->{position} == $pos) {
@@ -106,14 +117,6 @@ sub {
 					Log("Hook $hook not found.");
 				}
 
-				# this is legacy code, will be removed in favor of hooks
-				if ($_->{load}) {
-					my (@load, $tag, $ret);
-
-					@load = split(/,/, $_->{load});
-					$tag = shift(@load);
-					$ret = $Tag->$tag(@load);
-				}
 				$Tag->tmp('series_part', $_->{part});
 				return $Tag->form({series => $name, label => $_->{label},
 					part => $_->{part},
