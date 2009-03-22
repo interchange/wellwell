@@ -6,8 +6,6 @@ CREATE TABLE "form_series" (
   template varchar(255) NOT NULL DEFAULT '',
   profile varchar(255) NOT NULL DEFAULT '',
   position integer NOT NULL DEFAULT 0,
-  load varchar(255) NOT NULL DEFAULT '',
-  save varchar(255) NOT NULL DEFAULT '',
   apply varchar(255) NOT NULL DEFAULT ''
 );
 CREATE INDEX form_series_name ON form_series(name);
