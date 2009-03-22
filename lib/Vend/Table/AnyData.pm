@@ -37,6 +37,10 @@ sub anydata {
 		die ::errmsg("Access to file '%s' not allowed.", $name);
 	}
 
+	unless (-f $name) {
+		die ::errmsg("File '%s' not found.", $name);
+	}
+	
 	# check whether table name is in use
 	if (database_exists_ref($table)) {
 		die ::errmsg("Database name '%s' already in use.", $table);
