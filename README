@@ -50,6 +50,19 @@ MV_ATTRIBUTE_AUTO
 Forms
 *****
 
+Parts
+-----
+
+Each form consists of one or subforms, called parts. The parts are stored
+in the "form_series" table:
+
+name     Form name
+part     Part name
+label    Label displayed on top of the form (optional)
+template Template (optional)
+profile  Profile to check input in this part (optional)
+position Position of part (1,2,3,...)
+
 Template
 --------
 

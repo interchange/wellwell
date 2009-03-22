@@ -28,7 +28,7 @@ sub {
 			if (@line) {
 				if ($line[0]->{position} < $Session->{form_series}->{$name}) {
 					# backward jumps are fine
-					$back = $Session->{form_series}->{$name} - $line[0]->{position};
+					$back = $Session->{form_series}->{$name} - $line[0]->{position} - 1;
 				}
 				else {
 					# ignore invalid jump
@@ -39,6 +39,9 @@ sub {
 				# ignore invalid jump
 				Log ("Invalid jump to $CGI->{form_series}->{$name} detected.");
 			}
+
+			# clear jump target
+			delete $CGI->{form_series_jump};
 		} elsif ($CGI->{series} eq $name) {
 			if ($Session->{form_series}->{$name} <= $pos_max) {
 				$Session->{form_series}->{$name} += 1;
@@ -55,9 +58,10 @@ sub {
 			$back = 1;
 		}
 
-		if ($back) {
-			if ($Session->{form_series}->{$name} > 2) {
-				$Session->{form_series}->{$name} -= 2;
+		if (defined $back) {
+			if ($Session->{form_series}->{$name} > $back + 1) {
+				$Session->{form_series}->{$name} -= $back + 1;
+				$back = 1;
 			} else {
 				$back = 0;
 			}
