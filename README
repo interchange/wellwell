@@ -41,6 +41,16 @@ By default, Wellwell comes with two user roles:
     * Anonymous user: this role is used for users that don't have a user account or that are not authenticated.
     * Authenticated user: this role is automatically granted to all logged in users.
 
+The anonymous user has always the rid of 1 and the authenticated user has
+always the rid of 2.
+
+This matches the following records in the permissions table:
+
+ rid | uid |     perm      
+-----+-----+---------------
+   1 |   0 | anonymous
+   2 |   0 | authenticated
+
 Automatic components/attributes
 *******************************
 
