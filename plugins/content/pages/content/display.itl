@@ -1,4 +1,3 @@
-CODE: [cgi code]
 [compose
 	components.body="content_display"
 	attributes.content_display.code="[cgi code]"
