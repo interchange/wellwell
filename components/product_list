@@ -22,7 +22,7 @@
 [/image-list]
 </p>
 
-<h3>[product-field manufacturer] [product-field name]</h3>
+<h3><a href="[product-code]">[product-field manufacturer] [product-field name]</a></h3>
 <p class="description">
 [product-field description]
 </p>
