@@ -1,0 +1,7 @@
+Sub theme_form_submit <<EOS
+sub {
+	my ($series, $part) = @_;
+
+	return q{<input type="submit" name="submit" value="OK">};
+}
+EOS
