@@ -4,8 +4,10 @@
 [/comment]
 [anydata table="standard_products" format="TAB" name="database/standard/products.txt" hide=1]
 [query table="standard_products" sql="select * from standard_products" hashref="products"/]
-[perl tables="products categories product_categories" short_errors="1"]
-my ($sku, %count, $group, %prod_groups, $cat, %categories, $code);
+[anydata table="standard_users" format="TAB" name="database/standard/userdb.txt" hide=1]
+[query table="standard_users" sql="select * from standard_users" hashref="users"/]
+[perl tables="products categories product_categories users" short_errors="1"]
+my (@out, $sku, %count, $group, %prod_groups, $cat, %categories, $code);
 
 for my $productref (@{$Tmp->{products}}) {
 	$sku = delete $productref->{sku};
@@ -13,6 +15,7 @@ for my $productref (@{$Tmp->{products}}) {
 	$Db{products}->set_slice($sku,
 							 name => $productref->{title},
 							 description => $productref->{description},
+							 long_description => $productref->{comment},
 							 price => $productref->{price},
 							 inactive => $productref->{inactive});
 	$count{products}++;
@@ -43,5 +46,19 @@ for my $productref (@{$Tmp->{products}}) {
 	}
 }
 
-return "$count{products} products migrated.";
+push (@out, "$count{products} products migrated.");
+my ($userref);
+
+for my $userref (@{$Tmp->{users}}) {
+	my $uid;
+	
+	$uid = $Db{users}->set_slice(undef, {username => $userref->{username},
+								  password => $userref->{password},
+								  email => $userref->{email}});
+
+	$count{users}++;
+}
+
+push (@out, "$count{users} users migrated.");
+return join("\n", @out);
 [/perl]
