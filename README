@@ -105,6 +105,23 @@ wellwell=> select * from form_attributes where component = 'content_edit';
    30 | uri  | content_edit | width     | 200
    31 | body | content_edit | height    | 400
 
+Theming
+-------
+
+Most aspects of a form can be 'themed': 
+
+* title
+* elements (complete, label and field)
+* submit button
+
+Currently, you can modify one of the existing theme functions:
+
+theme_form_title
+theme_form_element
+theme_form_element_label
+theme_form_element_field
+theme_form_submit
+
 Plugins
 *******
 

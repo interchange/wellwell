@@ -247,7 +247,7 @@ EOT
 
 		$fhash{body} .= join("\n", @out);
 
-		$fhash{submit} = q{<input type="submit" name="submit" value="OK">};
+		$fhash{submit} = theme('form_submit', $opt->{series}, $form_name);
 		$fhash{bottom} = q{</form>};
 
 		$fhash{required} = $required_fields;
