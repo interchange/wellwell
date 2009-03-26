@@ -1,6 +1,7 @@
 UserTag content Order function code
 UserTag content AddAttr
 UserTag content HasEndTag
+UserTag content NoReparse
 UserTag content Routine <<EOR
 sub {
 	my ($function, $code, $opt, $body) = @_;
