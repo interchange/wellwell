@@ -22,7 +22,7 @@ sub {
 			$ctref = $ctset->[0];
 		}
 	} 
-	else {
+	elsif ($code) {
 		$ctref = $Db{content}->row_hash($code);
 	}
 
