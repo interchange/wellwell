@@ -4,7 +4,7 @@ sub {
 	my ($name, @args) = split(/\//, $page);
 
 	unless ($Session->{logged_in}) {
-		$Tag->warnings('Please login first.');
+		$Tag->warnings(errmsg('Please login before adding a product to the wishlist.'));
 		$CGI->{mv_nextpage} = 'login';
 		$Scratch->{login_target} = '';
 		$Scratch->{login_bounce} = $page;
@@ -32,7 +32,23 @@ sub {
 	}
 
 	# show wishlist for the current user
-	$CGI->{mv_nextpage} = 'wishlists/list';
+	if ($args[0] eq 'carts') {
+		$CGI->{mv_nextpage} = 'wishlists/carts';
+	}
+	else {
+		if ($args[1]) {
+			# select wishlist by code or name
+			if ($args[1] =~ /^(\d+)$/) {
+				$Tag->attribute('set', 'wishlist.code', $args[1]);
+			}
+			else {
+				$Tag->attribute('set', 'wishlist.name', $args[1]);
+			}
+		}
+
+		$CGI->{mv_nextpage} = 'wishlists/list';
+	}
+
 	return 1;	
 }
 EOS
