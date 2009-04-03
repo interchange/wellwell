@@ -1,0 +1,13 @@
+[seti carts][wishlist carts][/seti]
+[loop list=`$Scratch->{carts}` prefix=item]
+[on-match]
+<table class="titles">
+<tr><th>Name</th></tr>
+[/on-match]
+[list]
+<tr><td><a href="[area wishlists/list/[item-code]]">[item-data carts name]</a></td></tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
+[/loop]
