@@ -4,6 +4,7 @@ UserTag wishlist HasEndTag
 UserTag wishlist Routine <<EOR
 sub {
 	my ($function, $sku, $name, $opt, $body) = @_;
+	my ($wishlist_code, $set);
 
 	$function ||= 'list';
 	$name ||= $Variable->{WISHLISTS_DEFAULT_NAME};
@@ -14,13 +15,26 @@ sub {
 
 	$Tag->perl({tables => 'products carts cart_products'});
 
-	# check whether wishlist exists
-	my ($qname, $set, $wishlist_code);
+	if ($function eq 'carts') {
+		my @carts;
 
-	$qname = $Db{carts}->quote($name);
-	$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and name = $qname}); 
-	if (@$set) {
-		$wishlist_code = $set->[0]->[0];
+		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username}}); 
+		@carts = map {$_->[0]} @$set;
+
+		return wantarray ? @carts : join(',', @carts);
+	}
+
+	if ($opt->{code}) {
+		$wishlist_code = $opt->{code};
+	} elsif ($name) {
+		# lookup wishlist
+		my $qname;
+
+		$qname = $Db{carts}->quote($name);
+		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and name = $qname}); 
+		if (@$set) {
+			$wishlist_code = $set->[0]->[0];
+		}
 	}
 
 	if ($function eq 'create') {
