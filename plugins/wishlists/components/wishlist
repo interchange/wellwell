@@ -1,3 +1,12 @@
-[wishlist function="list"]
-[item-code]<br>
+[wishlist function="list" code="__CODE__" name="__NAME__"]
+[on-match]
+<table>
+<tr><th>SKU</th><th>Name</th></tr>
+[/on-match]
+[list]
+<tr><td>[item-code]</td><td><a href="[area [item-code]]">[item-data products name]</a></td></tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
 [/wishlist]
