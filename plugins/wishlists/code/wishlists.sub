@@ -28,7 +28,7 @@ sub {
 
 	# whether to delete stuff from wishlist
 	if ($CGI->{remove}) {
-		$Tag->wishlist('remove', $CGI->{remove});
+		$Tag->wishlist('remove', $CGI->{remove}, $CGI->{cart});
 	}
 
 	# show wishlist for the current user
