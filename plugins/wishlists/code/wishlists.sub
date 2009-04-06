@@ -39,10 +39,10 @@ sub {
 		if ($args[1]) {
 			# select wishlist by code or name
 			if ($args[1] =~ /^(\d+)$/) {
-				$Tag->attribute('set', 'wishlist.code', $args[1]);
+				$Tag->attribute('set', 'wishlist', 'code', $args[1]);
 			}
 			else {
-				$Tag->attribute('set', 'wishlist.name', $args[1]);
+				$Tag->attribute('set', 'wishlist', 'name', $args[1]);
 			}
 		}
 
