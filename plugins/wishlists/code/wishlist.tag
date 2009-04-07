@@ -18,7 +18,7 @@ sub {
 	if ($function eq 'carts') {
 		my @carts;
 
-		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username}}); 
+		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} order by name}); 
 		@carts = map {$_->[0]} @$set;
 
 		return wantarray ? @carts : join(',', @carts);
