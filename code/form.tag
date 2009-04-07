@@ -108,6 +108,9 @@ sub {
 				}
 			} 
 			elsif ($_->{position} == $pos) {
+				# clear form attributes
+				delete $Scratch->{form_attributes}->{$opt->{series}};
+
 				# check for appropriate hook for loading
 				my ($hook, $hooksub, $hookret);
 
@@ -117,9 +120,14 @@ sub {
 				if ($hooksub) {
 					$hookret = $hooksub->($_->{part});
 
-					if ($hookret && $hookret->{page}) {
-						$Tag->tmp('form_series_bounce', $hookret->{page});
-						return;
+					if ($hookret) {
+						if ($hookret->{page}) {
+							$Tag->tmp('form_series_bounce', $hookret->{page});
+							return;
+						}
+						if ($hookret->{attributes}) {
+							$Scratch->{form_attributes}->{$opt->{series}} = $hookret->{attributes};
+						}
 					}
 				}
 				else {
@@ -144,16 +152,23 @@ sub {
 		}
 	
 		# form elements
-		my ($elset, $attrset, $qcomp);
+		my ($elset, $attrref, $attrset, $qcomp);
 
 		$qcomp = $Db{form_elements}->quote($opt->{part});
 
 		$elset = $Db{form_elements}->query({sql => qq{select name,label,widget from form_elements where component = $qcomp order by priority desc, code asc}, hashref => 1});
 
+		# form attributes from load hook
+		$attrref = $Scratch->{form_attributes}->{$opt->{series}} || {};
+
 		for my $elref (@$elset) {
 			# fetch attributes for form element
 			my (%attributes, $required);
 		
+			if (exists $attrref->{$elref->{name}}) {
+				%attributes = %{$attrref->{$elref->{name}}};
+			}
+
 			$attrset = $Db{form_attributes}->query(q{select attribute,value from form_attributes where name = '%s' and (component = '' or component = '%s') order by component asc}, $elref->{name}, $opt->{part});
 			for (@$attrset) {
 				$attributes{$_->[0]} = $_->[1];

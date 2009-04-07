@@ -190,8 +190,10 @@ called if the profile check for the form part has been failed.
 The return value of the load hook is either a false value or
 a hash reference which can contain the following members:
 
-page	triggers a bounce to that page instead of displaying
-        the form
+page       triggers a bounce to that page instead of displaying
+           the form
+
+attributes hash reference providing defaults for form attributes
 
 Save
 ....
