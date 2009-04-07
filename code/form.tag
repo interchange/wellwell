@@ -126,7 +126,7 @@ sub {
 							return;
 						}
 						if ($hookret->{attributes}) {
-							$Scratch->{form_attributes}->{$opt->{series}} = $hookret->{attributes};
+							$Scratch->{form_attributes}->{$name} = $hookret->{attributes};
 						}
 					}
 				}
