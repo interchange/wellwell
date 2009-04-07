@@ -119,6 +119,13 @@ MV_ATTRIBUTE_AUTO
 Forms
 *****
 
+The recommended way to call [form] forms is within the compose tag:
+
+[compose
+	components.body="product_info wishlist_add"
+	forms.wishlist_add.name="wishlist_add"
+/]
+
 Parts
 -----
 
