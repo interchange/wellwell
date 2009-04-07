@@ -96,6 +96,20 @@ empty.
 Please note that [acl check] without a permission is always
 successful.
 
+Acl parameter in [compose]
+..........................
+
+Permissions can be checked for a complete page like that:
+
+[compose
+	acl.check="view_titles"
+	acl.bounce="index"
+    components.body="title_info"
+] 
+
+Please note that submitted [form] forms bypass this permission
+check because they are evaluated during autoload.
+
 Automatic components/attributes
 *******************************
 

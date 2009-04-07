@@ -16,7 +16,20 @@ sub dots2hash {
 
 sub {
 	my ($template, $opt, $body) = @_;
-	my (%forms, $template_file);
+	my (%acl, %forms, $template_file);
+
+	if ($opt->{acl})  {
+		# check permissions first
+		for my $k (keys %{$opt->{acl}}) {
+			dots2hash(\%acl, $opt->{acl}->{$k}, split /\./, $k);
+		}
+
+		unless ($Tag->acl('check', $acl{check})) {
+			$Tag->deliver({location => $Tag->area($acl{bounce}),
+				status => '302 move temporarily'});
+			return;							
+		}
+	}
 
 	if ($opt->{forms}) {
 		# process forms first
