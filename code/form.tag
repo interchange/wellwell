@@ -116,6 +116,11 @@ sub {
 
 				if ($hooksub) {
 					$hookret = $hooksub->($_->{part});
+
+					if ($hookret && $hookret->{page}) {
+						$Tag->tmp('form_series_bounce', $hookret->{page});
+						return;
+					}
 				}
 				else {
 					Log("Hook $hook not found.");

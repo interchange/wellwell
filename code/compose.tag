@@ -46,6 +46,12 @@ sub {
 					template => $forms{$k}->{template}});
 			}
 		}
+
+		# form bounce to another page
+		if ($Scratch->{form_series_bounce}) {
+			$Tag->deliver({location => $Tag->area($Scratch->{form_series_bounce}), status => '302 move temporarily'});
+			return;
+		}
 	}
 
 	$opt->{body} ||= $body;

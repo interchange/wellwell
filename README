@@ -181,8 +181,20 @@ form_NAME_save (e.g. form_checkout_save)
 
 The first parameter for the hook sub is the part name.
 
+Load
+....
+
 The load hook is called for the setup of a form part. It is not
 called if the profile check for the form part has been failed.
+
+The return value of the load hook is either a false value or
+a hash reference which can contain the following members:
+
+page	triggers a bounce to that page instead of displaying
+        the form
+
+Save
+....
 
 The save hook is called if the form part has been successfully
 submitted (e.g. profile check successful).
