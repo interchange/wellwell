@@ -26,6 +26,13 @@ sub {
 		}
 	}
 
+	# whether to copy stuff from wishlist to cart
+	if ($CGI->{addtocart}) {
+		for (@{$CGI_array->{sku}}) {
+			$Tag->addtocart($_, 1);
+		}
+	}
+
 	# whether to delete stuff from wishlist
 	if ($CGI->{remove}) {
 		$Tag->wishlist('remove', $CGI->{remove}, $CGI->{cart});
