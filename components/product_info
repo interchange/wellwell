@@ -19,7 +19,7 @@
 
 <ul>
 <li><strong>[item-price]</strong></li>
-<li>Qty: |INPUT|  |Add to cart button|
+<li>[product_order [item-code] 1]
 </li>
 </ul>
 
