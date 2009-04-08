@@ -64,7 +64,7 @@ sub {
 
 		# add product to wishlist
 		$Db{cart_products}->set_slice([$wishlist_code, $sku], {position => 0});
-		return;
+		return 1;
 	}
 
 	unless ($wishlist_code) {
@@ -78,7 +78,7 @@ sub {
 	}
 	elsif ($function eq 'list') {
 		# list products from wishlist
-		my $sql = qq{select sku from cart_products where cart = $wishlist_code order by position};
+		my $sql = qq{select sku,quantity from cart_products where cart = $wishlist_code order by position};
 
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
