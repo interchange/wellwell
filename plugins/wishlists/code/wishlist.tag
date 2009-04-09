@@ -1,13 +1,14 @@
-UserTag wishlist Order function sku name
+UserTag wishlist Order function sku name type
 UserTag wishlist AddAttr
 UserTag wishlist HasEndTag
 UserTag wishlist Routine <<EOR
 sub {
-	my ($function, $sku, $name, $opt, $body) = @_;
+	my ($function, $sku, $name, $type, $opt, $body) = @_;
 	my ($wishlist_code, $set);
 
 	$function ||= 'list';
 	$name ||= $Variable->{WISHLISTS_DEFAULT_NAME};
+	$type ||= $Variable->{WISHLISTS_DEFAULT_TYPE};
 
 	unless ($Session->{logged_in}) {
 		return;
@@ -18,7 +19,7 @@ sub {
 	if ($function eq 'carts') {
 		my @carts;
 
-		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} order by name}); 
+		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
 		@carts = map {$_->[0]} @$set;
 
 		return wantarray ? @carts : join(',', @carts);
@@ -60,8 +61,9 @@ sub {
 		unless ($wishlist_code) {
 			$wishlist_code = $Db{carts}->autosequence();
 			$Db{carts}->set_slice($wishlist_code, uid => $Session->{username},
-								created => $Tag->time({format => '%s'}),
-								name => $name);
+								  created => $Tag->time({format => '%s'}),
+								  type => $type,
+								  name => $name);
 		}
 
 		# check whether product is within wishlist
