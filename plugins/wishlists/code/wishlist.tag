@@ -37,6 +37,14 @@ sub {
 		}
 	}
 
+	# determine fields to use for wishlists
+	my $i = 0;
+	my %product_fields;
+
+	for my $f (split(/\s*,\s*/, $Variable->{WISHLISTS_PRODUCTS_FIELDS})) {
+		$product_fields{$f} = $i++;
+	}	
+
 	if ($function eq 'create') {
 		my $pref;
 
@@ -63,7 +71,15 @@ sub {
 		}
 
 		# add product to wishlist
-		$Db{cart_products}->set_slice([$wishlist_code, $sku], {position => 0});
+		my %data = (position => 0);
+
+		for (keys %product_fields) {
+			if (exists $opt->{$_} && $opt->{$_} =~ /\S/) {
+				$data{$_} = $opt->{$_};
+			}
+		}
+
+		$Db{cart_products}->set_slice([$wishlist_code, $sku], \%data);
 		return 1;
 	}
 
@@ -78,7 +94,13 @@ sub {
 	}
 	elsif ($function eq 'list') {
 		# list products from wishlist
-		my $sql = qq{select sku,quantity from cart_products where cart = $wishlist_code order by position};
+		my $fields = '';
+
+		if (keys %product_fields) {
+			$fields = join(',', '', keys %product_fields);			
+		}
+
+		my $sql = qq{select sku$fields from cart_products where cart = $wishlist_code order by position};
 
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
