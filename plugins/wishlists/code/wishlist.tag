@@ -60,7 +60,7 @@ sub {
 		unless ($wishlist_code) {
 			$wishlist_code = $Db{carts}->autosequence();
 			$Db{carts}->set_slice($wishlist_code, uid => $Session->{username},
-								created => time(),
+								created => $Tag->time({format => '%s'}),
 								name => $name);
 		}
 
@@ -80,6 +80,10 @@ sub {
 		}
 
 		$Db{cart_products}->set_slice([$wishlist_code, $sku], \%data);
+
+		# update timestamp on cart
+		$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));
+
 		return 1;
 	}
 
