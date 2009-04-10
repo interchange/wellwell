@@ -55,7 +55,10 @@ sub {
 
 	# whether to delete stuff from wishlist
 	if ($CGI->{remove}) {
-		$Tag->wishlist('remove', $CGI->{remove}, $CGI->{cart});
+		$Tag->wishlist({function => 'remove',
+						sku => $CGI->{remove},
+						name => $wishlist_name,
+						code => $wishlist_code});
 	}
 
 	# whether to update wishlist
