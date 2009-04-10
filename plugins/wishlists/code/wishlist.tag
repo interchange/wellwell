@@ -93,7 +93,19 @@ sub {
 		$Tag->error({name => 'wishlist', set => 'Wishlist is missing.'});
 		return;
 	}
+	
+	if ($function eq 'update') {
+		# update product in wishlist
+		my %data;
 
+		for (keys %product_fields) {
+			if (exists $opt->{$_} && $opt->{$_} =~ /\S/) {
+				$data{$_} = $opt->{$_};
+			}
+		}
+
+		$Db{cart_products}->set_slice([$wishlist_code, $sku], %data);
+	}
 	elsif ($function eq 'remove') {
 		# remove product from wishlist
 		$Db{cart_products}->delete_record([$wishlist_code, $sku]);

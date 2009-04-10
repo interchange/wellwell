@@ -58,6 +58,22 @@ sub {
 		$Tag->wishlist('remove', $CGI->{remove}, $CGI->{cart});
 	}
 
+	# whether to update wishlist
+	if ($CGI->{update}) {
+		for (my $i = 0; $i < @{$CGI_array->{sku}}; $i++) {
+			my %data = (function => 'update',
+						sku => $CGI_array->{sku}->[$i],
+						name => $wishlist_name,
+						code => $wishlist_code);
+
+			for my $f (split(/\s*,\s*/, $Variable->{WISHLISTS_PRODUCTS_FIELDS})) {
+				$data{$f} = $CGI_array->{$f}->[$i];
+			}
+
+			$Tag->wishlist(\%data);
+		}
+	}
+
 	# show wishlist for the current user
 	if ($args[0] eq 'carts') {
 		$CGI->{mv_nextpage} = 'wishlists/carts';
