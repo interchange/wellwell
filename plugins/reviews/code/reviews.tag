@@ -12,7 +12,13 @@ sub {
 	if ($function eq 'create') {
 		my $perm;
 
-		$review{uid} = $Scratch->{uid} || 0;
+		if ($Session->{username} =~ /^(\d+)$/) {
+			$review{uid} = $Session->{username};
+		}
+		else {
+			$review{uid} = 0;
+		}
+
 		$review{created} = $Tag->time({body => '%Y-%m-%d %H:%M:%S'});
 
 		for (qw/sku rating review/) {
