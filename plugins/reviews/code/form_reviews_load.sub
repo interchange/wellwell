@@ -1,5 +1,7 @@
 Sub form_reviews_load <<EOS
 sub {
 	$Tag->reviews('init');
+
+	return;
 }
 EOS
