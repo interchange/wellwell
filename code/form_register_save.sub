@@ -1,0 +1,8 @@
+Sub form_register_save <<EOS
+sub {
+	if ($Tag->register()) {
+		return {page => 'index'};
+	}
+}
+EOS
+

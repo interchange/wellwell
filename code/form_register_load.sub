@@ -1,0 +1,7 @@
+Sub form_register_load <<EOS
+sub {
+	$Values->{password} = $Values->{password_verify} = '';
+	
+	return;
+}
+EOS

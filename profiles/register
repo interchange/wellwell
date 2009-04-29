@@ -1,8 +1,8 @@
 __NAME__ register
-[if cgi mv_username]
-mv_username=unique users:username [L]Username already reserved.[/L]
+[if cgi username]
+username=unique users:username [L]Username already reserved.[/L]
 [else]
-mv_username=required [L]Please enter username.[/L]
+username=required [L]Please enter username.[/L]
 [/else]
 [/if]
 [if cgi email]
@@ -13,6 +13,6 @@ email=unique users:email [L]Email address already reserved.[/L]
 email=required [L]Please enter email address.[/L]
 [/else]
 [/if]
-mv_password=length [either][userdb function=option name=passminlen][or]4[/either] 
-mv_verify=match mv_password The specified passwords do not match.
+password=length [either][userdb function=option name=passminlen][or]4[/either] 
+password_verify=match password The specified passwords do not match.
 __END__

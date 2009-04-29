@@ -1,3 +1,4 @@
 [compose
-	components.body="create_account"
+	components.body="register"
+	forms.register.name="register"
 /]

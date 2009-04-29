@@ -37,11 +37,7 @@
 </p>
 
 <p>
-[action 
-	targets="create_account"
-	text="Create new account!"
-	type=link
-]
+<a href="[area register]">[L]Create new account![/L]</a>
 </p>
 <p>
 [action 
