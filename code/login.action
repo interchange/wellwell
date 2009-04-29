@@ -22,7 +22,8 @@ sub {
 						 indirect_login => 'email'});
 		} else {
 			# login with username
-			$ret = $Tag->userdb({function => 'login'});
+			$ret = $Tag->userdb({function => 'login',
+						 indirect_login => 'username'});
 		}
 
 		if ($ret) {
