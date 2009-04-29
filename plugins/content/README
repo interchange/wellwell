@@ -4,3 +4,6 @@ create_content
 edit_content
 edit_own_content
 
+FCK editor:
+
+Ensure that the FCK editor is available at /fckeditor/.
