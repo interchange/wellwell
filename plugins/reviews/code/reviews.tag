@@ -94,6 +94,18 @@ sub {
 	}
 	elsif ($function eq 'list') {
 		my $sql = qq{select title,name,review,rating,created,uid from reviews where sku = '$sku' and public is TRUE};
+
+		# sorting reviews
+		if ($opt->{sort} eq 'rating') {
+			$sql .= ' order by rating desc';
+		}
+		elsif ($opt->{sort} eq 'created') {
+			$sql .= ' order by created desc';
+		}
+		elsif ($opt->{sort} eq 'name') {
+			$sql .= ' order by name asc'; 
+		}
+
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 			body => $body});
 	}
