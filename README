@@ -110,6 +110,12 @@ Permissions can be checked for a complete page like that:
 Please note that submitted [form] forms bypass this permission
 check because they are evaluated during autoload.
 
+Menus
+.....
+
+Only menu entries with sufficient permission will be displayed
+(permission field in menus table).
+
 Automatic components/attributes
 *******************************
 
