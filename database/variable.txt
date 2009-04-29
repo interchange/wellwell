@@ -1,7 +1,7 @@
 code	Variable	comment
 MV_TEMPLATE_DIR	templates	Directory with templates
 MV_COMPONENT_DIR	components	Directory with components
-MODULES	content	List of modules used in this catalog
+PLUGINS		List of plugins used in this catalog
 STATIC_URL	/static	URL of the static content directory
 STATIC_DIR	static	Path to the static content directory (relative to catalog directory)
 IMAGE_URL	/images	URL of image directory
