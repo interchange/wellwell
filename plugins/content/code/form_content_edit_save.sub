@@ -23,7 +23,7 @@ sub {
 
 		@edit_perms = 'edit_content';
 
-		if ($content->{uid} == $Session->{username}) {
+		if ($content{uid} == $Session->{username}) {
 			push (@edit_perms, 'create_own_content');
 		}
 
