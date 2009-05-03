@@ -1,4 +1,6 @@
+[acl check create_content]
 <a href="[area content/edit]">[L]Add new content[/L]</a>
+[/acl]
 [query sql="select * from content" list=1]
 [on-match]
 <table>
