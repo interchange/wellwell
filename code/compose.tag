@@ -37,12 +37,16 @@ sub {
 			dots2hash(\%forms, $opt->{forms}->{$k}, split /\./, $k);
 		}
 
+		my $name;
+
 		for my $k (keys %forms) {
-			if ($Scratch->{forms}->{$k}) {
+			$name = $forms{$k}->{name};
+
+			if ($Scratch->{forms}->{$name}) {
 				# form intercepted by autoload
-				$forms{$k}->{content} = $Scratch->{forms}->{$k};
+				$forms{$k}->{content} = $Scratch->{forms}->{$name};
 			} else {
-				$forms{$k}->{content} = $Tag->form({name => $k,
+				$forms{$k}->{content} = $Tag->form({name => $name,
 					template => $forms{$k}->{template}});
 			}
 		}
