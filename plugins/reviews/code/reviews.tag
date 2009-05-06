@@ -38,7 +38,9 @@ sub {
 		$code = $Db{reviews}->set_slice('', %review);
 
 		# calculate average rating
-		$ret = $Db{products}->query(q{update products set rating = (select sum(rating)/count(rating) from reviews where sku = '%s') where sku = '%s'}, $review{sku}, $review{sku});
+		if ($review{public}) {
+			$ret = $Db{products}->query(q{update products set rating = (select sum(rating)/count(rating) from reviews where sku = '%s' and public is TRUE) where sku = '%s'}, $review{sku}, $review{sku});
+		}
 
 		return $code;
 	}
