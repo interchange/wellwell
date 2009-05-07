@@ -11,4 +11,3 @@ CSS_DIR	static/css	Path to CSS directory (relative to catalog path)
 SERVER_NAME	unconfigured_server_name	Name of the server
 CGI_URL	unconfigured_cgi_url	URL to the CGI linker
 ORDERS_TO	unconfigured_orders_to	Email to send orders to
-SQLDSN	unconfigured_sqldsn	Database DSN
