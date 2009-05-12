@@ -155,7 +155,7 @@ sub {
 		}
 	
 		# form elements
-		my ($elset, $attrref, $attrset, $qcomp);
+		my ($elset, $attrref, $attrset, $qcomp, @buttons);
 
 		$qcomp = $Db{form_elements}->quote($opt->{part});
 
@@ -165,6 +165,12 @@ sub {
 		$attrref = $Scratch->{form_attributes}->{$opt->{series}} || {};
 
 		for my $elref (@$elset) {
+			if ($elref->{widget} eq 'button') {
+				# submit buttons are handled separately
+				push (@buttons, $elref);
+				next;
+			}
+
 			# fetch attributes for form element
 			my (%attributes, $required);
 		
@@ -270,7 +276,7 @@ EOT
 
 		$fhash{body} .= join("\n", @out);
 
-		$fhash{submit} = theme('form_submit', $opt->{series}, $form_name);
+		$fhash{submit} = theme('form_submit', $opt->{series}, $form_name, \@buttons);
 		$fhash{bottom} = q{</form>};
 
 		$fhash{required} = $required_fields;
