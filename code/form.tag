@@ -102,6 +102,9 @@ sub {
 						}
 						return;
 					}
+					elsif ($hookret->{jump}) {
+							$CGI->{form_series_jump} = $hookret->{jump};
+					}
 				}
 				else {
 					Log("Hook $hook not found.");
