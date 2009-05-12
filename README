@@ -135,8 +135,8 @@ The recommended way to call [form] forms is within the compose tag:
 Parts
 -----
 
-Each form consists of one or subforms, called parts. The parts are stored
-in the "form_series" table:
+Each form consists of one or multiple subforms, called parts. 
+The parts are stored in the "form_series" table:
 
 name     Form name
 part     Part name
@@ -154,6 +154,32 @@ templates/form
 
 Alternative templates can be specified in table form_series, field
 template.
+
+The default template looks as follows:
+
+{PREPEND}
+{TOP}
+{BODY}
+{SUBMIT}
+{BOTTOM}
+
+{TOP} starts the HTML form.
+{BODY} contains the regular form elements.
+{SUBMIT} contains the button form elements (as specified in form_elements
+table or default submit button)
+{BOTTOM} ends the HTML form.
+
+Elements
+--------
+
+The elements of a form (part) are stored in the "form_elements" table:
+
+code		Serial number
+name		Name of form element
+label		Label for form element
+component	Part name
+priority    Sort order in form (descending)
+widget      Widget
 
 Attributes
 ----------
