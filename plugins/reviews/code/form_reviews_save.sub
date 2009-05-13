@@ -2,7 +2,17 @@ Sub form_reviews_save <<EOS
 sub {
 	my ($code);
 
-	$Tag->reviews('create');
+	if ($CGI->{preview}) {
+		# jumping back to reviews form and show review
+		return {page => 'reviews/create', jump => 'reviews'};
+	}
+
+	$code = $Tag->reviews('create');
+
+	if ($Variable->{REVIEWS_SHOW_THANKS}) {
+		$Tag->tmp('reviews_code', $code);
+		return {page => 'reviews/thanks'};
+	}
 
 	return {page => $Values->{sku}};
 }

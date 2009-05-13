@@ -4,7 +4,7 @@ sub {
 
 	if ($args[0] eq 'create'
 		&& $CGI->{sku}) {
-		$Values->{sku} = $args[0];
+		$Values->{sku} = $CGI->{sku};
 		$CGI->{mv_nextpage} = 'reviews/create';
 	}
 	elsif ($args[1] eq 'create') {
@@ -12,7 +12,10 @@ sub {
 		$CGI->{mv_nextpage} = 'reviews/create';
 		return 1;
 	}
-	else {
+	elsif ($args[0] eq 'thanks' && $Scratch->{reviews_code}) {
+		$CGI->{mv_nextpage} = 'reviews/thanks';
+		return 1;
+	} else {
 		Log("No action found for $name and @args");
 		return;
 	}
