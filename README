@@ -163,6 +163,7 @@ The default template looks as follows:
 {SUBMIT}
 {BOTTOM}
 
+{PREPEND} is a placeholder which can be used for form components.
 {TOP} starts the HTML form.
 {BODY} contains the regular form elements.
 {SUBMIT} contains the button form elements (as specified in form_elements
@@ -249,6 +250,21 @@ theme_form_element
 theme_form_element_label
 theme_form_element_field
 theme_form_submit
+
+Components
+----------
+
+Regular components can also included in forms. Examples are 
+dynamic form parts and supplementary content.
+
+Form components are stored in the "form_components" table.
+
+name - form name
+part - form part (empty if component applies to all parts of the form)
+component - component name
+location - placeholder used to place the component, e.g prepend for
+	{PREPEND} placeholder 
+priority - sort order in placeholder (descending)
 
 Plugins
 *******
