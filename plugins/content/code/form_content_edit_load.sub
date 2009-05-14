@@ -17,5 +17,7 @@ sub {
 		$Values->{title} = $Values->{body} = '';
 		$Values->{uri} = $CGI->{uri};
 	}
+
+	return;
 }
 EOS
