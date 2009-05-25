@@ -27,7 +27,7 @@ sub {
 			push (@edit_perms, 'create_own_content');
 		}
 
-		unless ($Tag->acl('check', @edit_perms)) {
+		unless ($Tag->acl('check', \@edit_perms)) {
 			$Tag->error({name => 'content', 
 				set => 'No permission to edit content'});
 			return {page => 'content/recent'};
