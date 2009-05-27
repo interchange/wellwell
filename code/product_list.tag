@@ -66,6 +66,8 @@ sub {
 	my $ml = $opt->{ml} || $opt->{mv_matchlimit} || 0;
 	my $more = $opt->{more} || 1;
 	my $form = $opt->{form};
+	my $jump;
+
 	if ($category){
 		$category = " AND pc.category='$category' ";
 	}
@@ -75,12 +77,18 @@ sub {
 		SELECT p.sku,p.manufacturer,p.name,p.description,p.price
 		FROM products p LEFT OUTER JOIN product_categories pc
 		ON p.sku=pc.sku WHERE p.inactive IS NOT TRUE $category
+		ORDER by p.name
 		};
+
+	if ($CGI->{category_page} > 1) {
+		$jump = ($CGI->{category_page} - 1) * $ml + 1;
+	}
 
 	return $Tag->query({
 		prefix => $prefix,
 		more_routine => 'paging',
 		form => $form,
+		fm => $jump,
 		ml => $ml,
 		more => $more,
 		sql => $sql,

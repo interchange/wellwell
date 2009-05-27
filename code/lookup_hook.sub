@@ -16,22 +16,31 @@ sub {
 	}
 
 	# check if it matches category URI
-	my $set;
+	my (@parts, $set, $page, $lookup);
+
+	@parts = grep {/\S/} split(/\//, $name);
+	if ($parts[$#parts] =~ /^(\d+)$/) {
+		$page = pop(@parts);
+		$lookup = join('/', @parts);
+		push(@parts, $page);
+	}
+	else {
+		$lookup = $name;
+	}
 
 	$Tag->perl({tables => 'categories'});
 	
 	$set = $Db{categories}->query(q{select code from categories where uri = '%s'},
-								  $name);
+								  $lookup);
 
 	if (@$set == 1) {
 		$CGI->{category} = $set->[0]->[0];
+		$CGI->{category_page} = $page;
 		return(1, 'overview');
 	}
 	
 	# finally assume that link contains SKU at the end
 	my (@parts, $sku);
-
-	@parts = grep {/\S/} split(/\//, $name);
 
 	if (@parts > 1) {
 		$sku = pop(@parts);
