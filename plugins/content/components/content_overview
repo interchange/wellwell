@@ -1,0 +1,18 @@
+[acl check view_content]
+[query sql="select * from content order by created desc" list=1]
+[list]
+<div class="content">
+<h2>[sql-param title]</h2>
+<span class="contentmeta">
+[msg arg.0="[user name [sql-param uid]]" arg.1=|[time time="[sql-param created]"]|]Submitted by %s on %s.[/msg]
+</span>
+<div class="contentbody">
+[sql-param body]
+</div>
+<div class="contentlinks">
+[acl check edit_content]<a href="[area content/edit/[sql-code]]">Edit</a>[/acl]
+</div>
+</div>
+[/list]
+[/query]
+[/acl]
