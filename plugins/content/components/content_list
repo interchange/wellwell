@@ -1,7 +1,7 @@
 [acl check create_content]
 <a href="[area content/edit]">[L]Add new content[/L]</a>
 [/acl]
-[query sql="select * from content" list=1]
+[query sql="select * from content order by created desc" list=1]
 [on-match]
 <table>
 <tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th><th>[L]Date[/L]</th></tr>
