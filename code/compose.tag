@@ -16,7 +16,7 @@ sub dots2hash {
 
 sub {
 	my ($template, $opt, $body) = @_;
-	my (%acl, %forms, $template_file);
+	my (%acl, %forms, $template_file, $container);
 
 	if ($opt->{acl})  {
 		# check permissions first
@@ -132,6 +132,9 @@ sub {
 		}
 	}
 
+	# determine whether we wrap a container around components
+	$container = $Variable->{COMPOSE_CONTAINER} || $opt->{container};
+	
 	# process components ([compose components.placeholder='COMP_SPEC'...])
 	# placeholder => "{NAME}" within template file
 	# COMP_SPEC => "component1=alias1 c2=a2, c3 c4, c5"
@@ -151,7 +154,7 @@ sub {
 			}
 
 			for my $comp (@components) {
-				my (%var);
+				my (%var, $type);
 
 				if ($forms{$comp}) {
 					# use precalculated form
@@ -175,8 +178,10 @@ sub {
 					$Variable->{uc($attr)} = $component_attributes->{$attr};
 				}
 
-				# figure out whether to output class= or id=
-				my $type = $attributes{$alias||$name}{css_type} || 'class';
+				if ($container) {
+					# figure out whether to output class= or id=
+					$type = $attributes{$alias||$name}{css_type} || 'class';
+				}
 
 				# locate component
 				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
@@ -194,20 +199,33 @@ sub {
 						$Tag->error({name => 'component', set => "Component $name not found."});
 					}
 				}
+				
+				my $wrap = 0;
 
-				if ($component_content =~ /\S/
-					|| ! $component_attributes->{skipblank}) {
-					if (exists $component_attributes->{container}
-						&& $component_attributes->{container} eq '') {
-						push (@content, $component_content);
-					} else {
-						push (@content,
-							qq{<div $type='$name'>} .
-					    	( $alias ? qq{<div $type='$alias'>} : '' ) .
-						    $component_content .
-						    ( $alias ? qq{</div>} : '' ) .
-						    q{</div>});
+				if ($container) {
+					if ($component_content =~ /\S/) {
+						# check whether container is explicitly suppressed
+						unless (exists $component_attributes->{container}
+							&& $component_attributes->{container} eq '') {
+							$wrap = 1;
+						}
 					}
+					elsif (! $component_attributes->{skipblank}) {
+						# even wrap empty components
+						$wrap = 1;
+					}	
+				}
+
+				if ($wrap) {
+					push (@content,
+						qq{<div $type='$name'>} .
+				    	( $alias ? qq{<div $type='$alias'>} : '' ) .
+					    $component_content .
+					    ( $alias ? qq{</div>} : '' ) .
+					    q{</div>});
+				}
+				else {
+					push (@content, $component_content);
 				}
 
 				# reset variables

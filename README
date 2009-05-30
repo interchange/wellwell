@@ -13,6 +13,7 @@ Flaws in Standard / Interchange
 *******************************
 
 * two shopping carts components  to maintain
+* components need to specified on every page instead of globally
 
 Goals
 *****
@@ -32,6 +33,56 @@ Prerequisites
 Interchange 5.7.1 and at least:
 	Dispatch.pm 1.103
 	Order.pm 2.104
+
+Composition
+***********
+
+[compose] basically just evaluates the components passed inside the [compose] 
+tag and fits them into the containers inside the template.
+
+Templates
+=========
+
+Templates are HTML files with placeholders for the containers.
+The placeholders are uppercase words inside curly braces.
+A very simple template would look like:
+
+<html>
+<head>
+{HTMLHEAD}
+</head>
+<body>
+{BODY}
+</body>
+</html>
+
+Components
+==========
+
+Components are evaluated as ITL and put into the placeholders.
+
+[compose
+    component.body="hello_world"
+]
+
+To automatically create a wrapping div for each component,
+set COMPOSE_CONTAINER to 1.
+
+Automatic components/attributes
+===============================
+
+Usually certain components appear on every page and you don't
+want to specify them inside the [compose] tag.
+
+[compose] examines the following variables which set
+components and attributes globally:
+
+MV_COMPONENT_AUTO
+MV_ATTRIBUTE_AUTO
+
+Example:
+Variable MV_COMPONENT_AUTO htmlhead:htmlhead left:menu,categorynav body:infobox
+Variable MV_ATTRIBUTE_AUTO menu.name=main
 
 Users, Roles and Permissions
 ****************************
@@ -115,12 +166,6 @@ Menus
 
 Only menu entries with sufficient permission will be displayed
 (permission field in menus table).
-
-Automatic components/attributes
-*******************************
-
-MV_COMPONENT_AUTO
-MV_ATTRIBUTE_AUTO
 
 Forms
 *****
