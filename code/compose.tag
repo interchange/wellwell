@@ -118,11 +118,20 @@ sub {
 	# automatic components
 	if ($Variable->{MV_COMPONENT_AUTO}) {
 		my @auto = split(/\s+/, $Variable->{MV_COMPONENT_AUTO});
+		my %skipauto;
+
+		if ($opt->{skipauto}) {
+			for (split(/[,\s]+/, $opt->{skipauto})) {
+				$skipauto{$_} = 1;
+			}
+		}
 
 		for (@auto) {
 			my ($ph, $c) = split(/[=:]/, $_, 2); # i.e. body=c1,c2=a2
 
 			for my $sc (reverse split(/,+/, $c)) {
+				next if $opt->{skipauto} && $skipauto{$sc};
+
 				if (exists $opt->{components}->{$ph}) {
 					$opt->{components}->{$ph} = "$sc $opt->{components}->{$ph}";
 				} else {
