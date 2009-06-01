@@ -1,0 +1,471 @@
+
+/* CONTENT PAGE HEADER DEFINITION */
+
+/* CONTENT PAGE HEADER DEFINITION */
+BODY{
+	/*font-family: 'Trebuchet MS', trebuchet, sans-serif;*/
+	font-family: Arial, Helvetica, sans-serif;
+	color: #4c4c4c;
+	font-size: 12px;
+	font-style: normal;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	text-align: justify;
+}
+
+a {
+	color: Black;
+	background-color: transparent;
+	border: 0;
+}
+
+img {
+	border: 0;
+}
+
+a:hover {
+	color: Black;
+	text-decoration: none;
+	background-color: transparent;
+}
+
+
+h1 { font-size: 250%; }
+h2 { font-size: 200%; }
+h3 { font-size: 150%; }
+h4 { font-size: 130%; }
+
+h1, h2, h3, h4{
+	color:#F26331;
+}
+
+h1, h2, h3, h4, p{
+	text-align:left;
+	margin: 0 0 5px 0;
+	font-weight: normal;
+}
+
+p{
+	padding-bottom: 6px;
+	padding-top: 3px;
+	
+}
+
+tr,td {
+  border-bottom: 1px dotted #595241;
+  vertical-align: top;
+}
+
+
+img {
+  z-index: 1;
+}
+
+.top_header{
+	margin: 0 auto 0 auto;
+	padding: 0 0 0 0;
+	height: 42px;
+	width: 890px;
+	text-align: right;
+}
+
+#header{
+	width: 980px;
+	position: relative;
+	margin-right: auto;
+	margin-left: auto;
+	padding: 0;
+}
+
+#header #logo{
+	width: 322px;
+	height: 88px;
+	float: left;
+	padding: 0;
+	margin: 16px 0 0 0; 
+}
+
+
+#header #intro h3{
+	   font-size: 22px;
+		font-weight: bold;
+		color: white;
+}
+
+#header #intro {
+   font-size: 16px;
+	color: white;
+	height: 220px;
+	margin: 0 0 0 0;
+	padding: 0 0 0 10px;
+	width: 360px;
+	text-align: left;
+	float: left;
+}
+
+#nav {
+	float: right;
+	width:650px;
+	height: 84px;
+	position: relative;
+	vertical-align: bottom;
+	padding: 0;
+	margin: 0;
+	}
+	  
+#nav ul {
+	float: right;
+	position: relative;
+	height: 25px;
+	margin: 0 0 0 0;
+	padding: 0 24px 0 50px;
+	list-style: none;
+	}
+	  
+#nav li {
+	float:left;
+	background: transparent url("menu_right.gif") no-repeat right top;
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+	width: 115px;
+	text-align: center;
+	}
+	
+#nav a {
+	margin:0;
+	height: 26px;
+	display:block;
+	left:-14px;
+	background:url("menu_left.gif") no-repeat left top;
+	padding: 7px 5px 3px 7px;
+	text-decoration:none;
+	color:#f07822;
+	font-size: 16px;
+	font-family: Arial, Helvetica;
+	font-weight: bold;
+	}
+	  
+#nav > ul a {width:auto;}
+    
+/* Commented Backslash Hack hides rule from IE5 \*/
+#nav a {float:none;}
+/* End IE5 */
+
+#nav a:hover, #nav .selected a{
+	color:Black;
+	}
+	
+/* doesn't work in IE5.x or IE6 */
+#nav li:hover, 
+#nav li:hover a, #nav .selected a, #nav .selected {
+	background-position:100% -42px;
+	color:Black;
+	}
+
+#nav li:hover a, #nav .selected a {
+	background-position:0 -42px;
+	}
+
+.mainContent {
+	width: 980px;
+	margin: 0 auto;
+}
+
+#casestudy {
+	color: #f2ebc7;
+	float: right;
+	margin: 0 0 0 0;
+	padding: 0 67px 0 0;
+	z-index: 0;
+	width: 428px;
+	height: 278px;
+	position: relative;
+}
+
+#casestudy #slidetext {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0 71px 0 0;
+  color: #353c42;
+  width: 415px;
+  height: 120px;
+}
+
+#casestudy #slidetext .name{
+	font-size: 18px;
+	padding-bottom: 0;
+	margin: 0;
+	color: #706D51;
+}
+
+#casestudy #slidetext .quote{
+	font-size: 26px;
+	padding-top: 4px;
+}
+
+/* Search Box */
+
+.search_box {
+   height: 38px;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+   width: 309px;
+   background: url(bg_search_box.gif);
+	float: right;
+}
+
+.search_box .s {
+    float: left;
+    padding: 0;
+    margin: 13px 0 0 6px;
+    border: 0;
+    width: 172px;
+    background: none;
+}
+.search_box .go {
+    width: 97px;
+	float: right;
+    margin: 8px 3px 0 0;
+}
+
+.banner{
+	width: 450px;
+	text-align: left;
+}
+
+.banner p{
+	font-size: 12px;
+	padding: 0;
+}
+
+.banner h2{
+	height: 51px;
+	font-size: 32px;
+	padding: 14px 0 0 0;
+}
+
+
+
+/* ##### Footer ##### */
+
+#footer {
+clear: both;
+	color: #353c42;
+	text-align: center;
+	padding: 10px 10px 0 0;
+	margin: 0;
+	border-top: 1px solid #D7D5C2;
+}
+
+#footer a {
+	color: #353c42;
+	background-color: transparent;
+	text-decoration: underline;
+}
+
+#footer a:hover {
+	text-decoration: none;
+}
+
+.leftmenu {
+				background:url(leftback.jpg) repeat-y left top;
+}
+
+.leftmenu li a {
+	font-weight: bold;
+}
+
+.leftmenu li li a {
+	font-weight: normal;
+}
+
+.news {
+	background:url("right_side.gif") repeat-x left top;
+}
+
+.news h3 {
+	color: #111B21;
+}
+
+.news h4 a{
+	color: #F26331;
+}
+
+.news .date {
+	color: #353C42;
+	font-size: 12px;
+	margin: 5px 0 0 0;
+	padding: 0;
+}
+
+.news .more {
+	color: #353C42;
+	margin: 5px 0 18px 0;
+	padding: 0;
+}
+
+
+.oneThirdGrad {
+	margin: 0 0 0 0;
+   padding: 12px 17px 10px 17px;
+	width: 273px;
+	float: left;
+	font-size: 14px;
+}
+
+.oneThirdGrad ul{
+	margin: 0;
+	padding: 0;
+	list-style-image: url(orange_bullet.png); 
+}
+
+.oneThirdGrad li{
+	margin-left: 20px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	text-align: left;
+}
+
+.oneThirdGrad .ticklist{
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0 0;
+}
+
+.oneThirdGrad .ticklist li{
+	background: url(tick.png) left center no-repeat; 
+	padding-left: 25px;
+	padding-top: 2px;
+	padding-bottom: 6px;
+	margin: 6px 0 0 0;
+	text-align: left;
+}
+
+.oneThirdGrad h3{
+   font-size: 26px;
+	margin-top: 10px;
+}
+
+.oneThirdGrad .intro{
+	padding: 0;
+	font-size: 18px;
+}
+
+#footer ul {
+	list-style: none;
+	padding-left: 14px;
+}
+
+#footer li, .uvod_storitve li {
+	margin-top: 5px;
+}
+
+#footer h2{
+	color: #F26331;
+}
+
+/* CRUMBS */
+
+.banner .crumbs_frame{
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+.crumbs ul, .crumbs li {
+	list-style-type:none;
+	margin:0;
+	}		
+	
+.crumbs {
+	height:2.3em;
+	/*border:1px solid #dedede;*/
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	}
+	
+.crumbs li {
+	float:left;
+	line-height:18px;
+	color:#777;
+	padding-left:.4em;
+	}		
+	
+.crumbs li a {
+	background:url(crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}			
+					
+.crumbs li a:link,
+.crumbs li a:visited {
+	color:#5C5C3D;
+	text-decoration:underline;
+	}	
+	
+.crumbs a:link, #crumbs a:visited,	
+.crumbs li a:hover,
+.crumbs li a:focus {
+	color:#111B21;
+	text-decoration: underline;
+	}		
+	
+	
+	/*
+
+This part is completely reusable
+
+*/
+
+.rowOfBoxes {
+	clear: both;
+}
+
+.quarter, .oneThird, .half, .twoThirds, .fullWidth, .crumbs_frame {
+  margin: 1em 0;
+  float: left;
+  /*border-left: 1px solid rgb(204,204,204);*/
+}
+
+.quarter {
+  width: 21%;
+  padding: 0 1.9%;
+}
+
+.oneThird {
+  width: 28%;
+  padding: 0 1.9%;
+  text-align: left;
+}
+
+.half {
+  text-align: justify;
+  width: 46%;
+  padding: 0 1.9%;
+}
+
+.twoThirds {
+  text-align: justify;
+  width: 63%;
+  padding: 0 1.9%;
+}
+
+.fullWidth, .crumbs_frame {
+  text-align: justify;
+  width: 96%;
+  padding: 0 1.2em;
+  border-left: none;
+}
+
+.filler {  /* use with an empty <p> element to add padding to the end of a text box */
+  border: 1px solid white;
+}
+ 
+.noBorderOnLeft {
+  border-left: none;
+}
+
+.dividingBorderAbove {
+  border-top: 1px dotted #595241;
+}

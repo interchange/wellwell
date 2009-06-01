@@ -1,0 +1,10 @@
+
+/* CONTENT PAGE HEADER DEFINITION */
+BODY{
+	background: url(header-back-front.gif) top repeat-x; 
+}
+
+#header{
+		background:url("home-back.jpg") no-repeat right top;
+		height: 440px;
+}

@@ -1,20 +1,26 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-
-<head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
 {HTMLHEAD}
 </head>
 
 <body>
-<div id="container">
-	<div id="header"> {HEADER} </div>
-	<div id="wrapper">
-		<div id="body">	{BODY} </div>
-	</div>
-	<div id="left">	{LEFT} </div>
-	<div id="right"> {RIGHT} </div>
-	<div id="footer"> {FOOTER} </div>	
+<div class="top_header">
+{TOPHEADER}
+</div>
+<div id="header">
+	{LOGO}
+<div id="nav"><div class="menu">
+	{MENU}
+</div></div>
+<div class="banner">
+	{BANNER}
+</div>
+</div>
+<div class="mainContent">
+	{BODY}
+</div>
+<div id="footer">
+	{FOOTER}
 </div>
 </body>
-
 </html>

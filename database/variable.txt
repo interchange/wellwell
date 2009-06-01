@@ -4,7 +4,7 @@ MV_COMPONENT_DIR	components	Directory with components
 PLUGINS		List of plugins used in this catalog
 STATIC_URL	/static	URL of the static content directory
 STATIC_DIR	static	Path to the static content directory (relative to catalog directory)
-IMAGE_URL	/images	URL of image directory
+IMAGE_URL	/style	URL of image directory
 IMAGE_DIR	static/images	STATIC_DIR relative path of image directory
 CSS_URL	/css	URL of the CSS files
 CSS_DIR	static/css	Path to CSS directory (relative to catalog path)

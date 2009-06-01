@@ -1,0 +1,73 @@
+/*
+ *
+ * This CSS describes clean forms layout. If you wish to change the
+ * appearance of forms, we recommend you use additional CSS file instead
+ * of changing this one. This file will be used to add any additonal layout
+ * to the basic look of Interchange WellWell.
+ *
+ */
+
+/* Inline avoids wrapping due to form elements */
+
+form { 
+  display: inline;
+}
+
+/* Standard form elements styling */
+
+.form fieldset {
+  border: 1px solid #ccc;
+  margin: 15px 0 30px 0;
+  padding: 10px;
+}
+
+.form legend {
+  font-weight:bold;
+  font-size:110%;
+}
+
+/* Label */
+
+.form label {
+  display: block;
+  position: relative;
+}
+
+.form label small {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 80%;
+  color: #666;
+}
+
+/* Other standard elements (that don't need classes) */
+
+.form input, .form textarea, .form select{ 
+  font-size: inherit;
+  font-family: inherit;
+  padding: 3px 0;
+  border: 1px solid #ccc;
+}
+
+/* Checkbox styling (needs special class) */
+
+.form  p.checkbox {
+  clear: both;
+  float: none;
+  position: relative;
+}
+
+.form p.checkbox input {
+  left: 10px;
+  width: 14px;
+  position: absolute;
+  top: 1px;
+}
+
+.form p.checkbox label {
+  display: block;
+  margin-left: 40px;
+  width: 80%;
+}
+

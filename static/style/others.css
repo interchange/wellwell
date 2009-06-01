@@ -1,0 +1,18 @@
+
+/* CONTENT PAGE HEADER DEFINITION */
+BODY{
+	background: transparent url(others-background.gif) repeat-x top; 
+}
+
+#header{
+		background:url("others-back.gif") no-repeat right top;
+		height: 216px;
+}
+
+.banner {
+	margin: 16px 0 0 10px;
+	width: 950px;
+	height: 100px;
+	text-align: left;
+	float: left;
+	}

@@ -5,3 +5,8 @@
 <link rel="shortcut icon" href="__IMAGE_URL__/style/favicon.ico">
 <title>__TITLE__</title>
 <link rel="stylesheet" type="text/css" href="__CSS_URL__/container.css">
+<style type="text/css">
+@import "/style/content.css";
+@import "/style/forms.css";
+@import "/style/__CSS__.css";
+</style>

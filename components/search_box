@@ -1,0 +1,6 @@
+<div class="search_box">
+	<form id="search_form" method="post" action="/">
+		<input type="text" class="s" title="Search">
+		<input type="image" src="btn_search_box.gif"  class="go" alt="Search">
+	</form>
+</div>
