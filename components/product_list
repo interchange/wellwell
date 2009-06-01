@@ -7,7 +7,7 @@
 [product-list category="__CATEGORY__" ml=10 more=1 form="category=__CATEGORY__"]
 [list]
 
-<div class="oneThird">
+<div class="oneThirdGrad">
 
 <p class="image">
 [image-list 

@@ -1,3 +1,4 @@
+<div class="oneThirdGrad">
 [query sql="select name,uri from categories" list=1]
 [on-match]
 <ul>
@@ -9,3 +10,4 @@
 </ul>
 [/on-match]
 [/query]
+</div>
