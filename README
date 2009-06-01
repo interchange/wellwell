@@ -14,6 +14,7 @@ Flaws in Standard / Interchange
 
 * two shopping carts components  to maintain
 * components need to specified on every page instead of globally
+* incomplete ITL doesn't crash whole page
 
 Goals
 *****
@@ -321,6 +322,46 @@ Plugins are activated by adding them to PLUGINS variable
 
 Please read the README for the plugin first and follow the
 instructions before activating the plugin.
+
+Authoring plugins
+=================
+
+Plugins are basically a small WellWell catalog on its own.
+
+Configuration
+-------------
+
+The configuration file is called plugin.cfg. The basic configuration
+is as follows:
+
+Message Loading helloworld plugin.
+
+Variable CURPLUGIN helloworld
+include plugins/default.cfg
+
+Info file
+---------
+
+The info file NAME.info contains basic information about the plugin:
+
+name
+version
+author
+
+E.g.
+
+name = Hello world!
+version = 0.1
+author = Stefan Hornburg (Racke) <racke@linuxia.de>
+
+Directory structure
+-------------------
+
+NAME.info  - info file (see Info file)
+plugin.cfg - configuration file (see Configuration)
+code       - directory for custom code (tags, functions, ...)
+pages/NAME - directory for pages
+components - directory for components
 
 Paging
 ******
