@@ -9,6 +9,22 @@ sub {
 
 	$Tag->perl({tables => 'content'});
 
+	if ($function eq 'add') {
+		my %content;
+
+		# created timestamp
+		$content{type} = $opt->{type} || 'page';
+		$content{title} = $opt->{title};
+		$content{body} = $opt->{body};
+		$content{uid} = $opt->{uid} || $Session->{username};
+		$content{uri} = $opt->{uri};
+		$content{created} = $opt->{created} || $Tag->time({format => '%s'});
+
+		$code = $Db{content}->set_slice([{dml => 'insert'}], \%content);
+
+		return $code;
+	}
+
 	if ($opt->{uri}) {
 		my ($ctset, $uri_qt);
 
@@ -24,6 +40,10 @@ sub {
 	} 
 	elsif ($code) {
 		$ctref = $Db{content}->row_hash($code);
+	}
+
+	if ($function eq 'exists') {
+		return $ctref;
 	}
 
 	if ($ctref) {
