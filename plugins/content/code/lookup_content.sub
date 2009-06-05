@@ -1,0 +1,13 @@
+Sub lookup_content <<EOS
+sub {
+	my ($name) = @_;
+	my ($ret);
+
+	if ($ret = $Tag->content({function => 'exists', uri => $name})) {
+		$CGI->{code} = $ret->{code};
+		return (1, 'content/display');
+	} 
+
+	return;
+}
+EOS
