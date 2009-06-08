@@ -12,6 +12,10 @@ sub {
 	my ($name, $label, $type, $value, $attributes) = @_;
 	my ($out);
 	
+	if ($type eq 'legend') {
+		return qq{<legend>$label</legend>};
+	}
+
 	$out = theme('form_element_label', $name, $label);
 	$out .= theme('form_element_field', $name,
 				   	$type,

@@ -230,6 +230,12 @@ component	Part name
 priority    Sort order in form (descending)
 widget      Widget
 
+The widget is passed by the form_element_field theme function to the
+[display] tag. 
+
+One exception to that is the "legend" widget, which just displays the
+label of the form_element.
+
 Attributes
 ----------
 
