@@ -4,7 +4,7 @@ UserTag wishlist HasEndTag
 UserTag wishlist Routine <<EOR
 sub {
 	my ($function, $sku, $name, $type, $opt, $body) = @_;
-	my ($wishlist_code, $set);
+	my ($wishlist_code, $set, $status);
 
 	$function ||= 'list';
 	$name ||= $Variable->{WISHLISTS_DEFAULT_NAME};
@@ -38,6 +38,11 @@ sub {
 		}
 	}
 
+	if ($wishlist_code) {
+		# record wishlist status
+		$status = $Db{carts}->field($wishlist_code, 'status');
+	}
+
 	# determine fields to use for wishlists
 	my $i = 0;
 	my %product_fields;
@@ -57,8 +62,15 @@ sub {
 			return;
 		}
 
-		# create new wishlist if necessary
-		unless ($wishlist_code) {
+		if ($wishlist_code) {			
+			if ($status eq 'final') {
+				# no updates allowed to finalized wishlists
+				$Tag->error({name => 'wishlist', set => 'Wishlist finalized'});
+				return;
+			}
+		}
+		else {
+			# create new wishlist
 			$wishlist_code = $Db{carts}->autosequence();
 			$Db{carts}->set_slice($wishlist_code, uid => $Session->{username},
 								  created => $Tag->time({format => '%s'}),
@@ -95,6 +107,12 @@ sub {
 	}
 	
 	if ($function eq 'update') {
+		if ($status eq 'final') {
+			# no updates allowed to finalized wishlists
+			$Tag->error({name => 'wishlist', set => 'Wishlist finalized'});
+			return;
+		}
+
 		# update product in wishlist
 		my %data;
 
@@ -107,6 +125,12 @@ sub {
 		$Db{cart_products}->set_slice([$wishlist_code, $sku], %data);
 	}
 	elsif ($function eq 'remove') {
+		if ($status eq 'final') {
+			# no updates allowed to finalized wishlists
+			$Tag->error({name => 'wishlist', set => 'Wishlist finalized'});
+			return;
+		}
+
 		# remove product from wishlist
 		$Db{cart_products}->delete_record([$wishlist_code, $sku]);
 	}
@@ -118,10 +142,23 @@ sub {
 			$fields = join(',', '', keys %product_fields);			
 		}
 
+		# expose status
+		$Tag->tmp('wishlist_status', $status);
+
 		my $sql = qq{select sku$fields from cart_products where cart = $wishlist_code order by position};
 
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
+	}
+	elsif ($function eq 'status') {
+		my $status;
+
+		if ($opt->{status}) {
+			$Db{carts}->set_field($wishlist_code, 'status', $opt->{status});
+			return;
+		}
+
+		return $status;
 	}
 }
 EOR

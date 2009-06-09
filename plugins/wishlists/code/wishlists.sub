@@ -77,6 +77,12 @@ sub {
 		}
 	}
 
+	# whether to finalize wishlist
+	if ($CGI->{finalize}) {
+		$Tag->wishlist({function => 'status', name => $wishlist_name,
+			code => $wishlist_code, status => 'final'});
+	}
+
 	# show wishlist for the current user
 	if ($args[0] eq 'carts') {
 		$CGI->{mv_nextpage} = 'wishlists/carts';
