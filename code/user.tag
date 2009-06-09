@@ -1,4 +1,5 @@
 UserTag user Order function uid
+UserTag user AddAttr
 UserTag user Documentation <<EOD
 
 =head1 NAME
@@ -35,6 +36,10 @@ User ID. Default to current logged in user.
 
 [user name 23223]
 
+=item Determine whether user racke exists
+
+[user function=exists username=racke]
+
 =head2
 
 =back
@@ -51,14 +56,43 @@ EOD
 
 UserTag user Routine <<EOR
 sub {
-	my ($function, $uid) = @_;
+	my ($function, $uid, $opt) = @_;
 	my ($uref);
+
+	$Tag->perl({tables => 'users'});
+
+	if ($function eq 'exists') {
+		my ($field, $val, $set);
+
+		# lookup username
+		if ($opt->{username}) {
+			$field = 'username';
+			$val = $opt->{username};
+		}
+		elsif ($opt->{email}) {
+			$field = 'email';
+			$val = $opt->{email};
+		}
+		elsif ($uid) {
+			$field = 'uid';
+			$val = $uid;
+		}
+		else {
+			return;
+		}
+
+		$set = $Db{users}->query(qq{select uid from users where $field = '%s'}, $val);
+
+		if (@$set) {
+			return $set->[0]->[0];
+		}
+
+		return;
+	}
 
 	unless ($uid){
 		$uid = $Session->{username};
 	}
-
-	$Tag->perl({tables => 'users'});
 
 	# fetch user record
 	unless ($uref = $Db{users}->row_hash($uid)) {
