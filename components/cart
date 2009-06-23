@@ -1,3 +1,4 @@
+<div class="oneThirdGrad">
 <form action="[area cart]" method="post">
 <table class="cart">
 <tr class="header">
@@ -20,3 +21,4 @@
 <input type="submit" name="recalculate" value="[L]Recalculate[/L]">
 <input type="submit" value="[L]Checkout[/L]">
 </form>
+</div>
