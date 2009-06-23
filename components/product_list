@@ -3,24 +3,17 @@
 <h2>[sql-param name]</h2>
 [/list]
 [/query]
-
 [product-list category="__CATEGORY__" ml=10 more=1 form="category=__CATEGORY__"]
+[no-match]
+<div class="oneThirdGrad">
+Nothing found.
+</div>
+[/no-match]
 [list]
 
 <div class="oneThirdGrad">
 
-<p class="image">
-[image-list 
-	where='i.inactive IS NOT TRUE AND ji.main IS TRUE' 
-	join_table='product_images' 
-	key_field='sku'
-	key='[product-field sku]'
-	size='small'
-
-]
-	[image-list-param img-src]
-[/image-list]
-</p>
+<p class="image"><img src="[image-display [product-code] list]"></p>
 
 <h3><a href="[product-code]">[product-field manufacturer] [product-field name]</a></h3>
 <p class="description">
