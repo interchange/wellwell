@@ -3,18 +3,7 @@
 <h2>[item-field manufacturer] [item-field name]</h2>
 
 <div class="image">
-	[image-list
-		join_table=product_images
-		key_field=sku
-		key="[item-field sku]"
-		size=original
-		where="ji.main IS true"
-	]
-	[list]
-		[image-list-param img-src]
-	[/list]
-	[no-match]<img src="__IMAGE_URL__/style/no_product_image.png" alt="No image for this product">[/no-match]
-	[/image-list]
+	<img src="[image-display [item-code] detail]">
 </div>
 
 <ul>
