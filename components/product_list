@@ -20,7 +20,7 @@ Nothing found.
 [product-field description]
 </p>
 <ul class="price">
-<li>[product-price]</li>
+<li>[product-price] [product-order [product-code]]</li>
 </ul>
 </div>
 
