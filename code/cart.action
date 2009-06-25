@@ -5,6 +5,12 @@ sub {
 
 	$CGI->{mv_nextpage} = 'cart';
 
+	# checkout function?
+	if ($CGI->{checkout}) {
+		$CGI->{mv_nextpage} = 'checkout';
+		return 1;
+	}
+
 	# remove function?
 	for (my $i = 0; $i < @$Items; $i++) {
 		if ($CGI->{"zeroquantity$i"}) {
