@@ -19,6 +19,6 @@
 [/item-list]
 </table>
 <input type="submit" name="recalculate" value="[L]Recalculate[/L]">
-<input type="submit" value="[L]Checkout[/L]">
+<input type="submit" name="checkout" value="[L]Checkout[/L]">
 </form>
 </div>
