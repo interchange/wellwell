@@ -8,7 +8,7 @@
 <legend>[L]Sign In[/L]</legend>
 
 [if session logged_in]
-<p>[msg arg.0="[data session username]"]You are already logged in as user %s.[/msg]</p>
+<p>[msg arg.0="[user name]"]You are already logged in as user %s.[/msg]</p>
 [else]
 
 <p>
