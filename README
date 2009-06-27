@@ -371,6 +371,11 @@ code       - directory for custom code (tags, functions, ...)
 pages/NAME - directory for pages
 components - directory for components
 
+Images
+******
+
+Originals for (product) images are recorded in images table.
+
 Paging
 ******
 
