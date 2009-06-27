@@ -39,7 +39,7 @@ sub {
 	if (keys %oldcats) {
 		$instr = join(',', keys %oldcats);
 
-		$Db{product_categories}->query(qq{delete from product categories where sku = $sku and category in ($instr)});
+		$Db{product_categories}->query(qq{delete from product_categories where sku = '$sku' and category in ($instr)});
 	}
 }
 EOR
