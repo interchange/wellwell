@@ -50,7 +50,7 @@ sub {
 	}
 
 	if ($imgcode && $origfilename ne $imgfilename) {
-		$ret = $Tag->unlink($origfilename);
+		$ret = $Tag->unlink_file($origfilename);
 		Log("Deleted file $origfilename: $ret.");	
 	}
 
