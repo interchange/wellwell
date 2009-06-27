@@ -207,13 +207,17 @@ The default template looks as follows:
 
 {PREPEND}
 {TOP}
-{BODY}
+<fieldset>
+<legend>{TITLE}</legend>
+{FIELDS}
 {SUBMIT}
+</fieldset>
 {BOTTOM}
 
 {PREPEND} is a placeholder which can be used for form components.
 {TOP} starts the HTML form.
-{BODY} contains the regular form elements.
+{TITLE} shows the label field from form_series table.
+{FIELDS} contains the regular form elements.
 {SUBMIT} contains the button form elements (as specified in form_elements
 table or default submit button)
 {BOTTOM} ends the HTML form.

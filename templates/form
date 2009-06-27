@@ -1,5 +1,8 @@
 {PREPEND}
 {TOP}
-{BODY}
+<fieldset>
+<legend>{TITLE}</legend>
+{FIELDS}
 {SUBMIT}
+</fieldset>
 {BOTTOM}
