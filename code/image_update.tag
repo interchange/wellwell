@@ -64,9 +64,14 @@ sub {
 	 	 format => $inforef->{type});
 
 	if ($imgcode) {
-	}  else {	
-	
+		# existing image has been updated
+		$imgcode = $Db{images}->set_slice([{dml => 'update'}, $imgcode], \%image);
 
+		unless ($imgcode) {
+			Log("Failed to update database record for %s", $filename);
+			return;
+		}
+	}  else {
 		$imgcode = $Db{images}->set_slice([{dml => 'insert'}], \%image);
 
 		unless ($imgcode) {
