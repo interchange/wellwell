@@ -19,8 +19,15 @@ sub {
 	if ($function eq 'carts') {
 		my @carts;
 
-		$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
-		@carts = map {$_->[0]} @$set;
+		if ($opt->{passed}) {
+			# produce string suitable for [display passed=]
+			$set = $Db{carts}->query(qq{select code,name from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
+			@carts = map {"$_->[0]=$_->[1]"} @$set;
+		}
+		else {
+			$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
+			@carts = map {$_->[0]} @$set;
+		}
 
 		return wantarray ? @carts : join(',', @carts);
 	}
