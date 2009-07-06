@@ -16,7 +16,10 @@ sub {
 		# select wishlist by code or name
 		if ($args[1] =~ /^(\d+)$/) {
 			$wishlist_code = $args[1];
+			$wishlist_name = $Tag->wishlist({function => 'name',
+				code => $wishlist_code});
 			$Tag->attribute('set', 'wishlist', 'code', $args[1]);
+			$Tag->attribute('set', 'wishlist', 'name', $wishlist_name);
 		}
 		else {
 			$wishlist_name = $args[1];

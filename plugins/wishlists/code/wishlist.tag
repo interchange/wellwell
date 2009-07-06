@@ -157,6 +157,9 @@ sub {
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
 	}
+	elsif ($function eq 'name') {
+		return $Db{carts}->field($wishlist_code, 'name');
+	}
 	elsif ($function eq 'status') {
 		my $status;
 
