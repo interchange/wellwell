@@ -2,11 +2,13 @@ UserTag image_update Order filename label code
 UserTag image_update AddAttr
 UserTag image_update Routine <<EOR
 sub {
-	my ($filename, $label, $code) = @_;
-	my ($inforef, $imgfilename, $origfilename, $imgname, $imgdir, $imgcode, 
-		$sizes, $destination, $ret, $filetime, $set, $exists);
+	my ($filename, $label, $code, $opt) = @_;
+	my ($inforef, $imgfilename, $origfilename, $imgprefix, $imgname, $imgdir, 
+		$imgcode, $sizes, $location,$destination, $ret, $filetime, $set, 
+		$exists);
 
-	$imgdir = $Variable->{IMAGE_DIR} || 'images';
+	$imgprefix = $opt->{image_dir_prefix} || $Variable->{IMAGE_DIR_PREFIX};
+	$imgdir = $opt->{image_dir} || $Variable->{IMAGE_DIR} || 'images';
 
 	# ensure that file exists
 	unless (-f $filename) {
@@ -15,7 +17,10 @@ sub {
 	}
 
 	# determine age of image
-	$filetime = $Tag->file_info({name => $filename, time => 1});
+	unless ($filetime = $Tag->file_info({name => $filename, time => 1})) {
+		Log("Failed to determine time for %s", $filename);
+		return;
+	}
 
 	$Tag->perl({tables => 'images image_sizes product_images'});
 	
@@ -39,7 +44,12 @@ sub {
 
 	# determine file name for the image
 	$imgname = $Tag->clean_url($label, $code);
-	$imgfilename = "$imgdir/$imgname.$inforef->{type}";
+	if ($imgprefix) {
+		$imgfilename = "$imgprefix/$imgdir/$imgname.$inforef->{type}";
+	}
+	else {
+		$imgfilename = "$imgdir/$imgname.$inforef->{type}";
+	}
 
 	# copy file to new location
 	unless ($Tag->cp({from => $filename, 
@@ -84,9 +94,23 @@ sub {
 	$sizes = $Db{image_sizes}->query({sql => q{select * from image_sizes},
 		hashref => 1});
 
+	# get current entries in product_images
+	my %prod_images;
+
+	$set = $Db{product_images}->query(q{select code,image_group from product_images where sku = '%s'}, $code);
+	for (@$set) {
+		$prod_images{$_->[1]} = $_->[0];
+	}
+	
 	# resize image
 	for my $size (@$sizes) {
-		$destination = "$imgdir/$size->{name}/$imgname.$inforef->{type}";
+		$location = "$imgdir/$size->{name}/$imgname.$inforef->{type}";
+		if ($imgprefix) {
+			$destination = "$imgprefix/$location";
+		}
+		else {
+			$destination = $location;
+		}
 
 		$ret = $Tag->image_resize({
 			name => $imgfilename,
@@ -101,10 +125,24 @@ sub {
 		}
 
 		# store in database
-		$ret = $Db{product_images}->set_slice('', sku => $code,
+		if (exists $prod_images{$size->{name}}) {
+			$ret = $Db{product_images}->set_slice([{dml => 'update'}, $prod_images{$size->{name}}],
 									   image => $imgcode,
 									   image_group => $size->{name},
-									   location => $destination);
+									   location => $location);
+			delete $prod_images{$size->{name}};
+		}
+		else {
+			$ret = $Db{product_images}->set_slice([{dml => 'insert'}, ''], sku => $code,
+									   image => $imgcode,
+									   image_group => $size->{name},
+									   location => $location);
+		}
+	}
+
+	# remove product images which aren't in use anymore
+	for (keys %prod_images) {
+		$Db{product_images}->delete_record($prod_images{$_});
 	}
 
 	return 1;
