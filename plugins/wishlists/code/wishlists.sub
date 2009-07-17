@@ -86,6 +86,12 @@ sub {
 			code => $wishlist_code, status => 'final'});
 	}
 
+	# whether to clear wishlist
+	if ($CGI->{clear}) {
+		$Tag->wishlist({function => 'clear', name => $wishlist_name,
+			code => $wishlist_code});
+	}
+
 	# show wishlist for the current user
 	if ($args[0] eq 'carts') {
 		$CGI->{mv_nextpage} = 'wishlists/carts';

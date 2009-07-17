@@ -131,6 +131,22 @@ sub {
 
 		$Db{cart_products}->set_slice([$wishlist_code, $sku], %data);
 	}
+	elsif ($function eq 'clear') {
+		if ($status eq 'final') {
+			# not allowed for finalized wishlists
+			$Tag->error({name => 'wishlist', set => 'Wishlist finalized'});
+			return;
+		}
+		# clear wishlist (remove all items)
+		my $ret;
+
+		$ret = $Db{cart_products}->query(q{delete from cart_products where cart = %s}, $wishlist_code);
+
+		if ($ret) {
+			# items were removed, update timestamp on cart
+			$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));			
+		}
+	}
 	elsif ($function eq 'remove') {
 		if ($status eq 'final') {
 			# no updates allowed to finalized wishlists
