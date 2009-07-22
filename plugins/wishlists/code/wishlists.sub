@@ -36,10 +36,15 @@ sub {
 
 	# whether to move stuff from wishlist to cart
 	if ($CGI->{movetocart}) {
-		for (@{$CGI_array->{sku}}) {
-			$Tag->addtocart($_, 1);
+		my (@skus, @qtys);
+
+		@skus = @{$CGI_array->{sku}};
+		@qtys = @{$CGI_array->{quantity}};
+
+		for (my $i = 0; $i < @skus; $i++) {
+			$Tag->addtocart($skus[$i], $qtys[$i] || 1);
 			$Tag->wishlist({function => 'remove',
-							sku => $_,
+							sku => $skus[$i],
 							name => $wishlist_name,
 							code => $wishlist_code});
 		}
@@ -49,8 +54,13 @@ sub {
 
 	# whether to copy stuff from wishlist to cart
 	if ($CGI->{addtocart}) {
-		for (@{$CGI_array->{sku}}) {
-			$Tag->addtocart($_, 1);
+		my (@skus, @qtys);
+
+		@skus = @{$CGI_array->{sku}};
+		@qtys = @{$CGI_array->{quantity}};
+
+		for (my $i = 0; $i < @skus; $i++) {
+			$Tag->addtocart($skus[$i], $qtys[$i] || 1);
 		}
 		$CGI->{mv_nextpage} = $Config->{Special}->{order};
 		return 1;
