@@ -107,6 +107,20 @@ sub {
 
 		return 1;
 	}
+	elsif ($function eq 'touch') {
+		if ($wishlist_code) {
+			# update timestamp on wishlist
+			$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));
+		}
+		else {
+			# create new wishlist
+			$wishlist_code = $Db{carts}->autosequence();
+			$Db{carts}->set_slice($wishlist_code, uid => $Session->{username},
+								  created => $Tag->time({format => '%s'}),
+								  type => $type,
+								  name => $name);
+		}
+	}
 
 	unless ($wishlist_code) {
 		$Tag->error({name => 'wishlist', set => 'Wishlist is missing.'});
