@@ -147,6 +147,14 @@ sub {
 			$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));			
 		}
 	}
+	elsif ($function eq 'addtocart') {
+		# add all wishlist items to the session-bound shopping cart
+		$set = $Db{cart_products}->query(q{select sku,quantity from cart_products where cart = %s}, $wishlist_code);
+		
+		for (@$set) {
+			$Tag->addtocart(@$_);
+		}
+	}
 	elsif ($function eq 'remove') {
 		if ($status eq 'final') {
 			# no updates allowed to finalized wishlists
