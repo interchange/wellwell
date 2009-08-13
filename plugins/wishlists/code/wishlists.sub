@@ -2,7 +2,7 @@ Sub wishlists <<EOS
 sub {
 	my $page = shift;
 	my ($name, @args) = split(/\//, $page);
-	my ($wishlist_code, $wishlist_name);
+	my ($wishlist_code, $wishlist_name, $wishlist_type);
 
 	unless ($Session->{logged_in}) {
 		$Tag->warnings(errmsg('Please login before adding a product to the wishlist.'));
@@ -18,13 +18,19 @@ sub {
 			$wishlist_code = $args[1];
 			$wishlist_name = $Tag->wishlist({function => 'name',
 				code => $wishlist_code});
-			$Tag->attribute('set', 'wishlist', 'code', $args[1]);
-			$Tag->attribute('set', 'wishlist', 'name', $wishlist_name);
 		}
 		else {
 			$wishlist_name = $args[1];
-			$Tag->attribute('set', 'wishlist', 'name', $args[1]);
+			$wishlist_code = $Tag->wishlist({function => 'code',
+				name => $wishlist_name});
 		}
+
+		$wishlist_type = $Tag->wishlist({function => 'type',
+				code => $wishlist_code});
+
+		$Tag->attribute('set', 'wishlist', 'code', $wishlist_code);
+		$Tag->attribute('set', 'wishlist', 'name', $wishlist_name);
+		$Tag->attribute('set', 'wishlist', 'type', $wishlist_type);
 	}
 	
 	if ($args[0] eq 'create') {
