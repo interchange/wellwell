@@ -1,0 +1,17 @@
+Sub init_filter <<EOS
+sub {
+	my $value;
+
+	if ($Config->{Filter}) {
+		for(keys %{$Config->{Filter}}) {
+			next unless exists $CGI->{$_};
+			$value = $Tag->filter({op => $Config->{Filter}->{$_}, 
+				body => $CGI->{$_}});
+			$Tag->cgi({name => $_, set => $value});
+		}
+	}
+
+	delete $Config->{Filter};
+	return;
+}
+EOS
