@@ -1,4 +1,4 @@
-[fly-list code="[either][data session arg][or]__SKU__[/either]"]
+[product-display sku="[either][data session arg][or]__SKU__[/either]"]
 
 <h2>[item-field manufacturer] [item-field name]</h2>
 
@@ -21,4 +21,4 @@
 [item-field long_description]
 </p>
 
-[/fly-list]
+[/product-display]
