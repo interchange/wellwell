@@ -1,1 +1,1 @@
-[menu-display __NAME__]
+[menu-display name="__NAME__" hooks="__HOOKS__"]
