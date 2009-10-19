@@ -37,6 +37,21 @@ sub {
 		push(@entries, qq{<li$selected><a href="$uri">$_->{name}</a></li>});
 	}
 
+	if ($opt->{hooks}) {
+		my @hook_entries = $Tag->call_hooks('menu', 'collect', $name, $opt);
+
+		for (@hook_entries) {
+			next unless ref($_) eq 'HASH';
+			if ($_->{url}) {
+				$uri = $Tag->area($_->{url});
+				push(@entries, qq{<li><a href="$uri">$_->{name}</a></li>});
+			}
+			else {
+				push(@entries, qq{<li>$_->{name}</li>});
+			}
+		}
+	}
+
 	return q{<ul>} . join('', @entries) . q{</ul>};
 }
 EOR
