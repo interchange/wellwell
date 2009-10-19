@@ -8,7 +8,6 @@ sub {
 	@plugins = split(/,/, $Variable->{PLUGINS});
 
 	for my $plugin (@plugins) {
-		Log("Checkin for function ${plugin}_$name");
 		if ($sub = $Config->{Sub}->{"${plugin}_$name"}) {
 			push(@ret, $sub->($opt));
 		}
