@@ -3,7 +3,7 @@ sub {
 	my ($name, @args) = split(/\//, shift);
 	my (@fields, @values, $rowref);
 
-	unless ($Tag->acl('check')) {
+	unless ($Tag->acl('check', 'backend')) {
 		$Tag->error({name => 'backend',
 			set => 'Access denied'});
 		$CGI->{mv_nextpage} = 'login';
@@ -43,6 +43,27 @@ sub {
 			$CGI->{mv_nextpage} = 'backend/categories/list';
 			return 1;
 		}
+	} elsif ($args[0] eq 'menus') {
+		if ($args[1]) {
+			# specific menu
+			if ($args[2] eq 'add') {
+				$CGI->{menu_name} = $args[1];
+				$CGI->{mv_nextpage} = 'backend/menus/edit';
+			}
+			elsif ($args[3] eq 'edit' && $args[2] =~ /^(\d+)$/) {
+				$CGI->{menu_name} = $args[1];
+				$CGI->{menu_code} = $args[2];
+				$CGI->{mv_nextpage} = 'backend/menus/edit';
+			}
+			else {
+				$CGI->{menu} = $args[1];
+				$CGI->{mv_nextpage} = 'backend/menus/menu';
+			}
+		}
+		else {
+			$CGI->{mv_nextpage} = 'backend/menus/list';
+		}
+		return 1;
 	} else {
 		$Tag->perl({tables => 'categories'});
 		$CGI->{mv_nextpage} = 'backend/products/list';

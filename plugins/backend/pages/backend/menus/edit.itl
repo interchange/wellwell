@@ -1,0 +1,11 @@
+[compose
+	components.left="menu"
+    attributes.menu.name="backend"
+    components.right="login"
+
+	components.body="backend_menus_add"
+	forms.backend_menus_add.name="[if cgi menu_code]menus_entry_edit[else]menus_entry_add[/else][/if]"
+
+	attributes.htmlhead.title="Well Well Backend"
+
+/]

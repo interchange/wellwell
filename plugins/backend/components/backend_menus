@@ -1,0 +1,17 @@
+<div class="oneThirdGrad">
+<h2>[L]Menus[/L]</h2>
+[query sql="select distinct menu_name from menus" list=1]
+[on-match]
+<table>
+[/on-match]
+[list]
+<tr><td><a href="[area backend/menus/[sql-code]]">[sql-code]</a></td></tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
+[no-match]
+[L]No menus found.[/L]
+[/no-match]
+[/query]
+</div>

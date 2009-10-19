@@ -1,0 +1,13 @@
+[compose
+	components.left="menu"
+    attributes.menu.name="backend"
+    components.right="login"
+
+	components.body="menu=menu_left backend_menus_menu"
+	attributes.menu_left.name="backend_menus"
+	attributes.menu_left.hooks=1
+
+	attributes.htmlhead.title="Well Well Backend"
+
+    attributes.backend_list.subject="menus"
+/]

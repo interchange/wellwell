@@ -1,0 +1,22 @@
+Sub backend_menu <<EOS
+sub {
+	my ($name, $opt) = @_;
+	my (@entries);
+
+	if ($name eq 'backend') {
+		push(@entries, {name => 'Menus', url => 'backend/menus'});		
+		return @entries;
+	}
+
+	if ($name eq 'backend_menus') {
+	    my $link;
+
+		push(@entries, {name => $CGI->{menu}});
+
+		$link = $Tag->area({href => "backend/menus/$CGI->{menu}/add"});
+
+		push(@entries, {name => 'Add item', url => $link});
+		return @entries;
+	}
+}
+EOS

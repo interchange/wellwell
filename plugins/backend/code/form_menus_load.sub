@@ -1,0 +1,20 @@
+Sub form_menus_load <<EOS
+sub {
+	my $menu_ref;
+
+	$Tag->perl({tables => 'menus'});
+
+	# load data for menu entry
+	$menu_ref = $Db{menus}->row_hash($CGI->{menu_code});
+
+	unless ($menu_ref) {
+		return {page => "backend/menus/$menu{menu_name}"};
+	}
+
+	$Values->{menu_code} = $menu_ref->{code};
+	$Values->{name} = $menu_ref->{name};
+	$Values->{url} = $menu_ref->{url};
+
+	return;
+}
+EOS
