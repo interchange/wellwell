@@ -32,7 +32,7 @@ Vend::Config::parse_tag('UserTag', 'menu_display MapRoutine WellWell::Menu::disp
 
 sub display {
 	my ($name, $opt) = @_;
-	my ($set, $uri, @entries, $name_qtd, @fields, $fstr, $base_url, $selected);
+	my ($set, @entries, $name_qtd, @fields, $fstr, $base_url, $selected);
 	my ($db_menus);
 	
 	$db_menus = database_exists_ref('menus');
@@ -44,27 +44,11 @@ sub display {
 	$fstr = join(',', @fields);
 
 	$set = $db_menus->query({sql => qq{select $fstr from menus where menu_name = $name_qtd order by parent asc, weight desc, code}, hashref => 1});
-	
-	if ($opt->{selected}) {
-		$base_url = $Vend::Session->{last_url};
-		$base_url =~ s%^/%%;
-	}
 
 	for (@$set) {
 		next unless Vend::Tags->acl('check', $_->{permission});
 
-		if ($opt->{selected}) {
-			if (index($base_url, $_->{url}) == 0) {
-				$selected = qq{ class="$opt->{selected}"};
-			}
-			else {
-				$selected = '';
-			}
-		}
-
-		$uri = Vend::Tags->area($_->{url});
-
-		push(@entries, qq{<li$selected><a href="$uri">$_->{name}</a></li>});
+		push(@entries, $_);
 	}
 
 	if ($opt->{hooks}) {
@@ -72,17 +56,43 @@ sub display {
 
 		for (@hook_entries) {
 			next unless ref($_) eq 'HASH';
-			if ($_->{url}) {
-				$uri = Vend::Tags->area($_->{url});
-				push(@entries, qq{<li><a href="$uri">$_->{name}</a></li>});
+			push(@entries, $_);
+		}
+	}
+	
+	return build_entries(\@entries, $opt);
+}
+
+sub build_entries {
+	my ($entries_ref, $opt) = @_;
+	my (@out, $ref, $base_url, $uri, $selected);
+
+	if ($opt->{selected}) {
+		$base_url = $Vend::Session->{last_url};
+		$base_url =~ s%^/%%;
+	}
+	for (my $i = 0; $i < @$entries_ref; $i++) {
+		$ref = $entries_ref->[$i];
+
+		if ($ref->{url}) {
+			if ($opt->{selected}) {
+				if (index($base_url, $ref->{url}) == 0) {
+					$selected = qq{ class="$opt->{selected}"};
+				}
+				else {
+					$selected = '';
+				}
 			}
-			else {
-				push(@entries, qq{<li>$_->{name}</li>});
-			}
+	
+			$uri = Vend::Tags->area($ref->{url});
+			$out[$i] = qq{<li$selected><a href="$uri">$ref->{name}</a></li>};
+		}
+		else {
+			$out[$i] = qq{<li>$ref->{name}</li>};
 		}
 	}
 
-	return q{<ul>} . join('', @entries) . q{</ul>};
+	return q{<ul>} . join('', @out) . q{</ul>};
 }
 
 1;
