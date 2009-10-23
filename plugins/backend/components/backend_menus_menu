@@ -1,4 +1,3 @@
-<div class="oneThirdGrad">
 [query sql="select * from menus where menu_name = '[cgi menu]'" list=1]
 [on-match]
 <table>
@@ -12,4 +11,3 @@
 </table>
 [/on-match]
 [/query]
-</div>

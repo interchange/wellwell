@@ -17,7 +17,14 @@
 </div>
 </div>
 <div class="mainContent">
+<div class="oneThirdGrad">
+	{LEFT}
+</div>
+<div class="oneThirdGrad">
 	{BODY}
+</div>
+<div class="oneThirdGrad">
+	{RIGHT}
 </div>
 <div id="footer">
 	{FOOTER}

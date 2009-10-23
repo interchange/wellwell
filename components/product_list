@@ -5,14 +5,9 @@
 [/query]
 [product-list category="__CATEGORY__" ml=10 more=1 form="category=__CATEGORY__"]
 [no-match]
-<div class="oneThirdGrad">
 Nothing found.
-</div>
 [/no-match]
 [list]
-
-<div class="oneThirdGrad">
-
 <p class="image"><img src="[image-display [product-code] list]"></p>
 
 <h3><a href="[product-code]">[product-field manufacturer] [product-field name]</a></h3>
@@ -22,8 +17,6 @@ Nothing found.
 <ul class="price">
 <li>[product-price] [product-order [product-code]]</li>
 </ul>
-</div>
-
 [/list]
 
 <div class="more">
