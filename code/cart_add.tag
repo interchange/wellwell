@@ -1,6 +1,6 @@
-UserTag addtocart Order sku quantity
-UserTag addtocart AddAttr
-UserTag addtocart Routine <<EOR
+UserTag cart_add Order sku quantity
+UserTag cart_add AddAttr
+UserTag cart_add Routine <<EOR
 sub {
 	my ($sku, $quantity, $opt) = @_;
     my ($product_ref, %item);

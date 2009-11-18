@@ -48,7 +48,7 @@ sub {
 		@qtys = @{$CGI_array->{quantity}};
 
 		for (my $i = 0; $i < @skus; $i++) {
-			$Tag->addtocart($skus[$i], $qtys[$i] || 1);
+			$Tag->cart_add($skus[$i], $qtys[$i] || 1);
 			$Tag->wishlist({function => 'remove',
 							sku => $skus[$i],
 							name => $wishlist_name,
@@ -66,7 +66,7 @@ sub {
 		@qtys = @{$CGI_array->{quantity}};
 
 		for (my $i = 0; $i < @skus; $i++) {
-			$Tag->addtocart($skus[$i], $qtys[$i] || 1);
+			$Tag->cart_add($skus[$i], $qtys[$i] || 1);
 		}
 		$CGI->{mv_nextpage} = $Config->{Special}->{order};
 		return 1;

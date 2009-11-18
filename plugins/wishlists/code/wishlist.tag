@@ -166,7 +166,7 @@ sub {
 		$set = $Db{cart_products}->query(q{select sku,quantity from cart_products where cart = %s}, $wishlist_code);
 		
 		for (@$set) {
-			$Tag->addtocart(@$_);
+			$Tag->cart_add(@$_);
 		}
 	}
 	elsif ($function eq 'remove') {
