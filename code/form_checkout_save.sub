@@ -1,0 +1,9 @@
+Sub form_checkout_save <<EOS
+sub {
+	if ($part eq 'shipping' && $Session->{logged_in}) {
+		# save shipping address
+	}
+
+	return;
+}
+EOS
