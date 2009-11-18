@@ -9,7 +9,7 @@ sub {
 	
     %item = (code => $sku,
 			 quantity => $quantity,
-			 mv_mi => 1,
+			 mv_mi => $Tag->time({format => '%s'}) . sprintf('%06d', ++$Session->{pageCount}),
 			 mv_si => 0);
 
 	$Tag->perl({tables => 'products'});
