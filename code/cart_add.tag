@@ -20,6 +20,12 @@ sub {
 		$item{$_} = $opt->{$_} || $product_ref->{$_};
 	}
 
+	for (@{$Config->{UseModifier}}) {
+		if (exists $opt->{$_}) {
+			$item{$_} = $opt->{$_};
+		}
+	}
+
     push(@$Items, \%item);
 
     return;
