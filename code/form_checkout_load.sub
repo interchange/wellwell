@@ -1,0 +1,18 @@
+Sub form_checkout_load <<EOS
+sub {
+	if ($part eq 'shipping') {
+		# load shipping address
+		$Tag->address({function => 'load',
+					type => 'shipping'});
+	}
+
+	if ($part eq 'final') {
+		# trigger 'order_finalize' hook to give plugins
+		# a last chance to mangle the order
+		
+		$Tag->call_hooks('order_finalize');
+	}
+
+	return {};
+}
+EOS
