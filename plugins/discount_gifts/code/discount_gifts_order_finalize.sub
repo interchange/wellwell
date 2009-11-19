@@ -1,0 +1,25 @@
+Sub discount_gifts_order_finalize <<EOS
+sub {
+	my ($subtotal, $set);
+
+	$Tag->perl({tables => 'discount_gifts'});
+
+	# calculate subtotal
+	$subtotal = $Tag->subtotal({noformat => 1});
+
+	# current date
+	$today = $Tag->time({format => '%Y-%m-%d'});
+
+	# select discount gifts for the given subtotal
+	$set = $Db{discount_gifts}->query(qq{select sku,quantity from discount_gifts where $subtotal >= min_amount and '$today' >= start_date and '$today' <= end_date});
+
+	for (@$set) {
+		# adding discount gifts to the cart
+		$Tag->cart_add({sku => $_->[0], 
+			quantity => $_->[1],
+			discount_gift => 1});
+	}
+
+	return;
+}
+EOS
