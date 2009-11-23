@@ -1,0 +1,6 @@
+Sub discount_gifts_order_rollback <<EOS
+sub {
+	# remove all discount gifts from cart
+	$Tag->cart_delete({modifier => 'discount_gift'});
+}
+EOS
