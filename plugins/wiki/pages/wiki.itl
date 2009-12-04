@@ -1,0 +1,6 @@
+[compose
+	components.body="wiki"
+
+	attributes.wiki.name="[cgi name]"
+	attributes.wiki.page="[cgi page]"
+]

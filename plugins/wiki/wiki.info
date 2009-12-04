@@ -1,0 +1,4 @@
+name = Wiki
+version = 0.1
+author = Stefan Hornburg (Racke) <racke@linuxia.de>
+require = Wiki::Toolkit

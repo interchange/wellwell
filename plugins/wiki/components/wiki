@@ -1,0 +1,56 @@
+<p>
+ACTION [cgi action]
+<br>
+PAGE [either][cgi page][or]__PAGE__[/either]
+</p>
+[if cgi action eq create]
+[if cgi content]
+CREATING
+[wiki name="__NAME__" function="create_page" page="[cgi page]" content="[cgi content]"/]
+[/if]
+<form action="[area href="wiki" nosession=1]" method="POST">
+[form_session_id]
+<input type="hidden" name="action" value="[cgi action]">
+<input name="page">
+<br>
+<textarea name="content">
+[value content]
+</textarea>
+<br>
+<input type="submit" value="OK">
+<br>
+</form>
+[elsif cgi action eq edit]
+[if cgi checksum]
+[wiki name="__NAME__" function="modify" page="__PAGE__" content="[cgi content]" checksum="[cgi checksum]"/]
+[else]
+[wiki name="__NAME__" function="display" page="__PAGE__"]
+<form action="[area href="wiki/__PAGE__" nosession=1]" method="POST">
+[form_session_id]
+<input type="hidden" name="action" value="[cgi action]">
+<input type="hidden" name="checksum" value="{CHECKSUM}">
+<input type="hidden" name="page" value="__PAGE__">
+<br>
+<textarea name="content">
+{CONTENT}
+</textarea>
+<br>
+<input type="submit" value="OK">
+<br>
+</form>
+[/wiki]
+[/else]
+[/if]
+[/elsif]
+[else]
+<a href="[area href=wiki form=action=create]">Create page</a>
+
+[wiki name="__NAME__" function="display" page="__PAGE__"/]
+
+<a href="[area href="wiki/__PAGE__" form=action=edit]">Edit page</a>
+[/else]
+[/if]
+
+LIST: [wiki name="__NAME__" function="list"]
+<a href="[area href="wiki/{PAGE}"]">{PAGE}</a><br>
+[/wiki]
