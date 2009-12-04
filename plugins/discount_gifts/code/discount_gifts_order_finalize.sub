@@ -1,6 +1,6 @@
 Sub discount_gifts_order_finalize <<EOS
 sub {
-	my ($subtotal, $set);
+	my ($subtotal, $set, $today);
 
 	$Tag->perl({tables => 'discount_gifts'});
 
