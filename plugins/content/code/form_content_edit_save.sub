@@ -1,10 +1,17 @@
 Sub form_content_edit_save <<EOS
 sub {
 	# create new content
-	my (%content, $code);
+	my (%content, $code, $page);
 
 	if ($CGI->{preview}) {
 		return {jump => 'content_edit'};
+	}
+
+	# determine page to show after edit
+	if ($Variable->{CONTENT_OVERVIEW_TYPE} eq 'panel') {
+		$page = 'content/list';
+	} else {
+		$page = 'content/recent';
 	}
 
 	$Tag->perl({tables => 'content'});
@@ -30,20 +37,20 @@ sub {
 		unless ($Tag->acl('check', \@edit_perms)) {
 			$Tag->error({name => 'content', 
 				set => 'No permission to edit content'});
-			return {page => 'content/recent'};
+			return {page => $page};
 		}
 	}
 	else {
 		unless ($Tag->acl('check', 'create_content')) {
 			$Tag->error({name => 'content', 
 				set => 'No permission to create content'});
-			return {page => 'content/recent'};
+			return {page => $page};
 		}
 		$content{created} = $Tag->time({format => '%s'});
 	}
 
 	$code = $Db{content}->set_slice($CGI->{code}, %content);
 
-	return {code => $code, page => 'content/recent'};
+	return {code => $code, page => $page};
 }
 EOS

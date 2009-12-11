@@ -14,6 +14,8 @@ sub {
 		}
 
 		$CGI->{mv_nextpage} = $url;
+	} elsif ($Variable->{CONTENT_OVERVIEW_TYPE} eq 'panel') {
+		$CGI->{mv_nextpage} = 'content/list';
 	} else {
 		$CGI->{mv_nextpage} = 'content/recent';
 	}
