@@ -3,6 +3,7 @@ Permissions:
 create_content
 edit_content
 edit_own_content
+view_content
 
 FCK editor:
 
