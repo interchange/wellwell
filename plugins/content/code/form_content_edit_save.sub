@@ -3,6 +3,10 @@ sub {
 	# create new content
 	my (%content, $code);
 
+	if ($CGI->{preview}) {
+		return {jump => 'content_edit'};
+	}
+
 	$Tag->perl({tables => 'content'});
 
 	for (qw/title body uri/) {
@@ -16,10 +20,6 @@ sub {
 		my @edit_perms;
 
 		$content{uid} = $Db{content}->field($CGI->{code}, 'uid');
-
-		unless ($content{uid}) {
-			return;
-		}		
 
 		@edit_perms = 'edit_content';
 
