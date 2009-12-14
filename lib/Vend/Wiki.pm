@@ -57,13 +57,41 @@ sub new {
 		$self->{store} = new Wiki::Toolkit::Store::SQLite(dbname => $self->{dbname});
 	}
 
-	# create Wiki::Toolkit formatter
-	require Wiki::Toolkit::Formatter::Default;
-	$self->{formatter} = new Wiki::Toolkit::Formatter::Default(node_prefix => '?page=');
+	# create Wiki::Toolkit formatter(s)
+	if ($self->{formatter}) {
+		my @formatters;
 		
+		# single or multiple formatter(s) ?
+		@formatters = keys %{$self->{formatter}};
+
+		if (@formatters > 1) {
+			my (%parms, $fmt);
+			
+			for (@formatters) {
+				$fmt = $self->{formatter}->{$_};
+				$self->load_formatter($fmt);
+				$parms{$_} = $fmt->{object};
+			}
+			require Wiki::Toolkit::Formatter::Multiple;
+
+		    $self->{formatter_object} = Wiki::Toolkit::Formatter::Multiple->new(%parms);
+		}
+		else {
+			my ($fmt);
+			
+			$fmt = $self->{formatter}->{$formatters[0]};
+			$self->load_formatter($fmt);
+			$self->{formatter_object} = $fmt->{object};
+		}
+	}
+	else {
+		require Wiki::Toolkit::Formatter::Default;
+		$self->{formatter_object} = new Wiki::Toolkit::Formatter::Default(node_prefix => '?page=');
+	}
+	
 	# create Wiki::Toolkit object
 	$self->{object} = new Wiki::Toolkit(store => $self->{store},
-										formatter => $self->{formatter});
+										formatter => $self->{formatter_object});
 										
 	return $self;
 }
@@ -222,6 +250,24 @@ sub list_pages {
 	return @pages;
 }
 
+# load formatter
+sub load_formatter {
+	my ($self, $fmt) = @_;
+
+	eval "require $fmt->{class}";
+	if ($@) {
+		die "Failed to load $fmt->{class}: $@\n";
+	}
+	eval {
+		$fmt->{object} = $fmt->{class}->new (node_prefix => '?page=');
+	};
+	if ($@) {
+		die "Failed to instantiate $fmt->{class}\n";
+	}
+
+	return $fmt->{object};
+}
+
 # default ActionMap for wiki
 sub action {
  	my ($path) = @_;
@@ -265,9 +311,18 @@ sub parse_wiki {
 		# add pointer for our ActionMap
 		Vend::Config::parse_action('ActionMap', "$value wiki");
 	}
+	elsif ($param eq 'formatter') {
+		# add to our list of formatters
+		::logGlobal ("Adding formatter $value.");
+		$C->{$item}->{$name}->{formatter}->{$value} = {class => "Wiki::Toolkit::Formatter::$value"};
+	}
+	elsif ($param eq 'backend' || $param eq 'dbname') {
+		$C->{$item}->{$name}->{$param} = $value;
+	}
+	else {
+		config_error("No code written yet for $param and $value.", $param, $value);
+	}
 	
-	$C->{$item}->{$name}->{$param} = $value;
-	#config_error("No code written yet for $var and $value.", $var, $value);
 	return $C->{$item};
 }
 
