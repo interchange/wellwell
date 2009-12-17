@@ -22,6 +22,7 @@ CREATING
 <br>
 <input type="submit" value="OK">
 <br>
+</fieldset>
 </form>
 [elsif cgi action eq edit]
 [if cgi checksum]
@@ -34,7 +35,9 @@ CREATING
 <input type="hidden" name="checksum" value="{CHECKSUM}">
 <input type="hidden" name="page" value="__PAGE__">
 <br>
-<textarea name="content">
+<fieldset>
+<label for="content">[L]Page content[/L]</label>
+<textarea name="content" cols="60" rows="20">
 {CONTENT}
 </textarea>
 <br>
