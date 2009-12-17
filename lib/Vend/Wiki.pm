@@ -313,8 +313,19 @@ sub parse_wiki {
 	}
 	elsif ($param eq 'formatter') {
 		# add to our list of formatters
-		::logGlobal ("Adding formatter $value.");
-		$C->{$item}->{$name}->{formatter}->{$value} = {class => "Wiki::Toolkit::Formatter::$value"};
+		my $class;
+		
+		if ($value =~ /::/) {
+			# formatter with different namespace, breakout name
+			$class = $value;
+			my @frags = split(/::/, $value);
+			$value = pop(@frags);
+		}
+		else {
+			$class = "Wiki::Toolkit::Formatter::$value";
+		}
+		
+		$C->{$item}->{$name}->{formatter}->{$value} = {class => $class};
 	}
 	elsif ($param eq 'backend' || $param eq 'dbname') {
 		$C->{$item}->{$name}->{$param} = $value;
