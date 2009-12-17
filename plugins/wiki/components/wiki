@@ -11,9 +11,12 @@ CREATING
 <form action="[area href="wiki" nosession=1]" method="POST">
 [form_session_id]
 <input type="hidden" name="action" value="[cgi action]">
-<input name="page">
+<fieldset>
+<label for="page">[L]Page name[/L]</label>
+<input name="page" size="60">
 <br>
-<textarea name="content">
+<label for="content">[L]Page content[/L]</label>
+<textarea name="content" cols="60" rows="20">
 [value content]
 </textarea>
 <br>
@@ -37,6 +40,7 @@ CREATING
 <br>
 <input type="submit" value="OK">
 <br>
+</fieldset>
 </form>
 [/wiki]
 [/else]
