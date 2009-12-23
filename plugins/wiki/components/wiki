@@ -26,7 +26,7 @@ CREATING
 </form>
 [elsif cgi action eq edit]
 [if cgi checksum]
-[wiki name="__NAME__" function="modify" page="__PAGE__" content="[cgi content]" checksum="[cgi checksum]"/]
+[wiki name="__NAME__" function="modify" page="__PAGE__" content=`$CGI->{content}` checksum="[cgi checksum]"/]
 [else]
 [wiki name="__NAME__" function="display" page="__PAGE__"]
 <form action="[area href="wiki/__PAGE__" nosession=1]" method="POST">
