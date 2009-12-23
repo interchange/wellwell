@@ -56,7 +56,10 @@ sub new {
 		require Wiki::Toolkit::Store::SQLite;
 		$self->{store} = new Wiki::Toolkit::Store::SQLite(dbname => $self->{dbname});
 	}
-
+	else {
+		$self->load_store();
+	}
+	
 	# create Wiki::Toolkit formatter(s)
 	if ($self->{formatter}) {
 		my @formatters;
@@ -250,6 +253,34 @@ sub list_pages {
 	return @pages;
 }
 
+# load store
+sub load_store {
+	my ($self, $store) = @_;
+	my ($class);
+	
+	if ($self->{backend} =~ /mysql/i) {
+		$class = 'Wiki::Toolkit::Store::MySQL';
+	}
+	elsif ($self->{backend} =~ /(pg|postgresql)/i) {
+		$class = 'Wiki::Toolkit::Store::PostgreSQL';
+	}
+	else {
+		die "Unknown Wiki store $self->{backend}.\n";
+	}
+
+	eval "require $class";
+	if ($@) {
+		die "Failed to load $class: $@\n";
+	}
+	eval {
+		$self->{store} = $class->new(dbname => $self->{dbname}, dbuser => $self->{dbuser},
+									 dbpass => $self->{dbpass}, dbhost => $self->{dbhost});
+	};
+	if ($@) {
+		die "Failed to instantiate $class: $@\n";
+	}
+}
+
 # load formatter
 sub load_formatter {
 	my ($self, $fmt) = @_;
@@ -298,6 +329,11 @@ sub action {
 
 package Vend::Config;
 
+my %wiki_config_params = (dbname => 1,
+						  dbuser => 1,
+						  dbpass => 1,
+						  dbhost => 1);
+
 sub parse_wiki {
 	my ($item, $settings) = @_;
 
@@ -327,11 +363,11 @@ sub parse_wiki {
 		
 		$C->{$item}->{$name}->{formatter}->{$value} = {class => $class};
 	}
-	elsif ($param eq 'backend' || $param eq 'dbname') {
+	elsif ($param eq 'backend' || $wiki_config_params{$param}) {
 		$C->{$item}->{$name}->{$param} = $value;
 	}
 	else {
-		config_error("No code written yet for $param and $value.", $param, $value);
+		config_error("Unknown wiki parameter %s with value %s.", $param, $value);
 	}
 	
 	return $C->{$item};
