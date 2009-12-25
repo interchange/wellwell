@@ -6,7 +6,7 @@ PAGE [either][cgi page][or]__PAGE__[/either]
 [if cgi action eq create]
 [if cgi content]
 CREATING
-[wiki name="__NAME__" function="create_page" page="[cgi page]" content="[cgi content]"/]
+[wiki name="__NAME__" function="create_page" page="[cgi page]" content=`$CGI->{content}`/]
 [/if]
 <form action="[area href="wiki" nosession=1]" method="POST">
 [form_session_id]
