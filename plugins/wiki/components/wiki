@@ -20,6 +20,8 @@ CREATING
 [value content]
 </textarea>
 <br>
+[wiki name="__NAME__" function="form" page="__PAGE__" subject="metadata"/]
+<br>
 <input type="submit" value="OK">
 <br>
 </fieldset>
@@ -40,24 +42,44 @@ CREATING
 <textarea name="content" cols="60" rows="20">
 {CONTENT}
 </textarea>
+[/wiki]
+<br>
+[wiki name="__NAME__" function="form" page="__PAGE__" subject="metadata"/]
 <br>
 <input type="submit" value="OK">
 <br>
 </fieldset>
 </form>
+[/else]
+[/if]
+[/elsif]
+[elsif cgi action eq list]
+[if cgi metadata]
+[wiki name="__NAME__" function="list" metadata=`$CGI->{metadata}`]
+<a href="[area href="wiki/{PAGE}"]">{PAGE}</a><br>
+[/wiki]
+[else]
+<h2>[L]List of Wiki Pages[/L]</h2>
+[wiki name="__NAME__" function="list"]
+<a href="[area href="wiki/{PAGE}"]">{PAGE}</a><br>
 [/wiki]
 [/else]
 [/if]
 [/elsif]
 [else]
+<p>
 <a href="[area href=wiki form=action=create]">Create page</a>
-
+</p>
+<p>
 [wiki name="__NAME__" function="display" page="__PAGE__"/]
-
+</p>
+<p>
 <a href="[area href="wiki/__PAGE__" form=action=edit]">Edit page</a>
-[/else]
-[/if]
-
-LIST: [wiki name="__NAME__" function="list"]
+</p>
+<p>
+[wiki name="__NAME__" function="list"]
 <a href="[area href="wiki/{PAGE}"]">{PAGE}</a><br>
 [/wiki]
+</p>
+[/else]
+[/if]

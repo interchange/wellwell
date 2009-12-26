@@ -31,7 +31,7 @@ use Wiki::Toolkit;
 Vend::Config::parse_directive('Wiki', 'Wiki wiki');
 
 # define [wiki] tag
-Vend::Config::parse_tag('UserTag', 'wiki Order function');
+Vend::Config::parse_tag('UserTag', 'wiki Order function page subject');
 Vend::Config::parse_tag('UserTag', 'wiki HasEndTag');
 Vend::Config::parse_tag('UserTag', 'wiki AddAttr');
 Vend::Config::parse_tag('UserTag', 'wiki MapRoutine Vend::Wiki::wiki');
@@ -100,7 +100,7 @@ sub new {
 }
 	
 sub wiki {
-	my ($function, $opt, $body) = @_;
+	my ($function, $page, $subject, $opt, $body) = @_;
 	my ($ret, $name);
 
 	# default name for the wiki is just wiki
@@ -117,12 +117,18 @@ sub wiki {
 	}
 
 	if ($function eq 'create_page') {
-		$ret = $wiki{$name}->create_page($opt->{page}, $opt->{content});
+		my $metadata = $wiki{$name}->metadata_from_form();
+
+		$ret = $wiki{$name}->create_page($opt->{page}, $opt->{content}, $metadata);
+
 		return $ret;
 	}
 
 	if ($function eq 'modify' || $function eq 'modify_page') {
-		$ret = $wiki{$name}->modify_page($opt->{page}, $opt->{content}, $opt->{checksum});
+		my $metadata = $wiki{$name}->metadata_from_form();
+
+		$ret = $wiki{$name}->modify_page($opt->{page}, $opt->{content}, $opt->{checksum},
+										 $metadata);
 		return $ret;
 	}
 	
@@ -139,9 +145,45 @@ sub wiki {
 			return $wiki{$name}->display_page($opt->{page});
 		}
 	}
+
+	if ($function eq 'form') {
+		if ($subject eq 'metadata') {
+			my ($mdlist, @out, %node, $mdref, $label, $el);
+
+			if ($page) {
+				%node = $wiki{$name}->retrieve_page($page);
+			}
+
+			# present form (elements) for adding/editing metadata
+			$mdlist = $wiki{$name}->{metadata}->{array};
+
+			for (@$mdlist) {
+				$mdref = $wiki{$name}->{metadata}->{hash}->{$_};
+
+				# preseed with current value of metadata
+				$mdref->{value} = $node{metadata}->{$_}->[0];
+
+				$label = qq{<label for="$_">$mdref->{label}</label>};
+				$el = Vend::Tags->display($mdref);
+				push (@out, "$label$el");
+			}
+
+			return join(',', @out);
+		}
+	}
 	
 	if ($function eq 'list') {
-		 my @nodes = $wiki{$name}->list_pages();
+		 my @nodes;
+
+		 if ($opt->{metadata}) {
+			 my ($key, $value) = split(/=/, $opt->{metadata}, 2);
+
+			 @nodes = $wiki{$name}->list_pages({metadata_type => $key,
+												metadata_value => $value});
+		 }
+		 else {
+			 @nodes = $wiki{$name}->list_pages();
+		 }
 
 		 if ($body) {
 			 # run templating on page list
@@ -165,10 +207,10 @@ sub wiki {
 # @param content page content
 
 sub create_page {
-	my ($self, $name, $content) = @_;
+	my ($self, $name, $content, $metadata) = @_;
 	my ($ret);
 	
-	$ret = $self->{object}->write_node($name, $content);
+	$ret = $self->{object}->write_node($name, $content, undef, $metadata);
 
 	unless ($ret) {
 		::logError("Failed to create page $name.");
@@ -179,10 +221,10 @@ sub create_page {
 
 # modify Wiki page
 sub modify_page {
-	my ($self, $name, $content, $checksum) = @_;
+	my ($self, $name, $content, $checksum, $metadata) = @_;
 	my ($ret);
 	
-	$ret = $self->{object}->write_node($name, $content, $checksum);
+	$ret = $self->{object}->write_node($name, $content, $checksum, $metadata);
 
 	unless ($ret) {
 		die "Page modification failed.";
@@ -233,7 +275,15 @@ sub display_page {
 		}
 
 		if ($format ne 'raw') {
-			return $self->{object}->format($node{content}, $node{metadata});
+			my @out;
+
+			push (@out, $self->{object}->format($node{content}, $node{metadata}));
+
+			for (keys %{$node{metadata}}) {
+				push (@out, "$_: " . join(', ', @{$node{metadata}->{$_}}));
+			}
+
+			return join("\n", @out);
 		}
 
 		return %node;
@@ -246,11 +296,29 @@ sub display_page {
 
 # list Wiki pages
 sub list_pages {
-	my ($self) = @_;
+	my ($self, $metadata) = @_;
 	my (@pages);
 
-	@pages = $self->{object}->list_all_nodes();
+	if ($metadata) {
+		@pages = $self->{object}->list_nodes_by_metadata(%$metadata);
+	}
+	else {
+		@pages = $self->{object}->list_all_nodes();
+	}
+	
 	return @pages;
+}
+
+# retrieve metadata from from parameters
+sub metadata_from_form {
+	my ($self) = @_;
+	my (%metadata);
+	
+	for (@{$self->{metadata}->{array}}) {
+		$metadata{$_} = $CGI::values{"metadata_$_"};
+	}
+
+	return \%metadata;
 }
 
 # load store
@@ -269,7 +337,7 @@ sub load_store {
 	}
 
 	eval "require $class";
-	if ($@) {
+ 	if ($@) {
 		die "Failed to load $class: $@\n";
 	}
 	eval {
@@ -341,7 +409,7 @@ sub parse_wiki {
 	# directives
 	return {} unless $settings;
 
-	my ($name, $param, $value) = split(/\s+/, $settings);
+	my ($name, $param, $value, @args) = split(/\s+/, $settings);
 
 	if ($param eq 'url') {
 		# add pointer for our ActionMap
@@ -363,11 +431,21 @@ sub parse_wiki {
 		
 		$C->{$item}->{$name}->{formatter}->{$value} = {class => $class};
 	}
+	elsif ($param eq 'metadata') {
+		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
+			push(@{$C->{$item}->{$name}->{$param}->{array}}, $value);
+			$C->{$item}->{$name}->{$param}->{hash}->{$value} = {name => "metadata_$value"};
+		}
+			
+		if (@args) {
+			$C->{$item}->{$name}->{$param}->{hash}->{$value}->{$args[0]} = $args[1];
+		}
+	}
 	elsif ($param eq 'backend' || $wiki_config_params{$param}) {
 		$C->{$item}->{$name}->{$param} = $value;
 	}
 	else {
-		config_error("Unknown wiki parameter %s with value %s.", $param, $value);
+		config_error("Unknown wiki parameter %s with value %s and args %s.", $param, $value, join(',', @args));
 	}
 	
 	return $C->{$item};
