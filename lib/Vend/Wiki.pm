@@ -65,13 +65,13 @@ sub new {
 		my @formatters;
 		
 		# single or multiple formatter(s) ?
-		@formatters = keys %{$self->{formatter}};
+		@formatters = @{$self->{formatter}->{array}};
 
 		if (@formatters > 1) {
 			my (%parms, $fmt);
 			
 			for (@formatters) {
-				$fmt = $self->{formatter}->{$_};
+				$fmt = $self->{formatter}->{hash}->{$_};
 				$self->load_formatter($fmt);
 				$parms{$_} = $fmt->{object};
 			}
@@ -82,7 +82,7 @@ sub new {
 		else {
 			my ($fmt);
 			
-			$fmt = $self->{formatter}->{$formatters[0]};
+			$fmt = $self->{formatter}->{hash}->{$formatters[0]};
 			$self->load_formatter($fmt);
 			$self->{formatter_object} = $fmt->{object};
 		}
@@ -170,6 +170,11 @@ sub wiki {
 
 			return join(',', @out);
 		}
+	}
+
+	if ($function eq 'format') {
+		# determine current format
+		return $wiki{$name}->{formatter}->{array}->[0];
 	}
 	
 	if ($function eq 'list') {
@@ -428,8 +433,12 @@ sub parse_wiki {
 		else {
 			$class = "Wiki::Toolkit::Formatter::$value";
 		}
+
+		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
+			push(@{$C->{$item}->{$name}->{$param}->{array}}, $value);
+		}
 		
-		$C->{$item}->{$name}->{formatter}->{$value} = {class => $class};
+		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class};
 	}
 	elsif ($param eq 'metadata') {
 		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
