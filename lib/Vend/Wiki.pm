@@ -1,6 +1,6 @@
 # Vend::Wiki - Interchange Wiki
 #
-# Copyright (C) 2004-2009 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2009-2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,6 +38,10 @@ Vend::Config::parse_tag('UserTag', 'wiki MapRoutine Vend::Wiki::wiki');
 
 # define [wiki] global sub for catalog actions
 Vend::Config::parse_subroutine('GlobalSub', 'wiki Vend::Wiki::action');
+
+# reserved metadata entries
+my %metadata_reserved = (formatter => 'Formatter',
+						 uid => 'User ID');
 
 our %wiki;
 
@@ -202,6 +206,21 @@ sub wiki {
 			 return join(',', @nodes);
 		 }
 	}
+
+	if ($function eq 'recent_changes') {
+		my (@changes, $loopret);
+		
+		@changes = $wiki{$name}->list_recent_changes();
+
+		for (@changes) {
+			$_->{date} = substr($_->{last_modified}, 0, 10);
+			$_->{time} = substr($_->{last_modified}, 11, 8);
+		}
+		
+		$loopret = Vend::Tags->loop({object => {mv_results => \@changes}, prefix => 'item',
+									 body => $body});
+		return $loopret;
+	}
 	
 	return $function;
 }
@@ -214,6 +233,8 @@ sub wiki {
 sub create_page {
 	my ($self, $name, $content, $metadata) = @_;
 	my ($ret);
+
+	$self->metadata_add_internal($metadata);
 	
 	$ret = $self->{object}->write_node($name, $content, undef, $metadata);
 
@@ -228,6 +249,8 @@ sub create_page {
 sub modify_page {
 	my ($self, $name, $content, $checksum, $metadata) = @_;
 	my ($ret);
+
+	$self->metadata_add_internal($metadata);
 	
 	$ret = $self->{object}->write_node($name, $content, $checksum, $metadata);
 
@@ -285,6 +308,8 @@ sub display_page {
 			push (@out, $self->{object}->format($node{content}, $node{metadata}));
 
 			for (keys %{$node{metadata}}) {
+				# skip internal metadata
+				next if exists $metadata_reserved{$_};
 				push (@out, "$_: " . join(', ', @{$node{metadata}->{$_}}));
 			}
 
@@ -314,7 +339,27 @@ sub list_pages {
 	return @pages;
 }
 
-# retrieve metadata from from parameters
+# list recent changes
+sub list_recent_changes {
+	my ($self) = @_;
+
+	return $self->{object}->list_recent_changes(last_n_changes => 50);
+}
+
+# add internal metadata - used when writing a node
+sub metadata_add_internal {
+	my ($self, $metadata) = @_;
+
+	if ($Vend::Session->{logged_in}) {
+		$metadata->{uid} = $Vend::Session->{username};
+	}
+
+	$metadata->{formatter} = $self->{formatter}->{array}->[0];
+
+	return $metadata;
+}
+
+# retrieve metadata from form parameters
 sub metadata_from_form {
 	my ($self) = @_;
 	my (%metadata);
@@ -441,6 +486,9 @@ sub parse_wiki {
 		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class};
 	}
 	elsif ($param eq 'metadata') {
+		if (exists $metadata_reserved{$value}) {
+			config_error('Metadata name %s is reserved for %s', $value, $metadata_reserved{$value});
+		}
 		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
 			push(@{$C->{$item}->{$name}->{$param}->{array}}, $value);
 			$C->{$item}->{$name}->{$param}->{hash}->{$value} = {name => "metadata_$value"};
