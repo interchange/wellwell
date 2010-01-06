@@ -10,6 +10,10 @@ sub {
 	%update_mode = (add => 'insert', modify => 'update', set => 'upsert');
 
 	if (exists $update_mode{$function}) {
+		# drop old record when reverting redirects
+		$Db{path_redirect}->query(q{delete from path_redirect where path_source = '%s'},
+			$target);
+
 		# in case target exists we have to rewrite it
 		$Db{path_redirect}->query(q{update path_redirect set path_target = '%s' where path_target = '%s'},
 			$target, $source);
@@ -46,6 +50,12 @@ sub {
 		unless ($recref = $Db{path_redirect}->row_hash($source)) {
 			return;
 		}
+
+		if ($recref->{source} eq $recref->{target}) {
+			# redirection points to itself, move ahead
+			Log("Redirection for $recref->{source} points to itself.");
+			return;
+		}	
 
 		if ($opt->{bump}) {
 			$Db{path_redirect}->set_field($source, 'last_used', $Tag->time({format => '%s'}));
