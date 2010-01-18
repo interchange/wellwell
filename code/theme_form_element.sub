@@ -16,7 +16,10 @@ sub {
 		return qq{<legend>$label</legend>};
 	}
 
-	$out = theme('form_element_label', $name, $label);
+	unless ($type eq 'hidden') {
+		$out = theme('form_element_label', $name, $label);
+	}
+
 	$out .= theme('form_element_field', $name,
 				   	$type,
 					$value,
