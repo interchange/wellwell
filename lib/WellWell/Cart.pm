@@ -1,3 +1,4 @@
+# WellWell::Cart - WellWell cart routines
 #
 # Copyright (C) 2009,2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
@@ -29,12 +30,18 @@ Vend::Config::parse_tag('UserTag', 'cart_add Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_add AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_add MapRoutine WellWell::Cart::cart_add');
 
+Vend::Config::parse_tag('UserTag', 'cart_item Order sku quantity');
+Vend::Config::parse_tag('UserTag', 'cart_item AddAttr');
+Vend::Config::parse_tag('UserTag', 'cart_item MapRoutine WellWell::Cart::cart_item');
+
 Vend::Config::parse_tag('UserTag', 'cart_refresh MapRoutine WellWell::Cart::cart_refresh');
 Vend::Config::parse_subroutine('GlobalSub', 'cart_refresh WellWell::Cart::cart_refresh_form_action');
 
-sub cart_add {
+# [cart-item] - returns item hash ready to put it into cart
+
+sub cart_item {
 	my ($sku, $quantity, $opt) = @_;
-    my ($db_products, $product_ref, %item);
+	my ($db_products, $product_ref, %item);
 
 	unless ($db_products = database_exists_ref('products')) {
 		die errmsg("Database missing: %s", 'products');
@@ -59,7 +66,20 @@ sub cart_add {
 		}
 	}
 
-    push(@$Vend::Items, \%item);
+	return \%item;
+}
+
+# [cart-add] - add item to cart
+
+sub cart_add {
+	my ($sku, $quantity, $opt) = @_;
+	my ($itemref);
+	
+	$itemref = cart_item($sku, $quantity, $opt);
+	
+    WellWell::Core::hooks('run', 'cart_add', $itemref);
+	
+    push(@$Vend::Items, $itemref);
 
     return;
 }
