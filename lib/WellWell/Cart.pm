@@ -77,7 +77,7 @@ sub cart_add {
 	
 	$itemref = cart_item($sku, $quantity, $opt);
 	
-    WellWell::Core::hooks('run', 'cart_add', $itemref);
+    WellWell::Core::hooks('run', 'cart_item_add', $itemref);
 	
     push(@$Vend::Items, $itemref);
 
@@ -85,15 +85,17 @@ sub cart_add {
 }
 
 sub cart_refresh {
-	my ($cart, $new_cart, $line, $quantity);
-	
+	my ($cart, $new_cart, $itemref, $quantity);
+
 	$cart = $Vend::Items;
 	$new_cart = [];
 	
 	return 1 unless defined $CGI::values{"quantity0"};
 
 	foreach my $i (0 .. $#$cart) {
-		$line = $cart->[$i];
+		my $modref = {};
+		
+		$itemref = $cart->[$i];
 		$quantity = $CGI::values{"quantity$i"};
 
 		# trim quantity
@@ -101,23 +103,33 @@ sub cart_refresh {
 		$quantity =~ s/\s+$//;
 		
 		if (defined $quantity) {
-			if ($quantity =~ /^(\d+)$/ && $quantity != $line->{quantity}) {
+			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
 				if ($quantity == 0) {
 					# deleting the item by omission
+				    WellWell::Core::hooks('run', 'cart_item_delete', $itemref);
 					next;
 				}
-				$line->{quantity} = $quantity;
+				$modref->{quantity} = $quantity;
 			}
 		}
 
 		# checking whether any modifier changed
 		for (@{$Vend::Cfg->{UseModifier}}) {
-			if (exists $CGI::values{"$_$i"}) {
-				$line->{$_} = $CGI::values{"$_$i"};
+			if (exists $CGI::values{"$_$i"}
+			   && $CGI::values{"$_$i"} ne $itemref->{$_}) {
+				$modref->{$_} = $CGI::values{"$_$i"};
+			}
+		}
+
+		if (keys %$modref) {
+		    WellWell::Core::hooks('run', 'cart_item_modify', $itemref, $modref);
+
+			for (keys %$modref) {
+				$itemref->{$_} = $modref->{$_};
 			}
 		}
 		
-		push (@$new_cart, $line);
+		push (@$new_cart, $itemref);
 	}
 
 	@$cart = @$new_cart;
