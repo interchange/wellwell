@@ -78,10 +78,17 @@ sub cart_add {
 	$itemref = cart_item($sku, $quantity, $opt);
 	
     WellWell::Core::hooks('run', 'cart_item_add', $itemref);
+
+	# verify that number of items doesn't go out of bounds
+	if ($Vend::Cfg->{OrderLineLimit} && @$Vend::Items >= $Vend::Cfg->{OrderLineLimit}) {
+		::logError('Limit %s for number of items in the cart exceeded.',
+				   $Vend::Cfg->{OrderLineLimit});
+		return;
+	}
 	
     push(@$Vend::Items, $itemref);
 
-    return;
+    return $itemref;
 }
 
 sub cart_refresh {
