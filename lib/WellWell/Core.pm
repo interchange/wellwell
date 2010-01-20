@@ -39,8 +39,6 @@ sub hooks {
 	my ($function, $name, @args) = @_;
 
 	if ($function eq 'run') {
-		::logError("Running hooks $name.");
-
 		if (exists $Vend::Cfg->{Hook}->{$name}) {
 			my @hooks = @{$Vend::Cfg->{Hook}->{$name}};
 
