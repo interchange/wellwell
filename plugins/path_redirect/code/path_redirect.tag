@@ -51,9 +51,9 @@ sub {
 			return;
 		}
 
-		if ($recref->{path_source} eq $recref->{path_target}) {
+		if ($source eq $recref->{path_target}) {
 			# redirection points to itself, move ahead
-			Log("Redirection for $recref->{source} points to itself.");
+			Log("Redirection for $source points to itself.");
 			return;
 		}	
 
