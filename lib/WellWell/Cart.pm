@@ -79,6 +79,15 @@ sub cart_add {
 	
     WellWell::Core::hooks('run', 'cart_item_add', $itemref);
 
+	if ($itemref->{error}) {
+		# one of the hooks denied the item
+		if ($itemref->{log_error}) {
+			::logError('Adding item %s was denied: %s', $sku, $itemref->{error});
+		}
+		Vend::Tags->error({name => $sku, set => $itemref->{error}, overwrite => 1});
+		return;
+	}
+	
 	# verify that number of items doesn't go out of bounds
 	if ($Vend::Cfg->{OrderLineLimit} && @$Vend::Items >= $Vend::Cfg->{OrderLineLimit}) {
 		::logError('Limit %s for number of items in the cart exceeded.',
@@ -112,9 +121,19 @@ sub cart_refresh {
 		if (defined $quantity) {
 			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
 				if ($quantity == 0) {
-					# deleting the item by omission
-				    WellWell::Core::hooks('run', 'cart_item_delete', $itemref);
-					next;
+					WellWell::Core::hooks('run', 'cart_item_delete', $itemref);
+
+					if ($itemref->{error}) {
+						if ($itemref->{log_error}) {
+							::logError('Removal of item %s was denied: %s', $itemref->{code}, $itemref->{error});
+						}
+						Vend::Tags->error({name => $itemref->{code}, set => $itemref->{error}, overwrite => 1});
+						$quantity = $itemref->{quantity};
+					}
+					else {
+						# deleting the item by omission
+						next;
+					}
 				}
 				$modref->{quantity} = $quantity;
 			}
@@ -131,6 +150,14 @@ sub cart_refresh {
 		if (keys %$modref) {
 		    WellWell::Core::hooks('run', 'cart_item_modify', $itemref, $modref);
 
+			if ($itemref->{error}) {
+				if ($itemref->{log_error}) {
+					::logError('Modification of item %s was denied: %s', $itemref->{code}, $itemref->{error});
+				}
+				Vend::Tags->error({name => $itemref->{code}, set => $itemref->{error}, overwrite => 1});
+				%$modref = ();
+			}
+			
 			for (keys %$modref) {
 				$itemref->{$_} = $modref->{$_};
 			}
