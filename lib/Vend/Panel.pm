@@ -71,8 +71,11 @@ sub panel {
 		
 		$set = $db->query({sql => qq{select $colstr from $table}, hashref => 1});
 
-		for (@$set) {
-			push(@out, $panel->fill_simple($_));
+		for my $row (@$set) {
+			for my $fltvar (%{$opt->{filters}}) {
+				$row->{$fltvar} = Vend::Tags->filter({op => $opt->{filters}->{$fltvar}, body => $row->{$fltvar}});
+			}
+			push(@out, $panel->fill_simple($row));
 		}
 	}
 
