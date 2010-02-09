@@ -77,7 +77,7 @@ sub cart_add {
 	
 	$itemref = cart_item($sku, $quantity, $opt);
 	
-    WellWell::Core::hooks('run', 'cart_item_add', $itemref);
+    WellWell::Core::hooks('run', 'cart', 'add', 'main', $itemref);
 
 	if ($itemref->{error}) {
 		# one of the hooks denied the item
@@ -121,7 +121,7 @@ sub cart_refresh {
 		if (defined $quantity) {
 			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
 				if ($quantity == 0) {
-					WellWell::Core::hooks('run', 'cart_item_delete', $itemref);
+					WellWell::Core::hooks('run', 'cart', 'delete', 'main', $itemref);
 
 					if ($itemref->{error}) {
 						if ($itemref->{log_error}) {
@@ -148,7 +148,7 @@ sub cart_refresh {
 		}
 
 		if (keys %$modref) {
-		    WellWell::Core::hooks('run', 'cart_item_modify', $itemref, $modref);
+		    WellWell::Core::hooks('run', 'cart', 'modify', 'main', $itemref, $modref);
 
 			if ($itemref->{error}) {
 				if ($itemref->{log_error}) {
