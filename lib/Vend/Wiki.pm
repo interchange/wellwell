@@ -99,7 +99,18 @@ sub new {
 	# create Wiki::Toolkit object
 	$self->{object} = new Wiki::Toolkit(store => $self->{store},
 										formatter => $self->{formatter_object});
-										
+
+	# register plugins
+	my (@plugins, $plugin);
+	
+	@plugins = @{$self->{plugin}->{array}};
+
+	for (@plugins) {
+		$plugin = $self->{plugin}->{hash}->{$_};
+		$self->load_plugin($plugin);
+		$self->{object}->register_plugin(plugin => $plugin->{object});
+	}
+	
 	return $self;
 }
 	
@@ -418,6 +429,24 @@ sub load_formatter {
 	return $fmt->{object};
 }
 
+# load plugin
+sub load_plugin {
+	my ($self, $fmt) = @_;
+
+	eval "require $fmt->{class}";
+	if ($@) {
+		die "Failed to load $fmt->{class}: $@\n";
+	}
+	eval {
+		$fmt->{object} = $fmt->{class}->new ();
+	};
+	if ($@) {
+		die "Failed to instantiate $fmt->{class}: $@\n";
+	}
+
+	return $fmt->{object};
+}
+
 # default ActionMap for wiki
 sub action {
  	my ($path) = @_;
@@ -488,6 +517,26 @@ sub parse_wiki {
 		}
 		else {
 			$class = "Wiki::Toolkit::Formatter::$value";
+		}
+
+		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
+			push(@{$C->{$item}->{$name}->{$param}->{array}}, $value);
+		}
+		
+		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class};
+	}
+	elsif ($param eq 'plugin') {
+		# add to our list of plugins
+		my $class;
+		
+		if ($value =~ /::/) {
+			# plugin with different namespace, breakout name
+			$class = $value;
+			my @frags = split(/::/, $value);
+			$value = pop(@frags);
+		}
+		else {
+			$class = "Wiki::Toolkit::Plugin::$value";
 		}
 
 		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
