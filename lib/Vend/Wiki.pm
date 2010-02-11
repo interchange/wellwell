@@ -408,10 +408,11 @@ sub load_formatter {
 		die "Failed to load $fmt->{class}: $@\n";
 	}
 	eval {
-		$fmt->{object} = $fmt->{class}->new (node_prefix => '?page=');
+		$fmt->{object} = $fmt->{class}->new (store => $self->{store},
+											 node_prefix => '?page=');
 	};
 	if ($@) {
-		die "Failed to instantiate $fmt->{class}\n";
+		die "Failed to instantiate $fmt->{class}: $@\n";
 	}
 
 	return $fmt->{object};
