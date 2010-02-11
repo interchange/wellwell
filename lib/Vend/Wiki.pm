@@ -425,11 +425,21 @@ sub action {
 	
  	($action, $url) = split(m{/+}, $path, 2);
 
-	# examine configuration for wiki name and relay to configured page
-	while (($key, $value) = each %{$Vend::Cfg->{Wiki}}) {
-		if ($action eq $value->{url}) {
-			$name = $key;
-			$page = $value->{page};
+	if (keys %{$Vend::Cfg->{Wiki}} == 1) {
+		$name = (keys %{$Vend::Cfg->{Wiki}})[0];
+	}
+	else {
+		# examine configuration for wiki name and relay to configured page
+		while (($key, $value) = each %{$Vend::Cfg->{Wiki}}) {
+			if ($action eq $value->{url}) {
+				$name = $key;
+				$page = $value->{page};
+				last;
+			}
+			elsif ($action eq $key) {
+				$name = $key;
+				last;
+			}
 		}
 	}
 
