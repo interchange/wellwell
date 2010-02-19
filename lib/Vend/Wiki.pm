@@ -43,6 +43,17 @@ Vend::Config::parse_subroutine('GlobalSub', 'wiki Vend::Wiki::action');
 my %metadata_reserved = (formatter => 'Formatter',
 						 uid => 'User ID');
 
+# default menu entries
+my %wiki_menu = (edit_page => {label => 'Edit this page',
+							   action => 'edit',
+							   permission => 'wiki_edit_pages',
+							   context => 'page'},
+				 home => {label => 'Home',
+						  permission => 'wiki_view_pages'},
+				 recent_changes => {label => 'Recent changes',
+									action => 'recent_changes',
+									permission => 'wiki_recent_changes'});
+
 our %wiki;
 
 sub new {
@@ -129,8 +140,11 @@ sub wiki {
 		}
 		
 		$wiki{$name} = new Vend::Wiki(%{$Vend::Cfg->{Wiki}->{$name}});
+		$wiki{$name}->{name} = $name;
 	}
 
+	$wiki{$name}->{page} = $page;
+	
 	if ($function eq 'create_page') {
 		my $metadata = $wiki{$name}->metadata_from_form();
 
@@ -218,6 +232,10 @@ sub wiki {
 		 }
 	}
 
+	if ($function eq 'menu') {
+		return $wiki{$name}->menu($opt->{menu_name}, $opt);
+	}
+	
 	if ($function eq 'recent_changes') {
 		my (@changes, $loopret);
 		
@@ -356,6 +374,52 @@ sub list_recent_changes {
 	my ($self) = @_;
 
 	return $self->{object}->list_recent_changes(last_n_changes => 50);
+}
+
+# prepares menu items
+sub menu {
+	my ($self, $name, $opt) = @_;
+	my (@tokens, @entries);
+
+	unless (exists $self->{menu}->{$name}) {
+		# menu not found
+		return;
+	}
+	
+	@tokens = @{$self->{menu}->{$name}};
+
+	for (@tokens) {
+		my ($menu_ref, $url, $form, $label);
+		
+		if (exists $wiki_menu{$_}) {
+			$menu_ref = $wiki_menu{$_};
+
+			if ($menu_ref->{context} eq 'page' && ! $self->{page}) {
+				# out of context, skip entry
+				next;
+			}
+			
+			$label = $menu_ref->{label} || $_;
+				
+			if ($menu_ref->{action}) {
+				$form = {action => $menu_ref->{action}};
+			}
+
+			$url = $self->{url} || $self->{name};
+
+			if ($self->{page}) {
+				$url .= "/$self->{page}";
+			}
+			
+			push(@entries, {name => $label, url => $url, form => $form,
+							permission => $menu_ref->{permission}});
+		}
+		else {
+			push(@entries, {name => $_});
+		}
+	}
+
+	return Vend::Tags->menu_display($name, {ref => \@entries});
 }
 
 # add internal metadata - used when writing a node
@@ -545,6 +609,14 @@ sub parse_wiki {
 		}
 		
 		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class};
+	}
+	elsif ($param eq 'menu') {
+		# split menu items
+		my @entries;
+
+		@entries = split(/\s*,\s*/, $args[0]);
+
+		push(@{$C->{$item}->{$name}->{$param}->{$value}}, @entries);
 	}
 	elsif ($param eq 'metadata') {
 		if (exists $metadata_reserved{$value}) {
