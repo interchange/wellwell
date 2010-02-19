@@ -35,16 +35,21 @@ sub display {
 	my ($set, @entries, $name_qtd, @fields, $fstr, $base_url, $selected);
 	my ($db_menus);
 	
-	$db_menus = database_exists_ref('menus');
+	if ($opt->{ref}) {
+		$set = $opt->{ref};
+	}
+	else {
+		$db_menus = database_exists_ref('menus');
 	
-	$name_qtd = $db_menus->quote($name);
+		$name_qtd = $db_menus->quote($name);
 
-	@fields = qw/code name url parent permission/;
+		@fields = qw/code name url parent permission/;
 		
-	$fstr = join(',', @fields);
-
-	$set = $db_menus->query({sql => qq{select $fstr from menus where menu_name = $name_qtd order by parent asc, weight desc, code}, hashref => 1});
-
+		$fstr = join(',', @fields);
+		
+		$set = $db_menus->query({sql => qq{select $fstr from menus where menu_name = $name_qtd order by parent asc, weight desc, code}, hashref => 1});
+	}
+	
 	for (@$set) {
 		next unless Vend::Tags->acl('check', $_->{permission});
 
@@ -65,7 +70,7 @@ sub display {
 
 sub build_entries {
 	my ($entries_ref, $opt) = @_;
-	my (@out, $ref, $base_url, $uri, $selected);
+	my (@out, $ref, $base_url, $uri, $form, $selected);
 
 	if ($opt->{selected}) {
 		$base_url = $Vend::Session->{last_url};
@@ -83,8 +88,15 @@ sub build_entries {
 					$selected = '';
 				}
 			}
-	
-			$uri = Vend::Tags->area($ref->{url});
+
+			if (ref($ref->{form}) eq 'HASH') {
+				$form = join("\n", map {"$_=$ref->{form}->{$_}"} keys(%{$ref->{form}}));
+			}
+			else {
+				$form = '';
+			}
+			
+			$uri = Vend::Tags->area({href => $ref->{url}, form => $form});
 			$out[$i] = qq{<li$selected><a href="$uri">$ref->{name}</a></li>};
 		}
 		else {
