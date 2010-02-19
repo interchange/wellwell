@@ -113,13 +113,15 @@ sub new {
 
 	# register plugins
 	my (@plugins, $plugin);
-	
-	@plugins = @{$self->{plugin}->{array}};
 
-	for (@plugins) {
-		$plugin = $self->{plugin}->{hash}->{$_};
-		$self->load_plugin($plugin);
-		$self->{object}->register_plugin(plugin => $plugin->{object});
+	if (exists $self->{plugin}) {
+		@plugins = @{$self->{plugin}->{array}};
+
+		for (@plugins) {
+			$plugin = $self->{plugin}->{hash}->{$_};
+			$self->load_plugin($plugin);
+			$self->{object}->register_plugin(plugin => $plugin->{object});
+		}
 	}
 	
 	return $self;
