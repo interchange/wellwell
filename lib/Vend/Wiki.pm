@@ -226,6 +226,7 @@ sub wiki {
 		for (@changes) {
 			$_->{date} = substr($_->{last_modified}, 0, 10);
 			$_->{time} = substr($_->{last_modified}, 11, 8);
+			$_->{uid} = $_->{metadata}->{uid}->[0];
 		}
 		
 		$loopret = Vend::Tags->loop({object => {mv_results => \@changes}, prefix => 'item',
