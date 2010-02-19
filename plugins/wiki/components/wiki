@@ -1,11 +1,5 @@
-<p>
-ACTION [cgi action]
-<br>
-PAGE [either][cgi page][or]__PAGE__[/either]
-</p>
 [if cgi action eq create]
 [if cgi content]
-CREATING
 [wiki name="__NAME__" function="create_page" page="[cgi page]" content=`$CGI->{content}`/]
 [/if]
 <form action="[area href="wiki" nosession=1]" method="POST">
@@ -29,6 +23,7 @@ CREATING
 [elsif cgi action eq edit]
 [if cgi checksum]
 [wiki name="__NAME__" function="modify" page="__PAGE__" content=`$CGI->{content}` checksum="[cgi checksum]"/]
+[wiki name="__NAME__" function="display" page="__PAGE__"]
 [else]
 [wiki name="__NAME__" function="display" page="__PAGE__"]
 <form action="[area href="wiki/__PAGE__" nosession=1]" method="POST">
@@ -72,14 +67,8 @@ CREATING
 </p>
 <p>
 [wiki name="__NAME__" function="display" page="__PAGE__"/]
-</p>
-<p>
-<a href="[area href="wiki/__PAGE__" form=action=edit]">Edit page</a>
-</p>
-<p>
-[wiki name="__NAME__" function="list"]
-<a href="[area href="wiki/{PAGE}"]">{PAGE}</a><br>
-[/wiki]
+<hr>
+[wiki name="__NAME__" function="menu" menu_name="footer" page="__PAGE__"/]
 </p>
 [/else]
 [/if]
