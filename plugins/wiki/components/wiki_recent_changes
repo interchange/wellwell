@@ -1,0 +1,33 @@
+<h2>[L]Recent Changes[/L]</h2>
+
+[wiki name="__NAME__" function="recent_changes"]
+[on-match]
+<table>
+[/on-match]
+[list]
+[item-change date][condition][item-param date][/condition]
+<tr class="rcdaybreak"><td colspan="6">[item-param date]</td></tr>
+[/item-change date]
+<tr>
+<td class="rcicon1">
+<a href="[area href="wiki" form="action=diff
+page=[item-param name]
+version=[item-param version]"]"><img src="style/wiki/wiki-diff.png"></a>
+</td>
+<td class="rcpagelink">
+<a href="[area href="wiki" form="page=[item-param name]"]">[item-param name]</a>
+</td>
+<td class="rctime">[item-param time]</td>
+<td class="rcicon2">
+</td>
+<td class="rceditor">
+[item-param uid]
+</td>
+<td class="rccomment">
+</td>
+</tr>
+[/list]
+[on-match]
+</table>
+[/on-match]
+[/wiki]
