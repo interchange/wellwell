@@ -1,6 +1,20 @@
-[compose
-	components.body="wiki"
+[if cgi action eq recent_changes]
+[tmpn main]wiki_recentchanges[/tmpn]
+[elsif cgi action eq create]
+[tmpn main]wiki[/tmpn]
+[/elsif]
+[elsif cgi action eq edit]
+[tmpn main]wiki[/tmpn]
+[/elsif]
+[else]
+[tmpn main]wiki[/tmpn]
+[/else]
+[/if]
 
-	attributes.wiki.name="[cgi name]"
-	attributes.wiki.page="[cgi page]"
+[attribute function="set" component="[scratch main]" name="name" value="[cgi name]" hide=1]
+[attribute function="set" component="[scratch main]" name="page" value="[cgi page]" hide=1]
+
+[compose
+	components.body="[scratch main]"
+	components.right="[scratch extra]"
 ]
