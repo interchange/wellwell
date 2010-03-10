@@ -63,7 +63,7 @@ sub {
 		$ret = ! $ret;
 	}
 
-	if ($ret && $body =~ /\S/) {
+	if ($ret && length($body)) {
 		return $body;
 	}
 
