@@ -15,13 +15,13 @@ sub {
 	for (my $i = 0; $i < @$Items; $i++) {
 		if ($CGI->{"zeroquantity$i"}) {
 			$CGI->{"quantity$i"} = 0;
-			$Tag->update('quantity');
+			$Tag->cart_refresh();
 			return 1;
 		}	    
 	}
 
 	# update quantities in the cart
-	$Tag->update('quantity');
+	$Tag->cart_refresh();
 	return 1;
 }
 EOA
