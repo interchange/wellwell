@@ -34,7 +34,9 @@ Vend::Config::parse_tag('UserTag', 'cart_item Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_item AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_item MapRoutine WellWell::Cart::cart_item');
 
+Vend::Config::parse_tag('UserTag', 'cart_refresh Order function sku quantity modifiers');
 Vend::Config::parse_tag('UserTag', 'cart_refresh MapRoutine WellWell::Cart::cart_refresh');
+
 Vend::Config::parse_subroutine('GlobalSub', 'cart_refresh WellWell::Cart::cart_refresh_form_action');
 
 # [cart-item] - returns item hash ready to put it into cart
@@ -105,10 +107,15 @@ sub cart_add {
 }
 
 sub cart_refresh {
-	my ($cart, $new_cart, $itemref, $quantity);
+	my ($function, $sku, $quantity, $modifiers) = @_;
+	my ($cart, $new_cart, $itemref);
 
 	$cart = $Vend::Items;
 	$new_cart = [];
+
+	if ($function eq 'add') {
+		cart_add($CGI::values{mv_order_item}, $CGI::values{mv_order_quantity}, $modifiers);
+	}
 	
 	return 1 unless defined $CGI::values{"quantity0"};
 
@@ -188,7 +195,7 @@ sub cart_refresh_form_action {
 			}
 		}
 		
-		cart_add($CGI::values{mv_order_item}, $CGI::values{mv_order_quantity}, $opt);
+		cart_refresh('add', $CGI::values{mv_order_item}, $CGI::values{mv_order_quantity}, $opt);
 	}
 	else {
 		cart_refresh();
