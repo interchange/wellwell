@@ -56,16 +56,20 @@ sub cart_item {
 
 	$product_ref = $db_products->row_hash($sku);
 	
-	for (@{$Vend::Cfg->{AutoModifier}}) {
-		$item{$_} = $opt->{$_} || $product_ref->{$_};
-	}
-
-	for (@{$Vend::Cfg->{UseModifier}}) {
-		if (exists $opt->{$_}) {
-			$item{$_} = $opt->{$_};
+	if (ref($Vend::Cfg->{AutoModifier}) eq 'ARRAY') {
+		for (@{$Vend::Cfg->{AutoModifier}}) {
+			$item{$_} = $opt->{$_} || $product_ref->{$_};
 		}
 	}
-
+	
+	if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+		for (@{$Vend::Cfg->{UseModifier}}) {
+			if (exists $opt->{$_}) {
+				$item{$_} = $opt->{$_};
+			}
+		}
+	}
+	
 	return \%item;
 }
 
@@ -140,10 +144,12 @@ sub cart_refresh {
 		}
 
 		# checking whether any modifier changed
-		for (@{$Vend::Cfg->{UseModifier}}) {
-			if (exists $CGI::values{"$_$i"}
-			   && $CGI::values{"$_$i"} ne $itemref->{$_}) {
-				$modref->{$_} = $CGI::values{"$_$i"};
+		if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+			for (@{$Vend::Cfg->{UseModifier}}) {
+				if (exists $CGI::values{"$_$i"}
+					&& $CGI::values{"$_$i"} ne $itemref->{$_}) {
+					$modref->{$_} = $CGI::values{"$_$i"};
+				}
 			}
 		}
 
@@ -174,9 +180,11 @@ sub cart_refresh_form_action {
 	if ($CGI::values{mv_order_item}) {
 		my $opt = {};
 
-		for (@{$Vend::Cfg->{UseModifier}}) {
-			if (exists $CGI::values{"mv_order_$_"}) {
-				$opt->{$_} = $CGI::values{"mv_order_$_"};
+		if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+			for (@{$Vend::Cfg->{UseModifier}}) {
+				if (exists $CGI::values{"mv_order_$_"}) {
+					$opt->{$_} = $CGI::values{"mv_order_$_"};
+				}
 			}
 		}
 		
