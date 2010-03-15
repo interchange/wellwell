@@ -26,6 +26,10 @@ use WellWell::Cart;
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
 
+# all what we want is to transfer CGI values from CGI to the Values
+# space, and nothing else
+Vend::Config::parse_tag('UserTag', 'values_update MapRoutine Vend::Dispatch::update_values');
+
 sub plugins {
 	my @plugins;
 	
