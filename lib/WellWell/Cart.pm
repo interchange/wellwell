@@ -34,7 +34,6 @@ Vend::Config::parse_tag('UserTag', 'cart_item Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_item AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_item MapRoutine WellWell::Cart::cart_item');
 
-Vend::Config::parse_tag('UserTag', 'cart_refresh Order function sku quantity modifiers');
 Vend::Config::parse_tag('UserTag', 'cart_refresh MapRoutine WellWell::Cart::cart_refresh');
 
 Vend::Config::parse_subroutine('GlobalSub', 'cart_refresh WellWell::Cart::cart_refresh_form_action');
@@ -107,14 +106,27 @@ sub cart_add {
 }
 
 sub cart_refresh {
-	my ($function, $sku, $quantity, $modifiers) = @_;
-	my ($cart, $new_cart, $itemref);
+	my ($cart, $new_cart, $quantity, $itemref, $modifiers);
 
 	$cart = $Vend::Items;
 	$new_cart = [];
 
-	if ($function eq 'add') {
-		cart_add($CGI::values{mv_order_item}, $CGI::values{mv_order_quantity}, $modifiers);
+	if ($CGI::values{mv_order_item}) {
+		$modifiers = {};
+		
+		if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+			for (@{$Vend::Cfg->{UseModifier}}) {
+				if (exists $CGI::values{"mv_order_$_"}) {
+					$modifiers->{$_} = $CGI::values{"mv_order_$_"};
+				}
+			}
+		}
+
+		cart_add($CGI::values{mv_order_item},
+				 $CGI::values{mv_order_quantity} || 1,
+				 $modifiers);
+		
+		return;
 	}
 	
 	return 1 unless defined $CGI::values{"quantity0"};
@@ -183,23 +195,8 @@ sub cart_refresh {
 }
 
 sub cart_refresh_form_action {
-	# check for additional items
-	if ($CGI::values{mv_order_item}) {
-		my $opt = {};
-
-		if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
-			for (@{$Vend::Cfg->{UseModifier}}) {
-				if (exists $CGI::values{"mv_order_$_"}) {
-					$opt->{$_} = $CGI::values{"mv_order_$_"};
-				}
-			}
-		}
-		
-		cart_refresh('add', $CGI::values{mv_order_item}, $CGI::values{mv_order_quantity}, $opt);
-	}
-	else {
-		cart_refresh();
-	}
+	# let [cart-refresh] deal with that
+	cart_refresh();
 	
 	if ($CGI::values{mv_nextpage} eq $Vend::Cfg->{ProcessPage}) {
 		# skip virtual pages for determing shopping cart page
