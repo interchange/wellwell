@@ -78,7 +78,7 @@ sub cart_item {
 
 sub cart_add {
 	my ($sku, $quantity, $opt) = @_;
-	my ($itemref);
+	my ($itemref, $combref);
 	
 	$itemref = cart_item($sku, $quantity, $opt);
 	
@@ -91,6 +91,11 @@ sub cart_add {
 		}
 		Vend::Tags->error({name => $sku, set => $itemref->{error}, overwrite => 1});
 		return;
+	}
+
+	# see if we can combine this item into cart items
+	if (!$Vend::Cfg{SeparateItems} && ($combref = combine_items($itemref))){
+		return $combref;
 	}
 	
 	# verify that number of items doesn't go out of bounds
@@ -209,6 +214,25 @@ sub cart_refresh_form_action {
 	}
 
 	return 1;
+}
+
+sub combine_items {
+	my $item = shift;
+	
+	ITEMS: for my $cartitem (@$Vend::Items){
+		if ($item->{'code'} eq $cartitem ->{'code'}){
+			if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY'){
+				for my $mod (@{$Vend::Cfg->{UseModifier}}){
+					next ITEMS unless($item->{$mod} eq $cartitem->{$mod});
+				}					
+			}
+			
+			$cartitem->{'quantity'} += $item->{'quantity'};
+			return $cartitem;
+		}
+	}
+
+	return;
 }
 
 1;
