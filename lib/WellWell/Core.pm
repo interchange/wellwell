@@ -25,6 +25,7 @@ use WellWell::Cart;
 
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
+Vend::Config::parse_directive('StartupHooks', 'StartupHooks startup_hooks');
 
 # all what we want is to transfer CGI values from CGI to the Values
 # space, and nothing else
@@ -72,6 +73,23 @@ sub parse_hook {
 	}
 	
 	return $C->{$item};
+}
+
+sub parse_startup_hooks {
+	my ($name, $routines) = @_;
+
+	$Vend::Config::Default{$name} = sub {
+		my $routines = shift;
+		my $save = $Vend::Cfg;
+		$Vend::Cfg = $Vend::Config::C;
+		$::Variable = $Vend::Cfg->{Variable};
+		$::Pragma = $Vend::Cfg->{Pragma};
+		Vend::Dispatch::run_macro($routines);
+		$Vend::Cfg = $save;
+		return 1;
+	};
+
+	return $routines || '';
 }
 
 1;
