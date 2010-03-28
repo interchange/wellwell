@@ -1,0 +1,37 @@
+Sub form_menus_entry_edit_save <<EOS
+sub {
+	my %menu;
+
+	$Tag->perl({tables => 'menus'});
+
+	if ($CGI->{delete}) {
+		my $menu_ref;
+
+		# get current entry
+		$menu_ref = $Db{menus}->row_hash($CGI->{menu_code});
+
+		if ($Db{menus}->delete_record($CGI->{menu_code})) {
+			$Tag->warnings(qq{Menu entry $menu_ref->{name} has been deleted.});
+		}
+		else {
+			$Tag->error({name => 'menu', set => q{Error deleting menu entry}});
+		}
+
+		return {page => "backend/menus/$menu{menu_name}"};
+	}
+
+	$menu{menu_name} = $CGI->{menu_name};
+	$menu{name} = $CGI->{name};
+	$menu{url} = $CGI->{url};
+	$menu{permission} = $CGI->{permission};
+
+	if ($CGI->{menu_code}) {
+		$ret = $Db{menus}->set_slice([{dml => 'update'}, $CGI->{menu_code}], %menu);
+	}
+	else {
+		$ret = $Db{menus}->set_slice([{dml => 'insert'}], %menu);
+	}
+		
+	return {page => "backend/menus/$menu{menu_name}"};
+}
+EOS

@@ -4,7 +4,7 @@
     components.right="login"
 
 	components.body="backend_menus_add"
-	forms.backend_menus_add.name="[if cgi menu_code]menus_entry_edit[else]menus_entry_add[/else][/if]"
+	forms.backend_menus_add.name="menus_entry_edit"
 
 	attributes.htmlhead.title="Well Well Backend"
 

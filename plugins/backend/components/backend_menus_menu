@@ -1,13 +1,8 @@
-[query sql="select * from menus where menu_name = '[cgi menu]'" list=1]
-[on-match]
 <table>
-<tr><th>Name</th><th>URL</th><th></th></tr>
-[/on-match]
-[list]
-<tr><td>[sql-param name]</td><td>[sql-param url]</td>
-<td><a href="[area href="backend/menus/[cgi menu]/[sql-code]/edit"]">Edit</a></td></tr>
-[/list]
-[on-match]
+<tr><th>[L]Name[/L]</th><th>[L]URL[/L]</th><th>[L]Permission[/L]</th><th></th></tr>
+[panel table="menus" restrict.menu_name="[cgi menu]"]
+<tr><td>{NAME}</td><td>{URL}</td>
+<td>{PERMISSION}</td>
+<td><a href="[area href="backend/menus/[cgi menu]/{CODE}/edit"]">Edit</a></td></tr>
+[/panel]
 </table>
-[/on-match]
-[/query]
