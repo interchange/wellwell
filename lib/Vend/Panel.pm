@@ -41,7 +41,7 @@ sub new {
 
 sub panel {
 	my ($table, $columns, $opt, $body) = @_;
-	my ($panel, $db, $set, @out, @cols, $colstr);
+	my ($panel, $db, $set, @out, @cols, @conds, $colstr, $condstr);
 
 	$panel = new Vend::Panel;
 
@@ -59,6 +59,10 @@ sub panel {
 		for (keys %{$panel->{variables}}) {
 			if ($db->column_exists($_)) {
 				push (@cols, $_);
+
+				if ($opt->{selectby}->{$_} =~ /\S/) {
+					push (@conds, "$_ = " . $db->quote($opt->{selectby}->{$_}));
+				}
 			}
 		}
 
@@ -68,14 +72,30 @@ sub panel {
 		else {
 			return $body;
 		}
+
+		for (keys %{$opt->{restrict}}) {
+			push (@conds, "$_ = " . $db->quote($opt->{restrict}->{$_}));
+		}
 		
-		$set = $db->query({sql => qq{select $colstr from $table}, hashref => 1});
+		if (@conds) {
+			$condstr = ' WHERE ' . join(' AND ', @conds);
+		}
+		else {
+			$condstr = '';
+		}
+		
+		$set = $db->query({sql => qq{select $colstr from $table$condstr}, hashref => 1});
 
 		for my $row (@$set) {
+			my $data;
+
+			%$data = %$row;
+
 			for my $fltvar (%{$opt->{filters}}) {
-				$row->{$fltvar} = Vend::Tags->filter({op => $opt->{filters}->{$fltvar}, body => $row->{$fltvar}});
+				$data->{$fltvar} = Vend::Tags->filter({op => $opt->{filters}->{$fltvar}, body => $row->{$fltvar}});
 			}
-			push(@out, $panel->fill_simple($row));
+			
+			push(@out, $panel->fill_simple($data, $row));
 		}
 	}
 
@@ -91,12 +111,13 @@ sub parse_simple {
 	$self->{variables} = {};
 	
 	while (pos $input < length $input) {
-		if ($input =~ m{ \G  (.*?)?\{([A-Z_]+)\} }gcxms) {
+		if ($input =~ m{ \G  (.*?)?\{([A-Z_]+)(:([A-Z]+))?\} }gcxms) {
 			if (defined $1) {
 				push (@{$self->{tokens}}, $1);
 			}
 			push (@{$self->{tokens}}, '');
-			push (@{$self->{variables}->{lc($2)}}, $#{$self->{tokens}});
+			push (@{$self->{variables}->{lc($2)}}, {pos => $#{$self->{tokens}},
+													type => lc($4)});
 		}
 		else {
 			push (@{$self->{tokens}}, substr($input, pos($input)));
@@ -108,14 +129,19 @@ sub parse_simple {
 }
 
 sub fill_simple {
-	my ($self, $hash) = @_;
+	my ($self, $hash, $row) = @_;
 	my ($out, $tokref);
 
 	@$tokref = @{$self->{tokens}};
 
 	for (keys %{$self->{variables}}) {
-		for my $pos (@{$self->{variables}->{$_}}) {
-			$tokref->[$pos] = $hash->{$_};
+		for my $var (@{$self->{variables}->{$_}}) {
+			if ($var->{type} eq 'raw') {
+				$tokref->[$var->{pos}] = $row->{$_};
+			}
+			else {
+				$tokref->[$var->{pos}] = $hash->{$_};
+			}
 		}
 	}
 
