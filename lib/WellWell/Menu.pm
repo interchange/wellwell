@@ -1,6 +1,6 @@
 # WellWell::Menu - WellWell Menu Functions/Tags
 #
-# Copyright (C) 2009 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2009,2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ sub display {
 	}
 	
 	for (@$set) {
-		next unless Vend::Tags->acl('check', $_->{permission});
+		next if $_->{permission} && ! Vend::Tags->acl('check', $_->{permission});
 
 		push(@entries, $_);
 	}
