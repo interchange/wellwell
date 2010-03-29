@@ -22,10 +22,14 @@ package WellWell::Core;
 use Vend::Config;
 
 use WellWell::Cart;
+use WellWell::Data;
 
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
 Vend::Config::parse_directive('StartupHooks', 'StartupHooks startup_hooks');
+
+# predefined startup hooks
+Vend::Config::parse_subroutine('GlobalSub', 'prepare_database WellWell::Data::prepare_database');
 
 # all what we want is to transfer CGI values from CGI to the Values
 # space, and nothing else
@@ -84,8 +88,9 @@ sub parse_startup_hooks {
 		$Vend::Cfg = $Vend::Config::C;
 		$::Variable = $Vend::Cfg->{Variable};
 		$::Pragma = $Vend::Cfg->{Pragma};
+		open_database();
 		Vend::Dispatch::run_macro($routines);
-		$Vend::Cfg = $save;
+#		$Vend::Cfg = $save;
 		return 1;
 	};
 
