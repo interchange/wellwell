@@ -70,7 +70,7 @@ sub display {
 
 sub build_entries {
 	my ($entries_ref, $opt, $tree) = @_;
-	my (@out, $ref, $base_url, $uri, $form, $selected);
+	my (@out, $ref, $base_url, $uri, $cur_level, $form, $selected);
 	
 	if ($opt->{selected}) {
 		$base_url = $Vend::Session->{last_url};
@@ -79,10 +79,22 @@ sub build_entries {
 
 	if ($tree) {
 		$entries_ref = sort_tree_entries($entries_ref);
+		$cur_level = $entries_ref->[0]->{level};
 	}
-	
+
 	for (my $i = 0; $i < @$entries_ref; $i++) {
 		$ref = $entries_ref->[$i];
+
+		if ($cur_level) {
+			if ($ref->{level} > $cur_level) {
+				push(@out, '<ul>');
+			}
+			elsif ($ref->{level} < $cur_level) {
+				push(@out, ('</ul>') x ($cur_level - $ref->{level}));
+			}
+
+			$cur_level = $ref->{level};
+		}
 		
 		if ($ref->{url}) {
 			if ($opt->{selected}) {
@@ -102,11 +114,15 @@ sub build_entries {
 			}
 			
 			$uri = Vend::Tags->area({href => $ref->{url}, form => $form});
-			$out[$i] = qq{<li$selected><a href="$uri">$ref->{name}</a></li>};
+			push(@out, qq{<li$selected><a href="$uri">$ref->{name}</a></li>});
 		}
 		else {
-			$out[$i] = qq{<li>$ref->{name}</li>};
+			push(@out, qq{<li>$ref->{name}</li>});
 		}
+	}
+
+	if ($cur_level > 1) {
+		push(@out, ('</ul>') x ($cur_level -1));
 	}
 	
 	return q{<ul>} . join('', @out) . q{</ul>};
