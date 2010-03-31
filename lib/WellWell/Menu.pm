@@ -33,7 +33,7 @@ Vend::Config::parse_tag('UserTag', 'menu_display MapRoutine WellWell::Menu::disp
 sub display {
 	my ($name, $opt) = @_;
 	my ($set, @entries, $name_qtd, @fields, $fstr, $base_url, $selected);
-	my ($db_menus);
+	my ($db_menus, $tree);
 	
 	if ($opt->{ref}) {
 		$set = $opt->{ref};
@@ -52,7 +52,7 @@ sub display {
 	
 	for (@$set) {
 		next if $_->{permission} && ! Vend::Tags->acl('check', $_->{permission});
-
+		$tree ||= $_->{parent};
 		push(@entries, $_);
 	}
 
@@ -65,20 +65,25 @@ sub display {
 		}
 	}
 	
-	return build_entries(\@entries, $opt);
+	return build_entries(\@entries, $opt, $tree);
 }
 
 sub build_entries {
-	my ($entries_ref, $opt) = @_;
+	my ($entries_ref, $opt, $tree) = @_;
 	my (@out, $ref, $base_url, $uri, $form, $selected);
-
+	
 	if ($opt->{selected}) {
 		$base_url = $Vend::Session->{last_url};
 		$base_url =~ s%^/%%;
 	}
+
+	if ($tree) {
+		$entries_ref = sort_tree_entries($entries_ref);
+	}
+	
 	for (my $i = 0; $i < @$entries_ref; $i++) {
 		$ref = $entries_ref->[$i];
-
+		
 		if ($ref->{url}) {
 			if ($opt->{selected}) {
 				if (index($base_url, $ref->{url}) == 0) {
@@ -103,8 +108,68 @@ sub build_entries {
 			$out[$i] = qq{<li>$ref->{name}</li>};
 		}
 	}
-
+	
 	return q{<ul>} . join('', @out) . q{</ul>};
+}
+
+sub sort_tree_entries {
+	my $entries_ref = shift;
+	my ($ref, @parents);
+	my %menu_tree = ();
+	my $tree_ref = [];
+
+	# first pass to establish tree relationships
+	for (my $i = 0; $i < @$entries_ref; $i++) {
+		$ref = $entries_ref->[$i];
+
+		if ($ref->{parent} > 0) {
+			# this is a descendant, register it with the parent
+			push @{$menu_tree{$ref->{parent}}}, $ref;
+		} else {
+			# top level item
+			push (@parents, $ref);
+								
+			unless (exists $menu_tree{$ref->{code}}) {
+				$menu_tree{$ref->{code}} = [];
+			}
+		}
+	}
+
+	# second pass to order tree entries
+	my (%seen, @children, @nodes, @levels);
+		
+	for (my $i = 0; $i < @parents; $i++) {
+		$ref = $parents[$i];
+		$ref->{level} = 1;
+		$seen{$ref->{code}} = 1;
+		push(@$tree_ref, $ref);
+
+		@children = @{$menu_tree{$ref->{code}}};
+		@levels = ((2) x scalar(@children));
+			
+		@nodes = @children;
+			
+		while ($ref = shift(@nodes)) {
+			$ref->{level} = shift(@levels);
+				
+			if (exists $seen{$ref->{code}}) {
+				::logError("Circular dependency in menu.");
+				next;
+			}
+
+			$seen{$ref->{code}} = 1;
+			push(@$tree_ref, $ref);
+
+			# add descendants to the stack
+			if (exists $menu_tree{$ref->{code}}) {
+				@children = @{$menu_tree{$ref->{code}}};
+				push(@levels, (($ref->{level} + 1) x scalar(@children)));
+				push(@nodes, @children);
+			}
+		}
+	}
+
+	return $tree_ref;
 }
 
 1;
