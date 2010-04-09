@@ -204,6 +204,15 @@ sub {
 	elsif ($function eq 'type') {
 		return $Db{carts}->field($wishlist_code, 'type');
 	}
+	elsif ($function eq 'count') {
+		# number of items in the cart (not the cumulative quantity)
+		my ($sql, $ret);
+
+		$sql = qq{select count(*) from cart_products where cart = $wishlist_code};
+		$ret = $Db{cart_products}->query({sql => $sql});
+
+		return $ret->[0]->[0];
+	}
 	elsif ($function eq 'status') {
 		my $status;
 
