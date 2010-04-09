@@ -73,5 +73,3 @@ sub {
 	return 1;
 }
 EOS
-
-ActionMap backend backend
