@@ -55,11 +55,13 @@ sub cart_item {
 			 mv_mi => Vend::Tags->time({format => '%s'}) . sprintf('%06d', ++$Vend::Session->{pageCount}),
 			 mv_si => 0);
 
-	$product_ref = $db_products->row_hash($sku);
-	
-	if (ref($Vend::Cfg->{AutoModifier}) eq 'ARRAY') {
-		for (@{$Vend::Cfg->{AutoModifier}}) {
-			$item{$_} = $opt->{$_} || $product_ref->{$_};
+	# get automodifiers
+	Vend::Order::auto_modifier(\%item);
+
+	# apply possible overrides
+	for (keys %item) {
+		if ($opt->{$_}) {
+			$item{$_} = $opt->{$_};
 		}
 	}
 	
