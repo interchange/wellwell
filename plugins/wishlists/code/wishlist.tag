@@ -64,7 +64,13 @@ sub {
 		$pref = $Db{products}->row_hash($sku);
 
 		# check whether product is valid
-		unless ($pref && ! $pref->{inactive}) {
+		unless ($pref) {
+			$Tag->error({name => $sku, set => 'Product discontinued.'});
+			return;
+		}
+
+		if ($Variable->{WISHLISTS_INACTIVE_FIELD}
+			&& $pref->{$Variable->{WISHLISTS_INACTIVE_FIELD}} eq $Variable->{WISHLISTS_INACTIVE_VALUE}) {
 			$Tag->error({name => $sku, set => 'Product discontinued.'});
 			return;
 		}
@@ -160,6 +166,8 @@ sub {
 			# items were removed, update timestamp on cart
 			$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));			
 		}
+
+		return $ret;
 	}
 	elsif ($function eq 'addtocart') {
 		# add all wishlist items to the session-bound shopping cart
