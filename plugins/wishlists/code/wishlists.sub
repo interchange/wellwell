@@ -54,8 +54,10 @@ sub {
 							name => $wishlist_name,
 							code => $wishlist_code});
 		}
-		$CGI->{mv_nextpage} = $Config->{Special}->{order};
-		return 1;
+
+		$Tag->deliver({location => $Tag->area($Config->{Special}->{order}),
+			status => '302 move temporarily'});
+		return;
 	}
 
 	# whether to copy stuff from wishlist to cart
