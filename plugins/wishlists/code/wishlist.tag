@@ -17,15 +17,48 @@ sub {
 	$Tag->perl({tables => 'products carts cart_products'});
 
 	if ($function eq 'carts') {
-		my @carts;
+		my (@carts, @cart_fields, $field_str, $group_str, $have_name, $query);
+
+		if ($opt->{passed}) {
+			@cart_fields = qw/code name/;
+			$have_name = 1;
+		}
+		else {
+			@cart_fields = qw/code/;
+		}
+
+		if ($opt->{min_count}) {
+			# complex query needed
+			$field_str = join(',', map {"C.$_"} @cart_fields);
+			
+			if ($have_name) {
+				$group_str = $field_str;
+			}
+			else {
+				$group_str = "$field_str,C.name";
+			}
+
+			$query = qq{select $field_str, count(CP.cart) from carts C left join cart_products CP on (C.code = CP.cart) where C.uid = %s and type = '%s' group by $group_str order by C.name};
+		}
+		else {
+			$field_str = join(',', @cart_fields);
+			$query = qq{select $field_str from carts where uid = '%s' and type = '%s' order by name};
+		}
+
+		$set = $Db{carts}->query($query, $Session->{username}, $type);
+
+		if ($opt->{min_count}) {
+			# filter out carts below minimum count
+			my $pos = @cart_fields;
+
+			@$set = grep {$_->[$pos] >= $opt->{min_count}} @$set;
+		}
 
 		if ($opt->{passed}) {
 			# produce string suitable for [display passed=]
-			$set = $Db{carts}->query(qq{select code,name from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
 			@carts = map {"$_->[0]=$_->[1]"} @$set;
 		}
 		else {
-			$set = $Db{carts}->query(qq{select code from carts where uid = $Session->{username} and type = '%s' order by name}, $type); 
 			@carts = map {$_->[0]} @$set;
 		}
 
