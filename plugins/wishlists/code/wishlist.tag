@@ -144,7 +144,7 @@ sub {
 		# update timestamp on cart
 		$Db{carts}->set_field($wishlist_code, 'last_modified', $Tag->time({format => '%s'}));
 
-		return 1;
+		return $wishlist_code;
 	}
 	elsif ($function eq 'touch') {
 		if ($wishlist_code) {
