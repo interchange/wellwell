@@ -87,7 +87,7 @@ sub {
 					}
 				}
 				# check for appropriate hook for saving
-				my ($hook, $hooksub, $hookret);
+				my ($hook, $hooksub, $hookret, $href);
 
 				$hook = join('_', 'form', $name, 'save');
 				$hooksub = $Config->{Sub}{$hook};
@@ -99,6 +99,10 @@ sub {
 						$CGI->{mv_nextpage} = $hookret->{page};
 						if ($hookret->{jump}) {
 							$CGI->{form_series_jump} = $hookret->{jump};
+						}
+						if ($hookret->{redirect}) {
+							$href = $Tag->area($hookret->{page});
+							$Tag->deliver({location => $href, status => '302 moved temporarily'});
 						}
 						return;
 					}
