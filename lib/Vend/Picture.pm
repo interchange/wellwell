@@ -1,6 +1,7 @@
 # Vend::Picture - Interchange image helper functions
 #
 # Copyright (C) 2004-2009 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2010 Rok Ružič <rok.ruzic@informa.si>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,7 +53,7 @@ Vend::Config::parse_tag('UserTag', 'image_superscribe MapRoutine Vend::Picture::
 
 sub info {
 	my ($name, $opts) = @_;
-	my ($width, $height, $type);
+	my ($width, $height, $type, $colors);
 	my (@ret, %info);
 
 	if ($opts->{colors}) {
@@ -62,7 +63,8 @@ sub info {
 			return;
 		}
 
-		return $image->Get('colors');
+		$colors = $image->Get('colors');
+		return $colors unless($opts->{hash});
 	}
 	
 	# first retrieve information about the image
@@ -94,6 +96,7 @@ sub info {
 
 	# return requested information
 	if ($opts->{hash}) {
+		$info{colors} = $colors if $opts->{colors};
 		return \%info;
 	}
 	
