@@ -1,6 +1,7 @@
 # WellWell::Cart - WellWell cart routines
 #
 # Copyright (C) 2009,2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2010 Rok Ružič <rok.ruzic@informa.si>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,11 +130,9 @@ sub cart_refresh {
 			}
 		}
 
-		cart_add($CGI::values{mv_order_item},
+		return cart_add($CGI::values{mv_order_item},
 				 $CGI::values{mv_order_quantity} || 1,
 				 $modifiers);
-		
-		return;
 	}
 	
 	return 1 unless defined $CGI::values{"quantity0"};
