@@ -70,7 +70,7 @@ sub display {
 
 sub build_entries {
 	my ($entries_ref, $opt, $tree) = @_;
-	my (@out, $ref, $base_url, $uri, $cur_level, $form, $selected);
+	my (@out, $ref, $base_url, $uri, $cur_level, $form, $name_str, $selected);
 	
 	if ($opt->{selected}) {
 		$base_url = $Vend::Session->{last_url};
@@ -95,6 +95,8 @@ sub build_entries {
 
 			$cur_level = $ref->{level};
 		}
+
+		$name_str = Vend::Tags->filter({op => 'encode_special_entities', body => $ref->{name}});
 		
 		if ($ref->{url}) {
 			if ($opt->{selected}) {
@@ -114,10 +116,10 @@ sub build_entries {
 			}
 			
 			$uri = Vend::Tags->area({href => $ref->{url}, form => $form});
-			push(@out, qq{<li$selected><a href="$uri">$ref->{name}</a></li>});
+			push(@out, qq{<li$selected><a href="$uri">$name_str</a></li>});
 		}
 		else {
-			push(@out, qq{<li>$ref->{name}</li>});
+			push(@out, qq{<li>$name_str</li>});
 		}
 	}
 
