@@ -1,6 +1,6 @@
 # Vend::Picture - Interchange image helper functions
 #
-# Copyright (C) 2004-2009 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2004-2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 # Copyright (C) 2010 Rok Ružič <rok.ruzic@informa.si>.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -235,7 +235,7 @@ sub resize {
 		$orig_width = $image->[0]->Get('width');
 		$orig_height = $image->[0]->Get('height');
 		
-		if ($orig_width < $orig_height){ # if landscape
+		if ($orig_width > $orig_height){ # if landscape
 			$size = "${width}x";
 		}
 		else {
