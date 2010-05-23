@@ -81,7 +81,7 @@ sub cart_item {
 
 sub cart_add {
 	my ($sku, $quantity, $opt) = @_;
-	my ($itemref, $combref);
+	my ($itemref, $subname, $sub, $separate_item, $combref);
 	
 	$itemref = cart_item($sku, $quantity, $opt);
 	
@@ -97,7 +97,15 @@ sub cart_add {
 	}
 
 	# see if we can combine this item into cart items
-	if (!$Vend::Cfg{SeparateItems} && ($combref = combine_items($itemref))){
+	if ($subname = $Vend::Cfg->{SpecialSub}{separate_items}) {
+		$sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+		$separate_item = $sub->($itemref);
+	}
+	else {
+		$separate_item = $Vend::Cfg{SeparateItems};
+	}
+
+	if (!$separate_item && ($combref = combine_items($itemref))){
 		return $combref;
 	}
 	
