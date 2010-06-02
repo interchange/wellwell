@@ -6,6 +6,7 @@ CREATE TABLE `menus`
   `url` varchar(255) NOT NULL DEFAULT '',
   `permission` varchar(64) NOT NULL DEFAULT '',
   `menu_name` varchar(64) NOT NULL DEFAULT '',
+  `description` text NOT NULL DEFAULT '',
   `weight` int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`code`),
   KEY (`menu_name`)

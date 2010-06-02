@@ -6,6 +6,7 @@ CREATE TABLE menus
   "url" varchar(255) NOT NULL DEFAULT '',
   "permission" varchar(64) NOT NULL DEFAULT '',
   "menu_name" varchar(64) NOT NULL DEFAULT '',
+  "description" text NOT NULL DEFAULT '',
   "weight" int4 NOT NULL DEFAULT 0,
   CONSTRAINT menu_pkey PRIMARY KEY (code)
 );
