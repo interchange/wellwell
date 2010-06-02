@@ -10,4 +10,4 @@ CREATE TABLE `categories` (
   PRIMARY KEY (`code`),
   KEY `parent` (`parent`, `type`),
   KEY `uri` (`uri`)
-) CHARACTER SET utf8;
+);

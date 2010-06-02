@@ -22,4 +22,4 @@ CREATE TABLE mv_metadata
   `display_filter` varchar(255),
   `extended` text,
   PRIMARY KEY (`code`)
-) CHARACTER SET utf8;
+);

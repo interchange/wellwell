@@ -4,4 +4,4 @@ CREATE TABLE `image_sizes`
   `width` int unsigned,
   `height` int unsigned,
   PRIMARY KEY (`name`)
-)  CHARACTER SET utf8;
+);

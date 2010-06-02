@@ -10,4 +10,4 @@ CREATE TABLE `menus`
   `weight` int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`code`),
   KEY (`menu_name`)
-) CHARACTER SET utf8;
+);

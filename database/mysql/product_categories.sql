@@ -4,4 +4,4 @@ CREATE TABLE `product_categories` (
   `type` varchar(16) NOT NULL,
   KEY (`sku`),
   KEY (`category`)
-) CHARACTER SET utf8;
+);

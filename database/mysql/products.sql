@@ -9,5 +9,5 @@ CREATE TABLE `products`
   `taxrate` decimal(4,2) NOT NULL DEFAULT 0,
   `inactive` boolean DEFAULT FALSE,
   PRIMARY KEY (`sku`)
- ) CHARACTER SET utf8;
+ );
  
