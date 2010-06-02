@@ -54,6 +54,9 @@ my %wiki_menu = (edit_page => {label => 'Edit this page',
 									action => 'recent_changes',
 									permission => 'wiki_recent_changes'});
 
+# default settings
+my %wiki_settings = (front_page => 'Index');
+
 our %wiki;
 
 sub new {
@@ -143,6 +146,11 @@ sub wiki {
 		
 		$wiki{$name} = new Vend::Wiki(%{$Vend::Cfg->{Wiki}->{$name}});
 		$wiki{$name}->{name} = $name;
+
+		for (keys %wiki_settings) {
+			next if exists $wiki{$name}->{$_};
+			$wiki{$name}->{$_} = $wiki_settings{$_};
+		}
 	}
 
 	$wiki{$name}->{page} = $page;
@@ -324,14 +332,20 @@ sub retrieve_page {
 
 sub display_page {
 	my ($self, $name, $version, $format) = @_;
-	my (%node);
+	my (%node, $page);
 
-	if ($name =~ /\S/ && $self->{object}->node_exists($name)) {
+	if ($name =~ /\S/) {
+		$page = $name;
+	}
+	else {
+		$page = $self->{front_page};
+	}
+	
+	if ($self->{object}->node_exists($page)) {
 		if ($version) {
-			%node = $self->{object}->retrieve_node({name => $name, version => $version});
-		}
-		else {
-			%node = $self->{object}->retrieve_node($name);
+			%node = $self->{object}->retrieve_node({name => $page, version => $version});
+		} else {
+			%node = $self->{object}->retrieve_node($page);
 		}
 
 		if ($format ne 'raw') {
@@ -350,10 +364,11 @@ sub display_page {
 
 		return %node;
 	}
-	else {
-		# boilerplate message for missing pages
-		return ::errmsg(q{This page does not exist yet. You can create a new empty page.});
-	}
+		
+	# boilerplate message for missing pages with link to create new page
+	my $url = Vend::Tags->area({href => "$self->{name}/$page", form => 'action=create'});
+	return ::errmsg(q{This page does not exist yet. You can %screate%s a new empty page.},
+					   qq{<a href="$url">}, q{</a>});
 }
 
 # list Wiki pages
@@ -557,7 +572,8 @@ package Vend::Config;
 my %wiki_config_params = (dbname => 1,
 						  dbuser => 1,
 						  dbpass => 1,
-						  dbhost => 1);
+						  dbhost => 1,
+						  front_page => 1);
 
 sub parse_wiki {
 	my ($item, $settings) = @_;
