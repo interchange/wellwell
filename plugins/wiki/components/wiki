@@ -63,12 +63,11 @@
 [/elsif]
 [else]
 <p>
-<a href="[area href=wiki form=action=create]">Create page</a>
-</p>
-<p>
 [wiki name="__NAME__" function="display" page="__PAGE__"/]
-<hr>
-[wiki name="__NAME__" function="menu" menu_name="footer" page="__PAGE__"/]
 </p>
 [/else]
 [/if]
+<p>
+<hr>
+[wiki name="__NAME__" function="menu" menu_name="footer" page="__PAGE__"/]
+</p>
