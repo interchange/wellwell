@@ -634,7 +634,7 @@ sub parse_wiki {
 
 		@entries = split(/\s*,\s*/, $args[0]);
 
-		push(@{$C->{$item}->{$name}->{$param}->{$value}}, @entries);
+		$C->{$item}->{$name}->{$param}->{$value} = \@entries;
 	}
 	elsif ($param eq 'metadata') {
 		if (exists $metadata_reserved{$value}) {
