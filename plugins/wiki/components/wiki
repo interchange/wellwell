@@ -7,7 +7,7 @@
 <input type="hidden" name="action" value="[cgi action]">
 <fieldset>
 <label for="page">[L]Page name[/L]</label>
-<input name="page" size="60">
+<input name="page" size="60" value="[cgi page]">
 <br>
 <label for="content">[L]Page content[/L]</label>
 <textarea name="content" cols="60" rows="20">
