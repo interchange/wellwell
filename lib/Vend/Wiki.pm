@@ -242,6 +242,10 @@ sub wiki {
 		 }
 	}
 
+	if ($function eq 'exists') {
+		return $wiki{$name}->{object}->node_exists($page);
+	}
+	
 	if ($function eq 'menu') {
 		return $wiki{$name}->menu($opt->{menu_name}, $opt);
 	}
@@ -563,6 +567,11 @@ sub action {
 	# pass wiki parameters to page
 	$CGI::values{name} = $name;
 	$CGI::values{page} ||= $url;
+
+	if ($CGI::values{action} eq 'edit' && ! wiki('exists', $CGI::values{page})) {
+		# Wiki::Toolkit doesn't distinguish between create and edit
+		$CGI::values{action} = 'create';
+	}
 
 	# actual page
 	$CGI::values{mv_nextpage} = $page;
