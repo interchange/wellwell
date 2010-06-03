@@ -495,14 +495,17 @@ sub load_store {
 # load formatter
 sub load_formatter {
 	my ($self, $fmt) = @_;
+	my ($edit_prefix);
 
 	eval "require $fmt->{class}";
 	if ($@) {
 		die "Failed to load $fmt->{class}: $@\n";
 	}
 	eval {
+		$edit_prefix = join($Global::UrlSepChar, '?action=edit', 'page=');
 		$fmt->{object} = $fmt->{class}->new (store => $self->{store},
-											 node_prefix => '?page=');
+											 node_prefix => '?page=',
+											 edit_prefix => $edit_prefix);
 	};
 	if ($@) {
 		die "Failed to instantiate $fmt->{class}: $@\n";
