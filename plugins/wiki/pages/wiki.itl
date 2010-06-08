@@ -15,6 +15,7 @@
 [attribute function="set" component="[scratch main]" name="page" value="[cgi page]" hide=1]
 
 [compose
+	attributes.htmlhead.title="[cgi page]"
 	components.body="[scratch main]"
 	components.right="[scratch extra]"
 ]
