@@ -199,6 +199,11 @@ sub wiki {
 			for (@$mdlist) {
 				$mdref = $wiki{$name}->{metadata}->{hash}->{$_};
 
+				# default label
+				unless (exists $mdref->{label}) {
+					$mdref->{label} = $_;
+				}
+				
 				# preseed with current value of metadata
 				$mdref->{value} = $node{metadata}->{$_}->[0];
 
