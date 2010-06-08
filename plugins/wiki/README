@@ -29,5 +29,11 @@ Some metadata keys with are reserved for internal usage:
 formatter: Formatter used for this node.
 uid: Author's uid (or 0).
 
+Permissions
+===========
 
+wiki_view_pages	- view Wiki nodes
+wiki_edit_pages - edit Wiki nodes
 
+insert into permissions (rid,perm) values (1, 'wiki_view_pages');
+insert into permissions (rid,perm) values (2, 'wiki_view_pages');
