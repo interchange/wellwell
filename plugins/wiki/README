@@ -20,6 +20,10 @@ Wiki wiki front_page Home
 Metadata
 ========
 
+Example for specifying metadata:
+
+Wiki wiki metadata tags label Tags
+
 Some metadata keys with are reserved for internal usage:
 
 formatter: Formatter used for this node.
