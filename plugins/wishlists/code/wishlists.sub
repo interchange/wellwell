@@ -1,7 +1,7 @@
 Sub wishlists <<EOS
 sub {
 	my $page = shift;
-	my ($name, @args) = split(/\//, $page);
+	my ($name, @args) = split(/\//, $page, 3);
 	my ($wishlist_code, $wishlist_name, $wishlist_type);
 
 	unless ($Session->{logged_in}) {
