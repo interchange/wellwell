@@ -514,7 +514,8 @@ sub load_formatter {
 		$edit_prefix = join($Global::UrlSepChar, '?action=edit', 'page=');
 		$fmt->{object} = $fmt->{class}->new (store => $self->{store},
 											 node_prefix => '?page=',
-											 edit_prefix => $edit_prefix);
+											 edit_prefix => $edit_prefix,
+											 %{$fmt->{options}});
 	};
 	if ($@) {
 		die "Failed to instantiate $fmt->{class}: $@\n";
@@ -607,7 +608,7 @@ sub parse_wiki {
 	}
 	elsif ($param eq 'formatter') {
 		# add to our list of formatters
-		my $class;
+		my ($class, %options);
 		
 		if ($value =~ /::/) {
 			# formatter with different namespace, breakout name
@@ -622,8 +623,15 @@ sub parse_wiki {
 		unless (exists $C->{$item}->{$name}->{$param}->{hash}->{$value}) {
 			push(@{$C->{$item}->{$name}->{$param}->{array}}, $value);
 		}
+
+		# possible additional parameters for the constructor
+		for (@args) {
+			my ($opt_name, $opt_value) = split(/=/, $_, 2);
+
+			$options{$opt_name} = $opt_value;
+		}
 		
-		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class};
+		$C->{$item}->{$name}->{$param}->{hash}->{$value} = {class => $class, options => \%options};
 	}
 	elsif ($param eq 'plugin') {
 		# add to our list of plugins

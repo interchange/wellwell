@@ -9,6 +9,17 @@ Wiki wiki dbname wiki
 Wiki wiki dbuser __SQLUSER__
 Wiki wiki dbpass __SQLPASS__
 
+Formatter
+---------
+
+Specify the formatter:
+
+Wiki wiki formatter UseMod
+
+Specify the formatter along with constructor option:
+
+Wiki wiki formatter UseMod extended_links=1
+
 Front page
 ----------
 
