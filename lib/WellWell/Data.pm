@@ -63,7 +63,7 @@ sub prepare_database {
 		$roles_query = qq{select rid from user_roles where $users_key = '%s'};
 	}
 
-	$roles_qual = qq{$users_key = '%s' or rid in (%s)};
+	$roles_qual = qq{($users_key = '%s' or rid in (%s))};
 	
 	$Vend::Cfg->{ACL}->{roles_query} = $roles_query;
 	$Vend::Cfg->{ACL}->{roles_qual} = $roles_qual;	
