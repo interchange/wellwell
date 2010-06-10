@@ -4,3 +4,5 @@ CREATE TABLE permissions (
   perm varchar(255) not null default ''
 );
 
+INSERT INTO permissions (rid,perm) VALUES (1,'anonymous');
+INSERT INTO permissions (rid,perm) VALUES (2,'authenticated');
