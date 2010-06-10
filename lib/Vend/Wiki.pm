@@ -154,6 +154,10 @@ sub wiki {
 	}
 
 	$wiki{$name}->{page} = $page;
+
+	if ($function eq 'object') {
+		return $wiki{$name};
+	}
 	
 	if ($function eq 'create_page') {
 		my $metadata = $wiki{$name}->metadata_from_form();
@@ -545,7 +549,7 @@ sub load_plugin {
 # default ActionMap for wiki
 sub action {
  	my ($path) = @_;
-	my ($action, $url, $page, $name, $key, $value);
+	my ($action, $url, $page, $name, $key, $value, $wiki);
 	
  	($action, $url) = split(m{/+}, $path, 2);
 
@@ -567,12 +571,14 @@ sub action {
 		}
 	}
 
+	$wiki = wiki('object', '', '', {name => $name});
+
 	# provide default for target page
 	$page ||= 'wiki';
 
 	# pass wiki parameters to page
 	$CGI::values{name} = $name;
-	$CGI::values{page} ||= $url;
+	$CGI::values{page} ||= $url || $wiki->{front_page};
 
 	if ($CGI::values{action} eq 'edit' && ! wiki('exists', $CGI::values{page})) {
 		# Wiki::Toolkit doesn't distinguish between create and edit
