@@ -249,7 +249,7 @@ sub {
 			@list = map {$_->strftime($fmt)} @list;
 		}
 
-		return @list;
+		return wantarray ? @list : join(' ', @list);
 	} elsif ($function eq 'month') {
 		return $from_dt->month();
 	} elsif ($function eq 'weekday') {
