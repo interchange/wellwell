@@ -186,7 +186,7 @@ sub {
 			return $from_dt;
 		}
 	} elsif ($function eq 'list') {	
-		my ($daily, $span, @list, $duration, $days);
+		my ($daily, $span, @list, $duration, $days, $month_limit, $month_mult, $month_max);
 
 		# daily is default scope
 		$scope ||= 'day';
@@ -203,13 +203,19 @@ sub {
 			return;
 		}
 
+		$month_limit = $::Limit->{datetime_list} || 24;
+
 		if ($scope eq 'year') {
 			$daily = DateTime::Event::Recurrence->yearly();
+			$month_mult = 365;
 		} elsif ($scope eq 'month') {
+			$month_mult = 30;
 			$daily = DateTime::Event::Recurrence->monthly();
 		} elsif ($scope eq 'week') {
+			$month_mult = 7;
 			$daily = DateTime::Event::Recurrence->weekly();
 		} elsif ($scope eq 'day') {
+			$month_mult = 1;
 			$daily = DateTime::Event::Recurrence->daily();
 		} else {
 			$Tag->error({name => 'datetime',
@@ -228,9 +234,12 @@ sub {
 			return;
 		}
 
-		if ($duration->in_units('months') > 24) {
+		$month_max = $month_limit * $month_mult;
+
+		if ($duration->in_units('months') > $month_max) {
 			$Tag->error({name => 'datetime',
-						 set => sprintf('exceeded maximum length of daily list')});
+						 set => sprintf('Exceeded maximum for list in months: %d', 
+							$month_max)});
 			return;
 		}
 	
