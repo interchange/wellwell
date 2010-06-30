@@ -122,29 +122,54 @@ sub cart_add {
 }
 
 sub cart_refresh {
-	my ($cart, $new_cart, $quantity, $itemref, $modifiers);
+	my ($cart, $new_cart, $quantity, $itemref, $sku, $modifiers);
 
 	$cart = $Vend::Items;
 	$new_cart = [];
 
 	if ($CGI::values{mv_order_item}) {
-		$modifiers = {};
+		my (@oi, $sku);
+
+		@oi = @{$CGI::values_array{mv_order_item}};
+
+		if (@oi == 1) {
+			# Adding single item from product order link/button
+
+			$sku = $oi[0];
+			$modifiers = {};
 		
-		if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
-			for (@{$Vend::Cfg->{UseModifier}}) {
-				if (exists $CGI::values{"mv_order_$_"}) {
-					$modifiers->{$_} = $CGI::values{"mv_order_$_"};
+			if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+				for (@{$Vend::Cfg->{UseModifier}}) {
+					if (exists $CGI::values{"mv_order_$_"}) {
+						$modifiers->{$_} = $CGI::values{"mv_order_$_"};
+					}
 				}
 			}
-		}
 
-		return cart_add($CGI::values{mv_order_item},
+			return cart_add($sku,
 				 $CGI::values{mv_order_quantity} || 1,
 				 $modifiers);
+
+		}
+		else {
+			# Adding multiple items from result lists
+			for (my $i = 0; $i < @{$CGI::values_array{mv_order_item}}; $i++) {
+				$sku = $CGI::values_array{mv_order_item}->[$i];
+
+				next unless $CGI::values_array{mv_order_quantity}->[$i];
+
+				cart_add($sku,
+						 $CGI::values_array{mv_order_quantity}->[$i] || 1,
+						 $modifiers);
+			}
+	
+			return;
+		}
 	}
 	
 	return 1 unless defined $CGI::values{"quantity0"};
 
+	# Refreshing cart
 	foreach my $i (0 .. $#$cart) {
 		my $modref = {};
 		
