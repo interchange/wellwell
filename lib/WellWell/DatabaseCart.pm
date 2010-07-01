@@ -82,8 +82,14 @@ sub cart_compare {
 	my ($cart, $cart_products, $session_products, $cart_item, $session_item, $max_count, @diff);
 	
 	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $Vend::Session->{username});
+
+	if ($cart) {
+		$cart_products = $cart->item_list();
+	}
+	else {
+		$cart_products = [];
+	}
 	
-	$cart_products = $cart->item_list();
 	$session_products = $Vend::Items;
 
 	if (@$cart_products > @$session_products) {
