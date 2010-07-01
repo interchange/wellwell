@@ -106,6 +106,7 @@ sub cart_add {
 	}
 
 	if (!$separate_item && ($combref = combine_items($itemref))){
+		WellWell::Core::hooks('run', 'cart', 'combine', 'main', $itemref, {quantity => $combref->{quantity}});
 		return $combref;
 	}
 	
