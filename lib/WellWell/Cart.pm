@@ -93,6 +93,9 @@ sub cart_add {
 			::logError('Adding item %s was denied: %s', $sku, $itemref->{error});
 		}
 		Vend::Tags->error({name => $sku, set => $itemref->{error}, overwrite => 1});
+
+		# prevent error from leaking into subsequent cart actions
+		delete $itemref->{error};
 		return;
 	}
 
@@ -191,6 +194,9 @@ sub cart_refresh {
 							::logError('Removal of item %s was denied: %s', $itemref->{code}, $itemref->{error});
 						}
 						Vend::Tags->error({name => $itemref->{code}, set => $itemref->{error}, overwrite => 1});
+						# prevent error from leaking into subsequent cart actions
+						delete $itemref->{error};
+						
 						$quantity = $itemref->{quantity};
 					}
 					else {
@@ -221,6 +227,9 @@ sub cart_refresh {
 				}
 				Vend::Tags->error({name => $itemref->{code}, set => $itemref->{error}, overwrite => 1});
 				%$modref = ();
+				
+				# prevent error from leaking into subsequent cart actions
+				delete $itemref->{error};
 			}
 			
 			for (keys %$modref) {
