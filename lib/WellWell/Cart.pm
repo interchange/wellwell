@@ -57,8 +57,10 @@ sub cart_item {
 			 mv_si => 0);
 
 	# get automodifiers
-	Vend::Order::auto_modifier(\%item);
-
+	if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+		Vend::Order::auto_modifier(\%item);
+	}
+	
 	# apply possible overrides
 	for (keys %item) {
 		if ($opt->{$_}) {
