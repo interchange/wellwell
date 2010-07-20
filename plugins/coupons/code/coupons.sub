@@ -1,0 +1,20 @@
+Sub coupons <<EOS
+sub {
+	my ($action, $function, @params) = split('/', shift);
+
+	if ($function eq 'redeem') {
+		if ($CGI->{coupon_number}) {
+			$Tag->coupons('redeem', $CGI->{coupon_number});
+		}
+		else {
+			$Tag->error({name => 'coupon', set => errmsg('Please enter coupon number.')});
+		}
+	}
+	elsif ($function eq 'cancel') {
+		$Tag->coupons('cancel', $CGI->{coupon_number});
+	}		
+
+	$CGI->{mv_nextpage} =  $Config->{Special}->{order};
+	return 1;
+}
+EOS

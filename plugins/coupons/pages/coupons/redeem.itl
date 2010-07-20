@@ -1,0 +1,4 @@
+[compose
+	components.body="coupons_redeem"
+    forms.coupons_redeem.name="coupons_redeem"
+]
