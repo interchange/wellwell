@@ -144,7 +144,7 @@ sub lookup {
 		die ::errmsg('Database missing: %s', 'coupons');
 	}
 
-	$set = $dbif->query(q{select C.code,D.valid_from,D.valid_to from coupons C left join coupon_dates D on (C.code = D.coupon_code) where C.coupon_code = '%s' and C.inactive is FALSE order by D.valid_from ASC},
+	$set = $dbif->query(q{select C.code,D.valid_from,D.valid_to from coupons C left join coupon_dates D on (C.code = D.coupon_code) where C.coupon_number = '%s' and C.inactive is FALSE order by D.valid_from ASC},
 						$coupon_number);
 
 	if (@$set) {
