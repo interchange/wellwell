@@ -64,6 +64,9 @@ sub coupons {
 			for (@{$repo->[0]}) {
 				my %hash = %{$repo->[1]->{$_}};
 				
+				$hash{coupon_number} = $_;
+				$hash{discount_total} = Vend::Tags->subtotal({name => 'main', noformat => 1, nodiscount => 1})
+															 - Vend::Tags->subtotal('main', 1);
 				push (@out, Vend::Tags->uc_attr_list({hash => \%hash, body => $body}));
 			}
 			
@@ -129,7 +132,7 @@ sub apply_discounts {
 			Vend::Tags->discount({code => 'ALL_ITEMS', body => '$s * ' . $factor});
 
 			$self->{discount} = $value;
-			$Vend::Session->{coupons}->[1]->{$self->{code}}->{discount} = $value;
+			$Vend::Session->{coupons}->[1]->{$self->{coupon_number}}->{discount} = $value;
 		}
 	}
 }
@@ -212,9 +215,9 @@ sub log {
 	
 	$Vend::Session->{coupons} ||= [[], {}];
 
-	push (@{$Vend::Session->{coupons}->[0]}, $self->{code});
-	$Vend::Session->{coupons}->[1]->{$self->{code}} = {coupon_number => $self->{coupon_number},
-																 valid_to => $self->{valid_to}};
+	push (@{$Vend::Session->{coupons}->[0]}, $self->{coupon_number});
+	$Vend::Session->{coupons}->[1]->{$self->{coupon_number}} = {code => $self->{code},
+																valid_to => $self->{valid_to}};
 	
 	return $code;
 }
