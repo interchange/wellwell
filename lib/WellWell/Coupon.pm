@@ -39,23 +39,44 @@ sub coupons {
 	my ($function, $code, $opt, $body) = @_;
 	my ($coupon, $repo);
 
-	if ($function eq 'validate' || $function eq 'redeem') {
+	if ($function eq 'validate') {
 		if ($coupon = lookup($code)) {
-			if ($function eq 'validate') {
-				return $coupon->code();
-			}
-			else {
-				$coupon->redeem();
-			}
+			return $coupon->code();
 		}
 		else {
 			Vend::Tags->error({name => 'coupons', set => $last_error, overwrite => 1});
 		}
+
+		return;
 	}
-	elsif ($function eq 'cancel') {
+
+	if ($function eq 'redeem') {
+		if ($coupon = lookup($code)) {
+			# check whether the coupon exists in the session first
+			if (exists $Vend::Session->{coupons}) {
+				$repo = $Vend::Session->{coupons};
+
+				if (exists $repo->[1]->{$code}) {
+					Vend::Tags->error({name => 'coupons', set => 'Coupon already in use', overwrite => 1});
+					return;
+				}
+			}
+			
+			$coupon->redeem();
+		}
+		else {
+			Vend::Tags->error({name => 'coupons', set => $last_error, overwrite => 1});
+		}
+
+		return;
+	}
+	
+	if ($function eq 'cancel') {
 		# noop right now
+		return;
 	}
-	elsif ($function eq 'display') {
+	
+	if ($function eq 'display') {
 		my (@out);
 		
 		if (exists $Vend::Session->{coupons}) {
@@ -72,6 +93,8 @@ sub coupons {
 			
 			return join('', @out);
 		}
+
+		return;
 	}
 	
 	return;
