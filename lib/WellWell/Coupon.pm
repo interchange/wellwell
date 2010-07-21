@@ -152,7 +152,7 @@ sub apply_discounts {
 
 			$factor = 1 - $value / 100;
 
-			Vend::Tags->discount({code => 'ALL_ITEMS', body => '$s * ' . $factor});
+			Vend::Tags->discount({code => 'ENTIRE_ORDER', body => '$s * ' . $factor});
 
 			$self->{discount} = $value;
 			$Vend::Session->{coupons}->[1]->{$self->{coupon_number}}->{discount} = $value;
