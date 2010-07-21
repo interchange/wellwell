@@ -154,6 +154,9 @@ sub apply_discounts {
 
 			Vend::Tags->discount({code => 'ENTIRE_ORDER', body => '$s * ' . $factor});
 
+			# use only existing decimals
+			$value =~ s/\.0+$//;
+				
 			$self->{discount} = $value;
 			$Vend::Session->{coupons}->[1]->{$self->{coupon_number}}->{discount} = $value;
 		}
