@@ -1,0 +1,11 @@
+Sub coupons_order_cleanup <<EOS
+sub {
+	delete $Session->{coupons};
+
+	# reset discount
+	$Tag->discount('ENTIRE_ORDER');
+
+	return;
+}
+EOS
+
