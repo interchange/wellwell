@@ -237,8 +237,6 @@ sub log {
 	
 	$code = $dbif->set_slice([{dml => 'insert'}], \%record);
 
-	# apply discounts
-	
 	$Vend::Session->{coupons} ||= [[], {}];
 
 	push (@{$Vend::Session->{coupons}->[0]}, $self->{coupon_number});
