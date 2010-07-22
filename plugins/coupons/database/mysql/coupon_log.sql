@@ -4,6 +4,7 @@ CREATE TABLE coupon_log (
     uid int unsigned NOT NULL default 0,
 	session_id char(8) NOT NULL default '',
 	entered datetime NOT NULL,
+    order_number varchar(14) NOT NULL default '',
 	PRIMARY KEY(code),
 	KEY(coupon_code)
 );

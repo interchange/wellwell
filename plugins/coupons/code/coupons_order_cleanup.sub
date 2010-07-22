@@ -1,5 +1,21 @@
 Sub coupons_order_cleanup <<EOS
 sub {
+	$Tag->perl({tables => 'coupon_log'});
+
+	# store order number in coupon_log table
+	if (exists $Session->{coupons}) {
+		for my $coupon_number (keys %{$Session->{coupons}->[1]}) {
+			my $repo = $Session->{coupons}->[1]->{$coupon_number};
+
+			if ($repo->{log_code}) {
+				$Db{coupon_log}->set_field($repo->{log_code}, 'order_number', $Values->{mv_order_number});
+			}
+			else {
+				Log("coupon_log code missing for coupon $coupon_number and order $Values->{mv_order_number}");
+			}
+		}
+	}
+
 	delete $Session->{coupons};
 
 	# reset discount

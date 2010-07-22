@@ -241,6 +241,7 @@ sub log {
 
 	push (@{$Vend::Session->{coupons}->[0]}, $self->{coupon_number});
 	$Vend::Session->{coupons}->[1]->{$self->{coupon_number}} = {code => $self->{code},
+																log_code => $code,
 																valid_to => $self->{valid_to}};
 	
 	return $code;
