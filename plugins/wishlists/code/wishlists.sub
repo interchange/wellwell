@@ -70,8 +70,10 @@ sub {
 		for (my $i = 0; $i < @skus; $i++) {
 			$Tag->cart_add($skus[$i], $qtys[$i] || 1);
 		}
-		$CGI->{mv_nextpage} = $Config->{Special}->{order};
-		return 1;
+
+		$Tag->deliver({location => $Tag->area($Config->{Special}->{order}),
+			status => '302 move temporarily'});
+		return;
 	}
 
 	# whether to delete stuff from wishlist
