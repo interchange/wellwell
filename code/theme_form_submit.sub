@@ -10,7 +10,7 @@ sub {
 		}
 	}
 	else {
-		$submit = q{<input type="submit" name="submit" value="OK">};
+		$submit = q{<input type="submit" name="ok" value="OK">};
 	}
 
 	return $submit;
