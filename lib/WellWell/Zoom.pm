@@ -61,7 +61,7 @@ sub zoom {
 
 		# now determine which fields are needed
 		while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
-			push @{$bref->{columns}->{$value->{table}}}, $key;
+			push @{$bref->{columns}->{$value->{table}}}, $value->{field} || $key;
 		}
 
 		($sql, $bind) = build_select(%$bref);
@@ -83,7 +83,7 @@ sub zoom {
 		while ($row = $sth->fetchrow_hashref) {
 			# now fill in params
 			while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
-				$rep_str = $row->{$key};
+				$rep_str = $row->{$value->{field} || $key};
 
 				if ($value->{subref}) {
 					$rep_str = $value->{subref}->($row);
