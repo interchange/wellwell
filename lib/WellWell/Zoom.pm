@@ -94,7 +94,11 @@ sub zoom {
 				}
 				
 				for my $elt (@{$value->{elts}}) {
-					if ($elt->{zoom_rep_att}) {
+					if ($elt->{zoom_rep_sub}) {
+						# call subroutine to handle this element
+						$elt->{zoom_rep_sub}->($elt, $rep_str);
+					}
+					elsif ($elt->{zoom_rep_att}) {
 						# replace attribute instead of embedded text (e.g. for <input>)
 						$elt->set_att($elt->{zoom_rep_att}, $rep_str);
 					}
@@ -177,6 +181,9 @@ sub parse_handler {
 				# replace value attribute instead of text
 				$elt->{zoom_rep_att} = 'value';
 			}
+			elsif ($gi eq 'select') {
+				$elt->{zoom_rep_sub} = \&set_selected;
+			}
 			elsif (! $elt->contains_only_text()) {
 				# contains real elements, so we have to be careful with
 				# set text and apply it only to the first PCDATA element
@@ -205,5 +212,28 @@ sub parse_handler {
 	return $sref;
 }
 
+# set_selected - Set selected value in a dropdown menu
+
+sub set_selected {
+	my ($elt, $value) = @_;
+	my (@children, $eltval);
+
+	@children = $elt->children('option');
+
+	for my $node (@children) {
+		$eltval = $node->att('value');
+
+		unless (length($eltval)) {
+			$eltval = $node->text();
+		}
+		
+		if ($eltval eq $value) {
+			$node->set_att('selected', 'selected');
+		}
+		else {
+			$node->del_att('selected', '');
+		}
+	}
+}
 
 1;
