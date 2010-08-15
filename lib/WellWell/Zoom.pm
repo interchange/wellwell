@@ -194,7 +194,14 @@ sub parse_handler {
 			
 			if ($sob->{sub}) {
 				# determine code reference for named function
-				$sob->{subref} = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
+				my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
+
+				if ($sob->{scope} eq 'element') {
+					$elt->{zoom_rep_sub} = $subref;
+				}
+				else {
+					$sob->{subref} = $subref;
+				}
 			}
 			
 			$sref->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
