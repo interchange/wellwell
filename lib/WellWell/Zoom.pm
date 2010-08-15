@@ -61,7 +61,9 @@ sub zoom {
 
 		# now determine which fields are needed
 		while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
-			push @{$bref->{columns}->{$value->{table}}}, $value->{field} || $key;
+			if (exists $value->{table}) {
+				push @{$bref->{columns}->{$value->{table}}}, $value->{field} || $key;
+			}
 		}
 
 		($sql, $bind) = build_select(%$bref);
@@ -196,7 +198,7 @@ sub parse_handler {
 				# determine code reference for named function
 				my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
 
-				if ($sob->{scope} eq 'element') {
+				if (exists $sob->{scope} && $sob->{scope} eq 'element') {
 					$elt->{zoom_rep_sub} = $subref;
 				}
 				else {
