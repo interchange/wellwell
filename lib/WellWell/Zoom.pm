@@ -222,7 +222,7 @@ sub parse_handler {
 			$sref->{values}->{$name} = $sob;
 		}
 		else {
-			next;
+			return $sref;
 		}
 	}
 
