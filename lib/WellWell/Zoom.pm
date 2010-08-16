@@ -170,6 +170,14 @@ sub parse_handler {
 	if (defined $class && exists $sref->{specs}->{class}->{$class}) {
 		$sob = $sref->{specs}->{class}->{$class};
 		$name = $sob->{name} || $class;
+
+		if ($sob->{permission}) {
+			unless (Vend::Tags->acl('check', $sob->{permission})) {
+				# no permission for this document part
+				$elt->cut();
+				return;
+			}
+		}
 		
 		if ($sob->{type} eq 'list') {
 			$sob->{elts} = [$elt];
