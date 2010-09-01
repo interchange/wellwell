@@ -7,6 +7,6 @@
 Sub theme_form_element_label <<EOS 
 sub {
 	my ($name, $label) = @_;
-	return qq{<label for="$name">$label</label>};
+	return qq{<label for="$name" id="$name">$label</label>};
 }
 EOS
