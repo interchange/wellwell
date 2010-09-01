@@ -83,6 +83,8 @@ sub {
 	}
 	elsif ($function eq 'init') {
 		# set defaults for the review form
+		$Values->{sku} = $sku || $Scratch->{sku};
+
 		$Values->{rating} = 0;
 
 		for (qw/title review/) {
