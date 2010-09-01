@@ -108,7 +108,7 @@ sub {
 			$sql .= ' order by name asc'; 
 		}
 
-		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
+		return $Tag->query ({sql => $sql, list => 1, prefix => $opt->{prefix} || 'item',
 			body => $body});
 	}
 }
