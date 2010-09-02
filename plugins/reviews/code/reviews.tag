@@ -56,10 +56,26 @@ sub {
 
 		unless ($rating) {
 			if ($sku) {
-				my $url = $Tag->area("reviews/$sku/create");
-				return qq{<a href="$url">Enter First Review</a>};
+				my ($create_text, $url);
+
+				if (exists $opt->{create_text}) {
+					$create_text = $opt->{create_text};
+				}
+				else {
+					$create_text = 'Enter First Review';
+				}
+
+				if ($create_text =~ /\S/) {
+					$url = $Tag->area("reviews/$sku/create");
+					return qq{<a href="$url">Enter First Review</a>};
+				}
+
+				return;
 			}
 		}
+
+		# additional content at the top
+		push @out, $opt->{top};
 
 		for (qw/empty full/) {
 			$img{"rating_path_$_"} = $opt->{"img_rating_$_"} || $Variable->{'REVIEWS_IMG_RATING_' . uc($_)};
@@ -78,6 +94,9 @@ sub {
 				push @out, qq{<img src="$img{'rating_empty'}">};
 			}
 		}
+
+		# additional content at the bottom
+		push @out, $opt->{bottom};
 		
 		return(join('', @out));
 	}
