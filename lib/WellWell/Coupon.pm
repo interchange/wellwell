@@ -72,7 +72,34 @@ sub coupons {
 	}
 	
 	if ($function eq 'cancel') {
-		# noop right now
+		my ($coupon, $pos);
+		
+		if (exists $Vend::Session->{coupons}) {
+			$repo = $Vend::Session->{coupons};
+
+			if (exists $repo->[1]->{$code}) {
+				# remove coupon from session hash
+				$coupon = delete $repo->[1]->{$code};
+
+				# reset discount(s)
+				if ($coupon->{subject} eq 'subtotal') {
+					Vend::Tags->discount({code => 'ENTIRE_ORDER', body => ''});
+				}
+				elsif ($coupon->{subject} eq 'product') {
+					for my $sku (@{$coupon->{targets}}) {
+						Vend::Tags->discount({code => $sku, body => ''});
+					}
+				}
+				
+				# remove coupon from session array
+				delete $repo->[0]->[$coupon->{pos}];
+				
+				Vend::Tags->warnings('Coupon has been canceled');
+				return;
+			}
+		}
+
+		Vend::Tags->error({name => 'coupons', set => 'Coupon not in use'});
 		return;
 	}
 	
@@ -88,6 +115,14 @@ sub coupons {
 				$hash{coupon_number} = $_;
 				$hash{discount_total} = Vend::Tags->subtotal({name => 'main', noformat => 1, nodiscount => 1})
 															 - Vend::Tags->subtotal('main', 1);
+
+				if ($hash{subject} eq 'subtotal') {
+					$hash{target} = ' all items';
+				}
+				elsif ($hash{subject} eq 'product') {
+					$hash{target} = join(', ', @{$hash{targets}});
+				}
+				
 				push (@out, Vend::Tags->uc_attr_list({hash => \%hash, body => $body}));
 			}
 			
@@ -131,7 +166,7 @@ sub redeem {
 
 sub apply_discounts {
 	my ($self) = shift;
-	my ($dbif, $set);
+	my ($dbif, $dbif_targets, $set);
 	
 	unless ($dbif = database_exists_ref('coupon_discounts')) {
 		die ::errmsg('Database missing: %s', 'coupon_discounts');
@@ -141,6 +176,7 @@ sub apply_discounts {
 
 	for (@$set) {
 		my ($code, $subject, $mode, $value) = @$_;
+		my ($repo);
 
 		if ($subject eq 'subtotal' && $mode eq 'percents') {
 			if ($value <= 0 || $value >= 100) {
@@ -158,7 +194,46 @@ sub apply_discounts {
 			$value =~ s/\.0+$//;
 				
 			$self->{discount} = $value;
-			$Vend::Session->{coupons}->[1]->{$self->{coupon_number}}->{discount} = $value;
+			$self->{subject} = $subject;
+
+			$repo = $Vend::Session->{coupons}->[1]->{$self->{coupon_number}};
+
+			for (qw/discount subject/) {
+				$repo->{$_} = $self->{$_};
+			}
+		}
+		elsif ($subject eq 'product' && $mode eq 'percents') {
+			my (@products);
+			
+			# apply discount only to certain products
+			if ($value <= 0 || $value >= 100) {
+				::logError("Invalid coupon discount %s: $value%");
+				next;
+			}
+
+			# get products from coupon_targets
+			@products = product_targets($code);
+			
+			my $factor;
+
+			$factor = 1 - $value / 100;
+
+			for (@products) {
+				Vend::Tags->discount({code => $_, body => '$s * ' . $factor});
+			}
+
+			# use only existing decimals
+			$value =~ s/\.0+$//;
+				
+			$self->{discount} = $value;
+			$self->{subject} = $subject;
+			$self->{targets} = \@products;
+
+			$repo = $Vend::Session->{coupons}->[1]->{$self->{coupon_number}};
+
+			for (qw/discount subject targets/) {
+				$repo->{$_} = $self->{$_};
+			}
 		}
 	}
 }
@@ -218,11 +293,27 @@ sub lookup {
 								 valid_to => $clist[0]->[1]);
 }
 
+# product_targets - Look up SKUs applicable for discount.
+
+sub product_targets {
+	my ($discount_code) = @_;
+	my ($dbif, $set);
+
+	unless ($dbif = database_exists_ref('coupon_targets')) {
+		die ::errmsg('Database missing: %s', 'coupon_targets');
+	}
+
+	$set = $dbif->query(q{select value from coupon_targets where discount_code = '%s'},
+						$discount_code);
+
+	return map {$_->[0]} @$set;
+}
+
 # log - Log the coupon into the database and the session.
 
 sub log {
 	my ($self) = shift;
-	my ($dbif, $entered, %record, $code);
+	my ($dbif, $entered, %record, $code, $pos, $session);
 	
 	unless ($dbif = database_exists_ref('coupon_log')) {
 		die ::errmsg('Database missing: %s', 'coupon_log');
@@ -240,10 +331,16 @@ sub log {
 	$Vend::Session->{coupons} ||= [[], {}];
 
 	push (@{$Vend::Session->{coupons}->[0]}, $self->{coupon_number});
-	$Vend::Session->{coupons}->[1]->{$self->{coupon_number}} = {code => $self->{code},
-																log_code => $code,
-																valid_to => $self->{valid_to}};
+	$pos = $#{$Vend::Session->{coupons}->[0]};
+
+	$session = {code => $self->{code},
+				subject => $self->{subject},
+				targets => $self->{targets},
+				log_code => $code,
+				pos => $pos,
+				valid_to => $self->{valid_to}};
 	
+	$Vend::Session->{coupons}->[1]->{$self->{coupon_number}} = $session;
 	return $code;
 }
 
