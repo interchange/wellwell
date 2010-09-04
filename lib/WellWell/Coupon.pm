@@ -104,7 +104,7 @@ sub coupons {
 	}
 	
 	if ($function eq 'display') {
-		my (@out);
+		my (@out, @links);
 		
 		if (exists $Vend::Session->{coupons}) {
 			$repo = $Vend::Session->{coupons};
@@ -120,7 +120,14 @@ sub coupons {
 					$hash{target} = ' all items';
 				}
 				elsif ($hash{subject} eq 'product') {
-					$hash{target} = join(', ', @{$hash{targets}});
+					my (@links, $url);
+					
+					for (@{$hash{targets}}) {
+						$url = Vend::Tags->area($_);
+						push(@links, qq{<a href="$url">$_</a>});
+					}
+					
+					$hash{target} = join(', ', @links);
 				}
 				
 				push (@out, Vend::Tags->uc_attr_list({hash => \%hash, body => $body}));
