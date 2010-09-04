@@ -116,6 +116,11 @@ sub coupons {
 				$hash{discount_total} = Vend::Tags->subtotal({name => 'main', noformat => 1, nodiscount => 1})
 															 - Vend::Tags->subtotal('main', 1);
 
+				if ($opt->{zerohide} && $hash{discount_total} == 0) {
+					# don't display anything
+					return;
+				}
+				
 				if ($hash{subject} eq 'subtotal') {
 					$hash{target} = ' all items';
 				}
