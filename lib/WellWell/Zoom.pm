@@ -51,7 +51,9 @@ sub zoom {
 	}
 	
 	if ($function eq 'display') {
-		my ($sref, $bref, $sql, $sth, $bind, %columns, $row, $key, $value, $lel, %paste_pos, $rep_str);
+		my ($sref, $bref, $sql, $sth, $bind, %columns, $row, $key, $value,
+			$att_name, $att_spec, $att_tag_name, $att_tag_spec, %att_tags, $att_val,
+			$lel, %paste_pos, $rep_str);
 
 		unless ($sref = $::Scratch->{zoom}->{$name}->{object}) {
 			die "Missing template $name\n";
@@ -116,6 +118,26 @@ sub zoom {
 					}
 					else {
 						$elt->set_text($rep_str);
+					}
+
+					# replace attributes on request
+					if ($value->{attributes}) {
+						while (($att_name, $att_spec) = each %{$value->{attributes}}) {
+							if (exists ($att_spec->{filter})) {
+								# derive tags from current record
+								if (exists ($att_spec->{filter_tags})) {
+									while (($att_tag_name, $att_tag_spec) = each %{$att_spec->{filter_tags}}) {
+										$att_tags{$att_tag_name} = $row->{$att_tag_spec};
+									}
+								}
+								else {
+									%att_tags = ();
+								}
+								
+								$att_val = Vend::Interpolate::filter_value($att_spec->{filter}, undef, \%att_tags, $att_spec->{filter_args});
+								$elt->set_att($att_name, $att_val);
+							}
+						}
 					}
 				}
 			}
