@@ -213,11 +213,23 @@ sub parse_handler {
 		}
 		
 		if ($sob->{type} eq 'list') {
+			if (exists $sref->{lists}->{$name}) {
+				# discard repeated lists
+				$elt->cut();
+				return;
+			}
+			
 			$sob->{elts} = [$elt];
 
 			$sref->{lists}->{$name} = [$sob];
+			return $sref;
 		}
-		elsif ($sob->{type} eq 'param') {
+
+		if (exists $sref->{lists}->{$sob->{list}}) {
+			return $sref;
+		}
+
+		if ($sob->{type} eq 'param') {
 			push (@{$sob->{elts}}, $elt);
 
 			if ($gi eq 'input') {
