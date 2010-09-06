@@ -83,9 +83,11 @@ sub zoom {
 		else {
 			%paste_pos = (before => $lel->next_sibling());
 		}
-
+		
 		$lel->cut();
-			
+		
+		my $row_pos = 0;
+		
 		while ($row = $sth->fetchrow_hashref) {
 			# now fill in params
 			while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
@@ -141,10 +143,19 @@ sub zoom {
 					}
 				}
 			}
-	
+			
+			$row_pos++;
+			
 			# now add to the template
 			my $subtree = $lel->copy();
-	
+
+			# alternate classes?
+			if ($sref->{lists}->{$name}->[2]->{alternate}) {
+				my $idx = $row_pos % $sref->{lists}->{$name}->[2]->{alternate};
+				
+				$subtree->set_att('class', $sref->{lists}->{$name}->[1]->[$idx]);
+			}
+			
 			$subtree->paste(%paste_pos);
 
 			# call increment functions
@@ -176,7 +187,7 @@ sub zoom {
 
 sub parse_template {
 	my ($template, $specs) = @_;
-	my ($twig, $xml, $object);
+	my ($twig, $xml, $object, $list);
 
 	$object = {specs => $specs, lists => {}, params => {}};
 		
@@ -187,6 +198,15 @@ sub parse_template {
 		die "Invalid HTML template: $template\n";
 	}
 
+	# examine list on alternates
+	for my $name (keys %{$object->{lists}}) {
+		$list = $object->{lists}->{$name};
+
+		if (@{$list->[1]} > 1) {
+			$list->[2]->{alternate} = @{$list->[1]};
+		}
+	}
+	
 	$object->{xml} = $xml;
 	return $object;
 }
@@ -195,12 +215,21 @@ sub parse_template {
 
 sub parse_handler {
 	my ($elt, $sref) = @_;
-	my ($gi, $class, $name, $sob, $elt_text);
+	my ($gi, @classes, @static_classes, $class, $name, $sob, $elt_text);
 
 	$gi = $elt->gi();
-	$class  = $elt->att('class');
 
-	if (defined $class && exists $sref->{specs}->{class}->{$class}) {
+	# weed out "static" classes
+	for my $class (split(/\s+/, $elt->att('class'))) {
+		if (exists $sref->{specs}->{class}->{$class}) {
+			push @classes, $class;
+		}
+		else {
+			push @static_classes, $class;
+		}
+	}
+	
+	for my $class (@classes) {
 		$sob = $sref->{specs}->{class}->{$class};
 		$name = $sob->{name} || $class;
 
@@ -214,6 +243,9 @@ sub parse_handler {
 		
 		if ($sob->{type} eq 'list') {
 			if (exists $sref->{lists}->{$name}) {
+				# record static classes
+				push (@{$sref->{lists}->{$name}->[1]}, join(' ', @static_classes));
+				
 				# discard repeated lists
 				$elt->cut();
 				return;
@@ -221,7 +253,7 @@ sub parse_handler {
 			
 			$sob->{elts} = [$elt];
 
-			$sref->{lists}->{$name} = [$sob];
+			$sref->{lists}->{$name} = [$sob, [join(' ', @static_classes)]];
 			return $sref;
 		}
 
@@ -235,11 +267,9 @@ sub parse_handler {
 			if ($gi eq 'input') {
 				# replace value attribute instead of text
 				$elt->{zoom_rep_att} = 'value';
-			}
-			elsif ($gi eq 'select') {
+			} elsif ($gi eq 'select') {
 				$elt->{zoom_rep_sub} = \&set_selected;
-			}
-			elsif (! $elt->contains_only_text()) {
+			} elsif (! $elt->contains_only_text()) {
 				# contains real elements, so we have to be careful with
 				# set text and apply it only to the first PCDATA element
 				if ($elt_text = $elt->first_child('#PCDATA')) {
@@ -253,16 +283,14 @@ sub parse_handler {
 
 				if (exists $sob->{scope} && $sob->{scope} eq 'element') {
 					$elt->{zoom_rep_sub} = $subref;
-				}
-				else {
+				} else {
 					$sob->{subref} = $subref;
 				}
 			}
 			
 			$sref->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
 			push(@{$sref->{params}->{$sob->{list}}->{array}}, $sob);
-		}
-		elsif ($sob->{type} eq 'increment') {
+		} elsif ($sob->{type} eq 'increment') {
 			# increments
 			push (@{$sob->{elts}}, $elt);
 
@@ -272,16 +300,14 @@ sub parse_handler {
 
 			# record it for increment values
 			$sref->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
-		}
-		elsif ($sob->{type} eq 'value') {
+		} elsif ($sob->{type} eq 'value') {
 			push (@{$sob->{elts}}, $elt);
 			$sref->{values}->{$name} = $sob;
-		}
-		else {
+		} else {
 			return $sref;
 		}
 	}
-
+	
 	return $sref;
 }
 
