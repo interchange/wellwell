@@ -170,6 +170,9 @@ sub zoom {
 				if ($value->{scope} eq 'scratch') {
 					$rep_str = $::Scratch->{$key};
 				}
+				else {
+					$rep_str = $value->{value};
+				}
 				
 				if ($value->{filter}) {
 					$rep_str = Vend::Tags->filter({op => $value->{filter}, body => $rep_str});
