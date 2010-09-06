@@ -25,6 +25,8 @@ use warnings;
 use XML::Twig;
 use Rose::DB::Object::QueryBuilder qw(build_select);
 
+use WellWell::Zoom::Increment;
+
 use Vend::Config;
 use Vend::Data;
 use Vend::Tags;
@@ -87,6 +89,10 @@ sub zoom {
 			while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
 				$rep_str = $row->{$value->{field} || $key};
 
+				if ($value->{increment}) {
+					$rep_str = $value->{increment}->value();
+				}
+				
 				if ($value->{subref}) {
 					$rep_str = $value->{subref}->($row);
 				}
@@ -118,6 +124,11 @@ sub zoom {
 			my $subtree = $lel->copy();
 	
 			$subtree->paste(%paste_pos);
+
+			# call increment functions
+			for my $inc (@{$sref->{increments}->{$name}->{array}}) {
+				$inc->{increment}->increment();
+			}
 		}
 
 		# replacements for simple values
@@ -216,6 +227,17 @@ sub parse_handler {
 			
 			$sref->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
 			push(@{$sref->{params}->{$sob->{list}}->{array}}, $sob);
+		}
+		elsif ($sob->{type} eq 'increment') {
+			# increments
+			push (@{$sob->{elts}}, $elt);
+
+			# create increment object and record it for increment updates
+			$sob->{increment} = new WellWell::Zoom::Increment;
+			push(@{$sref->{increments}->{$sob->{list}}->{array}}, $sob);
+
+			# record it for increment values
+			$sref->{params}->{$sob->{list}}->{hash}->{$name} = $sob;
 		}
 		elsif ($sob->{type} eq 'value') {
 			push (@{$sob->{elts}}, $elt);
