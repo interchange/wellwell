@@ -430,15 +430,15 @@ sub menu {
 			}
 			
 			$label = $menu_ref->{label} || $_;
-				
-			if ($menu_ref->{action}) {
-				$form = {action => $menu_ref->{action}};
-			}
 
 			$url = $self->{url} || $self->{name};
+			
+			if ($menu_ref->{action}) {
+				$form = {action => $menu_ref->{action}};
 
-			if ($self->{page}) {
-				$url .= "/$self->{page}";
+				if ($self->{page}) {
+					$url .= "/$self->{page}";
+				}
 			}
 			
 			push(@entries, {name => $label, url => $url, form => $form,
