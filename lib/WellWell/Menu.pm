@@ -81,6 +81,9 @@ sub build_entries {
 		$entries_ref = sort_tree_entries($entries_ref);
 		$cur_level = $entries_ref->[0]->{level};
 	}
+	else {
+		$cur_level = 0;
+	}
 
 	for (my $i = 0; $i < @$entries_ref; $i++) {
 		$ref = $entries_ref->[$i];
