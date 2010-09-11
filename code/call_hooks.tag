@@ -5,7 +5,12 @@ sub {
 	my ($name, $mode, $opt) = @_;
 	my (@plugins, @ret);
 
-	@plugins = split(/,/, $Variable->{PLUGINS});
+	if ($opt->{plugins}) {
+		@plugins = split(/,/, $opt->{plugins});
+	}
+	else {
+		@plugins = split(/,/, $Variable->{PLUGINS});
+	}
 
 	for my $plugin (@plugins) {
 		if ($sub = $Config->{Sub}->{"${plugin}_$name"}) {
