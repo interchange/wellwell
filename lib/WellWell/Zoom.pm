@@ -64,12 +64,20 @@ sub zoom {
 		$bref->{query_is_sql} = 1;
 
 		# now determine which fields are needed
+		my %tables;
+		
 		while (($key, $value) = each %{$sref->{params}->{$name}->{hash}}) {
 			if (exists $value->{table}) {
+				$tables{$value->{table}} = 1;
 				push @{$bref->{columns}->{$value->{table}}}, $value->{field} || $key;
 			}
 		}
 
+		unless (keys %tables) {
+			Vend::Tags->error({name => 'zoom', set => 'Missing tables in specification.'});
+			return;
+		}
+		
 		($sql, $bind) = build_select(%$bref);
 
 		$sth = $bref->{dbh}->prepare($sql);
