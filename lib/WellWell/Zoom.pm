@@ -116,7 +116,7 @@ sub zoom {
 				for my $elt (@{$value->{elts}}) {
 					if ($elt->{zoom_rep_sub}) {
 						# call subroutine to handle this element
-						$elt->{zoom_rep_sub}->($elt, $rep_str);
+						$elt->{zoom_rep_sub}->($elt, $rep_str, $row);
 					}
 					elsif ($elt->{zoom_rep_att}) {
 						# replace attribute instead of embedded text (e.g. for <input>)
