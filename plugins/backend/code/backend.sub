@@ -65,8 +65,24 @@ sub {
 		}
 		return 1;
 	} else {
-		$Tag->perl({tables => 'categories'});
-		$CGI->{mv_nextpage} = 'backend/products/list';
+		# delegate to a plugin?
+		my (@ret, @path);
+
+		@path = @args;
+		shift @path;
+		
+		@ret = $Tag->call_hooks({name => 'backend', mode => 'collect', plugins => $args[0],
+			path => \@path});
+
+		if ($ret[0]) {
+			return 1;
+		}
+		else {
+			$Tag->error({name => 'backend', set => 'No appropriate backend action found.'});
+			$Tag->perl({tables => 'categories'});
+			$CGI->{mv_nextpage} = 'backend/products/list';
+		}
+
 		return 1;
 	}
 
