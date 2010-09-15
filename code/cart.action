@@ -11,6 +11,11 @@ sub {
 		return 1;
 	}
 
+	# clear function?
+	if ($CGI->{clear}) {
+		$Tag->cart_clear();
+	}
+
 	# remove function?
 	for (my $i = 0; $i < @$Items; $i++) {
 		if ($CGI->{"zeroquantity$i"}) {
