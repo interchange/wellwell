@@ -7,6 +7,7 @@ CREATE TABLE reviews (
   rating integer NOT NULL DEFAULT 0,
   title varchar(255) NOT NULL DEFAULT '',
   public boolean NOT NULL DEFAULT FALSE,
-  review text NOT NULL DEFAULT ''
+  approved boolean DEFAULT NULL,
+  review text NOT NULL DEFAULT '',
 );
 CREATE INDEX reviews_sku ON reviews(sku);

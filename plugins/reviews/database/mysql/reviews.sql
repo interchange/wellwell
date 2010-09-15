@@ -7,6 +7,7 @@ CREATE TABLE reviews (
   rating integer NOT NULL DEFAULT 0,
   title varchar(255) NOT NULL DEFAULT '',
   public boolean NOT NULL DEFAULT FALSE,
+  approved boolean DEFAULT NULL,
   review text NOT NULL DEFAULT '',
   KEY(sku)  
 );
