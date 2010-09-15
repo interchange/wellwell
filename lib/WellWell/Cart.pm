@@ -31,6 +31,9 @@ Vend::Config::parse_tag('UserTag', 'cart_add Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_add AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_add MapRoutine WellWell::Cart::cart_add');
 
+Vend::Config::parse_tag('UserTag', 'cart_clear AddAttr');
+Vend::Config::parse_tag('UserTag', 'cart_clear MapRoutine WellWell::Cart::cart_clear');
+
 Vend::Config::parse_tag('UserTag', 'cart_item Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_item AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_item MapRoutine WellWell::Cart::cart_item');
@@ -125,6 +128,37 @@ sub cart_add {
     push(@$Vend::Items, $itemref);
 
     return $itemref;
+}
+
+# [cart-clear] - clear cart
+
+sub cart_clear {
+	my ($opt) = @_;
+	my (@new_cart, $sku);
+
+	for my $itemref (@$Vend::Items) {
+		$sku = $itemref->{code};
+		WellWell::Core::hooks('run', 'cart', 'delete', 'main', $itemref);
+	
+		if ($itemref->{error}) {
+			# one of the hooks denied the item
+			if ($itemref->{log_error}) {
+				::logError('Removing item %s was denied: %s', $sku, $itemref->{error});
+			}
+			Vend::Tags->error({name => $sku, set => $itemref->{error}, overwrite => 1});
+
+			# prevent error from leaking into subsequent cart actions
+			delete $itemref->{error};
+			
+			push (@new_cart, $itemref);
+		}
+	}
+
+    if (@$Vend::Items = @new_cart) {
+		return 0;
+	}
+
+	return 1;
 }
 
 sub cart_refresh {
