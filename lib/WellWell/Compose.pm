@@ -1,7 +1,34 @@
-UserTag compose Order template
-UserTag compose HasEndTag
-UserTag compose AddAttr
-UserTag compose Routine <<EOR
+# WellWell::Compose - WellWell compose routines
+#
+# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public
+# License along with this program; if not, write to the Free
+# Software Foundation, Inc., MA 02110-1301, USA.
+
+package WellWell::Compose;
+
+use strict;
+use warnings;
+
+use Vend::Config;
+use Vend::Tags;
+
+Vend::Config::parse_tag('UserTag', 'compose Order template');
+Vend::Config::parse_tag('UserTag', 'compose HasEndTag');
+Vend::Config::parse_tag('UserTag', 'compose AddAttr');
+Vend::Config::parse_tag('UserTag', 'compose MapRoutine WellWell::Compose::compose');
+
 sub dots2hash {
 	my ($h, $v, @k) = @_;
 	my ($skey);
@@ -14,7 +41,7 @@ sub dots2hash {
 	$h->{shift @k} = $v;
 }
 
-sub {
+sub compose {
 	my ($template, $opt, $body) = @_;
 	my (%acl, %forms, $template_file, $container);
 
@@ -24,8 +51,8 @@ sub {
 			dots2hash(\%acl, $opt->{acl}->{$k}, split /\./, $k);
 		}
 
-		unless ($Tag->acl('check', $acl{check})) {
-			$Tag->deliver({location => $Tag->area($acl{bounce}),
+		unless (Vend::Tags->acl('check', $acl{check})) {
+			Vend::Tags->deliver({location => Vend::Tags->area($acl{bounce}),
 				status => '302 move temporarily'});
 			return;							
 		}
@@ -42,18 +69,18 @@ sub {
 		for my $k (keys %forms) {
 			$name = $forms{$k}->{name};
 
-			if ($Scratch->{forms}->{$name}) {
+			if ($::Scratch->{forms}->{$name}) {
 				# form intercepted by autoload
-				$forms{$k}->{content} = $Scratch->{forms}->{$name};
+				$forms{$k}->{content} = $::Scratch->{forms}->{$name};
 			} else {
-				$forms{$k}->{content} = $Tag->form({name => $name,
+				$forms{$k}->{content} = Vend::Tags->form({name => $name,
 					template => $forms{$k}->{template}});
 			}
 		}
 
 		# form bounce to another page
-		if ($Scratch->{form_series_bounce}) {
-			$Tag->deliver({location => $Tag->area($Scratch->{form_series_bounce}), status => '302 move temporarily'});
+		if ($::Scratch->{form_series_bounce}) {
+			Vend::Tags->deliver({location => Vend::Tags->area($::Scratch->{form_series_bounce}), status => '302 move temporarily'});
 			return;
 		}
 	}
@@ -62,23 +89,23 @@ sub {
 	# preserve local body even after components.body=, as user might want it
 	$opt->{local_body} = $opt->{body};
 
-	if( !$Variable->{MV_TEMPLATE_DIR} ){
+	if( !$::Variable->{MV_TEMPLATE_DIR} ){
 		::logError("MV_TEMPLATE_DIR is not set. [compose] cannot function properly without this variable.");
 		return errmsg('Templates not found, please contact site administrator.');
 	}
 
-	if( !$Variable->{MV_COMPONENT_DIR} ){
+	if( !$::Variable->{MV_COMPONENT_DIR} ){
 		::logError("MV_COMPONENT_DIR is not set. [compose] cannot function properly without this variable.");
 		return errmsg('Components not found, please contact site administrator.');
 	}
 
 	unless( $template_file = $opt->{template_file} ) {
 		# locate template
-		$template ||= $Tag->control('template', 'main');
-		$template_file = "$Variable->{MV_TEMPLATE_DIR}/$template";
+		$template ||= Vend::Tags->control('template', 'main');
+		$template_file = "$::Variable->{MV_TEMPLATE_DIR}/$template";
 
 		# read template
-		$template_file = $Tag->file($template_file);
+		$template_file = Vend::Tags->file($template_file);
 	}
 
 	# process attributes ([compose attributes.COMPONENT.OPTION='VALUE'...])
@@ -87,8 +114,8 @@ sub {
 	my (%attributes);
 
 	# automatic attributes
-	if ($Variable->{MV_ATTRIBUTE_AUTO}) {
-		my @auto = split(/\s+/, $Variable->{MV_ATTRIBUTE_AUTO});
+	if ($::Variable->{MV_ATTRIBUTE_AUTO}) {
+		my @auto = split(/\s+/, $::Variable->{MV_ATTRIBUTE_AUTO});
 
 		for (@auto) {
 			my ($ph, $c) = split(/[=:]/, $_, 2);
@@ -109,8 +136,8 @@ sub {
 	# override attributes from CGI variables
 	# for example: mv_attribute=htmlhead.title=Homepage
 	
-	if ($CGI->{mv_attribute}) {
-		for (@{$CGI_array->{mv_attribute}}) {
+	if ($CGI::values{mv_attribute}) {
+		for (@{$CGI::values_array{mv_attribute}}) {
 			if (/^(.+?)\.(.+?)=(.*)$/) {
 				$attributes{$1}->{$2} = $3;
 			}
@@ -118,8 +145,8 @@ sub {
 	}
 
 	# automatic components
-	if ($Variable->{MV_COMPONENT_AUTO}) {
-		my @auto = split(/\s+/, $Variable->{MV_COMPONENT_AUTO});
+	if ($::Variable->{MV_COMPONENT_AUTO}) {
+		my @auto = split(/\s+/, $::Variable->{MV_COMPONENT_AUTO});
 		my %skipauto;
 
 		if ($opt->{skipauto}) {
@@ -144,7 +171,7 @@ sub {
 	}
 
 	# determine whether we wrap a container around components
-	$container = $Variable->{COMPOSE_CONTAINER} || $opt->{container};
+	$container = $::Variable->{COMPOSE_CONTAINER} || $opt->{container};
 	
 	# process components ([compose components.placeholder='COMP_SPEC'...])
 	# placeholder => "{NAME}" within template file
@@ -155,9 +182,9 @@ sub {
 		for (keys %{$opt->{components}}) {
 			my (@components, @content);
 
-			if ($_ eq 'body' && $CGI->{mv_components}) {
+			if ($_ eq 'body' && $CGI::values{mv_components}) {
 				# override components 
-				@components = split(/[,\s]+/, $CGI->{mv_components});
+				@components = split(/[,\s]+/, $CGI::values{mv_components});
 			} elsif (ref($opt->{components}->{$_}) eq 'ARRAY') {
 				@components = @{$opt->{components}->{$_}};
 			} else {
@@ -183,10 +210,10 @@ sub {
 
 				# temporarily assign variables for component attributes
 				for my $attr (keys %$component_attributes) {
-					if (exists $Variable->{uc($attr)}) {
-						$var{uc($attr)} = $Variable->{uc($attr)};
+					if (exists $::Variable->{uc($attr)}) {
+						$var{uc($attr)} = $::Variable->{uc($attr)};
 					}
-					$Variable->{uc($attr)} = $component_attributes->{$attr};
+					$::Variable->{uc($attr)} = $component_attributes->{$attr};
 				}
 
 				if ($container) {
@@ -195,7 +222,7 @@ sub {
 				}
 
 				# locate component
-				$components_file = "$Variable->{MV_COMPONENT_DIR}/$name";
+				$components_file = "$::Variable->{MV_COMPONENT_DIR}/$name";
 
 				# add component	
 				my $component_content;
@@ -203,11 +230,11 @@ sub {
 				if ($_ eq 'body' and $name eq 'local_body' ) {
 					$component_content = $opt->{local_body};
 				} else {
-					$component_content =  $Tag->include($components_file);
+					$component_content =  Vend::Tags->include($components_file);
 
 					unless (defined $component_content && $name ne 'local_body') {
 						Log("Component $name from $components_file not found");
-						$Tag->error({name => 'component', set => "Component $name not found."});
+						Vend::Tags->error({name => 'component', set => "Component $name not found."});
 					}
 				}
 				
@@ -242,9 +269,9 @@ sub {
 				# reset variables
 				for my $attr (keys %$component_attributes) {
 					if (exists $var{uc($attr)}) {
-						$Variable->{uc($attr)} = $var{uc($attr)};
+						$::Variable->{uc($attr)} = $var{uc($attr)};
 					} else {
-						delete $Variable->{uc($attr)};
+						delete $::Variable->{uc($attr)};
 					}
 				}
 			}
@@ -254,6 +281,7 @@ sub {
 	}
 
 	# compose
-	$Tag->uc_attr_list({hash => $opt, body => $template_file});	
+	Vend::Tags->uc_attr_list({hash => $opt, body => $template_file});	
 }
-EOR
+	
+1;
