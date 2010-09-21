@@ -19,6 +19,9 @@
 
 package WellWell::Core;
 
+use strict;
+use warnings;
+
 use Vend::Config;
 
 use WellWell::Cart;
