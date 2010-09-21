@@ -1,4 +1,7 @@
 [compose
+	acl.check="edit_products"
+	acl.bounce="backend"
+
 	components.left="menu"
     attributes.menu.name="backend"
     components.right="login"
