@@ -1,0 +1,9 @@
+[compose
+	attributes.htmlhead.title="Backend: Products"
+	
+	components.left="menu=menu_left"
+	attributes.menu_left.name="backend"
+	attributes.menu_left.hooks=1
+
+	components.body="backend_product_edit"
+]
