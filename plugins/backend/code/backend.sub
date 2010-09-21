@@ -10,7 +10,12 @@ sub {
 		return 1;
 	}
 	
-	if ($args[0] eq 'categories') {
+	if ($args[0] eq 'products') {
+		$args[1] ||= 'list';
+		$CGI->{mv_nextpage} = "$name/products/$args[1]";
+		return 1;
+	}
+	elsif ($args[0] eq 'categories') {
 		$Tag->perl({tables => 'categories'});
 		@fields = qw/name/;
 		
@@ -64,7 +69,7 @@ sub {
 			$CGI->{mv_nextpage} = 'backend/menus/list';
 		}
 		return 1;
-	} else {
+	} elsif (@args) {
 		# delegate to a plugin?
 		my (@ret, @path);
 
@@ -84,6 +89,9 @@ sub {
 		}
 
 		return 1;
+	}
+	else {
+		$CGI->{mv_nextpage} = 'backend/products/list';
 	}
 
 	return 1;
