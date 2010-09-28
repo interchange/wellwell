@@ -60,7 +60,7 @@ sub cart_item {
 			 mv_si => 0);
 
 	# get automodifiers
-	if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+	if (ref($Vend::Cfg->{AutoModifier}) eq 'ARRAY') {
 		Vend::Order::auto_modifier(\%item);
 	}
 	
