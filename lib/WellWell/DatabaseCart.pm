@@ -172,9 +172,11 @@ sub new {
 sub add_item {
 	my ($self, $item) = @_;
 
-	$self->{db_products}->set_slice([$self->{code}, $item->{code}], quantity => $item->{quantity},
-								   position => 0);
-	$self->touch();
+	unless (exists $item->{inactive} && $item->{inactive}) {
+		$self->{db_products}->set_slice([$self->{code}, $item->{code}], quantity => $item->{quantity},
+										position => 0);
+		$self->touch();
+	}
 }
 
 sub delete_item {

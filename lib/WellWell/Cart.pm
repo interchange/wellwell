@@ -104,6 +104,13 @@ sub cart_add {
 		return;
 	}
 
+	# now check whether the item is active
+	if (exists $itemref->{inactive}
+		&& $itemref->{inactive}) {
+		Vend::Tags->error({name => $sku, set => 'Product has been discontinued', overwrite => 1});
+		return;
+	}
+	
 	# see if we can combine this item into cart items
 	if ($subname = $Vend::Cfg->{SpecialSub}{separate_items}) {
 		$sub = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
