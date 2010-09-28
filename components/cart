@@ -10,7 +10,7 @@
 [item-list]
 <tr>
 <td><input type="submit" name="zero[quantity-name]" value="X">
-<td>[item-field name]</td>
+<td><a href="[item-code]">[item-field name]</a></td>
 <td><input name="[quantity-name]" size="3" value="[item-quantity]"></td>
 <td>[item-price]</td>
 <td>[item-subtotal]</td>
