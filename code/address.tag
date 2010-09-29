@@ -41,6 +41,13 @@ sub {
 		if ($address{country}) {
 			$address{country} = $Db{country}->field($address{country}, 'name');
 		}
+
+		# strip all strings to avoid display of pure whitespace strings
+		for (keys %address) {
+			$address{$_} =~ s/^\s+//;
+			$address{$_} =~ s/\s+$//;
+		}
+
 		return $Tag->uc_attr_list({hash => \%address, body => $body});
 	}
 	elsif ($function eq 'set') {
