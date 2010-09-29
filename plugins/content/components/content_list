@@ -4,13 +4,14 @@
 [query sql="select * from content order by created desc" list=1]
 [on-match]
 <table>
-<tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th><th>[L]Date[/L]</th></tr>
+<tr><th>[L]Title[/L]</th><th>[L]Author[/L]</th><th>[L]Date[/L]</th><th>[L]Path[/L]</tr>
 [/on-match]
 [list]
 <tr>
 <td><a href="[area content/[sql-code]]">[sql-param title]</a></td>
 <td>[user name [sql-param uid]]</td>
 <td>[time time="[sql-param created]"]%A, %e.%B %Y[/time] </td>
+<td>[sql-param uri]</td>
 </tr>
 [/list]
 [on-match]
