@@ -37,7 +37,7 @@ sub acl {
 	return 1 unless $permission;
 
 	unless ($acl_config = $Vend::Cfg->{ACL}) {
-		die ::errmsg("ACL configuration missing in [acl] tag."), "\n";
+		die ::errmsg("ACL configuration missing in [acl] tag.\nPlease add StartupHooks prepare_database to your catalog configuration file."), "\n";
 	}
 	
 	# match UID on request
