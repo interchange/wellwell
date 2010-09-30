@@ -1,4 +1,4 @@
-Sub lookup_hook <<EOS
+Sub page_missing <<EOS
 sub {
 	my ($name, @plugins, $sub, $retval, $page);
 
