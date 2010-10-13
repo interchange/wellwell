@@ -26,6 +26,7 @@ use Vend::Config;
 
 use WellWell::Cart;
 use WellWell::Data;
+use WellWell::Plugin qw/plugin_scan plugin_enable/;
 
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
@@ -33,6 +34,7 @@ Vend::Config::parse_directive('StartupHooks', 'StartupHooks startup_hooks');
 
 # predefined startup hooks
 Vend::Config::parse_subroutine('GlobalSub', 'prepare_database WellWell::Data::prepare_database');
+Vend::Config::parse_subroutine('GlobalSub', 'plugin_scan WellWell::Core::plugin_scan_sub');
 
 # all what we want is to transfer CGI values from CGI to the Values
 # space, and nothing else
@@ -45,6 +47,28 @@ sub plugins {
 	@plugins = split(/,/, $::Variable->{PLUGINS});
 
 	return @plugins;
+}
+
+# called at startup to scan plugins
+sub plugin_scan_sub {
+	my ($dbif, $plref);
+
+	$dbif = WellWell::Data::easy_handle();
+	$plref = WellWell::Plugin::plugin_scan($dbif, "$Vend::Cfg->{VendRoot}/plugins",
+										   "$Vend::Cfg->{VendRoot}/local/plugins");
+
+	for my $plugin (plugins()) {
+		if (exists $plref->{$plugin}) {
+			if ($plref->{$plugin}->{status} eq 0) {
+				Vend::Config::config_error("Plugin $plugin used in PLUGIN variable is explicitly disabled in plugins table.");
+				return;
+			}
+			elsif (! defined($plref->{$plugin}->{status})) {
+				Vend::Config::config_warn("Enabling plugin $plugin in plugins table.");
+				plugin_enable($dbif, $plugin);
+			}
+		}
+	}
 }
 
 sub hooks {
