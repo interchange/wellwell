@@ -59,11 +59,11 @@ sub plugin_scan_sub {
 
 	for my $plugin (plugins()) {
 		if (exists $plref->{$plugin}) {
-			if ($plref->{$plugin}->{status} eq 0) {
+			if ($plref->{$plugin}->{active} eq 0) {
 				Vend::Config::config_error("Plugin $plugin used in PLUGIN variable is explicitly disabled in plugins table.");
 				return;
 			}
-			elsif (! defined($plref->{$plugin}->{status})) {
+			elsif (! defined($plref->{$plugin}->{active})) {
 				Vend::Config::config_warn("Enabling plugin $plugin in plugins table.");
 				plugin_enable($dbif, $plugin);
 			}
