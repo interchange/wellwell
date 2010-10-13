@@ -23,6 +23,7 @@ use strict;
 use warnings;
 
 use Vend::Data;
+use DBIx::Easy;
 
 sub prepare_database {
 	my ($userdb_ref, $users_table, %dbif);
@@ -69,6 +70,17 @@ sub prepare_database {
 	$Vend::Cfg->{ACL}->{roles_qual} = $roles_qual;	
 
 	return;
+}
+
+sub easy_handle {
+	my ($dbh, $dbif);
+
+	$dbh = database_exists_ref('products')->dbh();
+		
+	$dbif = new DBIx::Easy ($dbh->{Driver}->{Name}, $dbh->{Name});
+	$dbif->{CONN} = $dbh->clone;
+
+	return $dbif;
 }
 
 1;
