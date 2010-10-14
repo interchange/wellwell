@@ -166,10 +166,19 @@ sub {
 		if ($scope eq 'days') {
 			$from_dt->add(days => $amount);
 		} elsif ($scope eq 'business_days') {	
+			my $incr;
+
+			if ($function eq 'sub') {
+				$incr = -1;
+			}
+			else {
+				$incr = 1;
+			}
+
 			while($amount){
-				$from_dt->add(days => 1);
+				$from_dt->add(days => $incr);
 				if($from_dt->day_of_week() < 6){
-					$amount--;
+					$amount -= $incr;
 				}
 			}
 		} elsif ($scope eq 'weeks') {

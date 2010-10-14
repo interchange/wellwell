@@ -57,7 +57,10 @@ sub display {
 	}
 
 	if ($opt->{hooks}) {
-		my @hook_entries = Vend::Tags->call_hooks('menu', 'collect', $name, $opt);
+		my @hook_entries;
+
+		$opt->{menu_name} = $name;
+		@hook_entries = Vend::Tags->call_hooks('menu', 'collect', $opt);
 
 		for (@hook_entries) {
 			next unless ref($_) eq 'HASH';

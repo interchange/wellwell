@@ -2,7 +2,7 @@
 <tr><th>Name</th></tr>
 [query sql="select * from __SUBJECT__ order by name" list=1]
 [list]
-<tr><td>[sql-param name]</td><td><a href="[area href="backend/__SUBJECT__/[sql-code]"]">[L]Edit[/L]</a></td></td></tr>
+<tr><td>[sql-param name]</td><td><a href="[area href="backend/__SUBJECT__/edit" form="code=[sql-code]"]">[L]Edit[/L]</a></td></td></tr>
 [/list]
 [/query]
 </table>
