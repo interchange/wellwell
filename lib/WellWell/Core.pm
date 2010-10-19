@@ -27,6 +27,7 @@ use Vend::Config;
 use WellWell::Cart;
 use WellWell::Data;
 use WellWell::Plugin qw/plugin_scan plugin_enable/;
+use WellWell::Engine;
 
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
