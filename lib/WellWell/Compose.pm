@@ -256,7 +256,7 @@ sub compose {
 					if ($compobj = $engine->locate_component($name)) {
 						$component_content = $compobj->process($component_attributes);
 
-						unless (defined $component_content && $name ne 'zlocal_body') {
+						unless (defined $component_content && $name ne 'local_body') {
 							::logError("Error processing component $name.");
 							Vend::Tags->error({name => 'component', set => "Error processing component $name."});
 						}
