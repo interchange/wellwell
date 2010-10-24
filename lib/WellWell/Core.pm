@@ -41,7 +41,7 @@ Vend::Config::parse_subroutine('GlobalSub', 'plugin_scan WellWell::Core::plugin_
 # space, and nothing else
 Vend::Config::parse_tag('UserTag', 'values_update MapRoutine Vend::Dispatch::update_values');
 
-sub plugins {
+sub plugins_from_var {
 	my @plugins;
 	
 	# simply return a list of plugins sitting in $Variable
@@ -52,22 +52,31 @@ sub plugins {
 
 # called at startup to scan plugins
 sub plugin_scan_sub {
-	my ($dbif, $plref);
+	my ($dbif, $plref, $active);
 
 	$dbif = WellWell::Data::easy_handle();
-	$plref = WellWell::Plugin::plugin_scan($dbif, "$Vend::Cfg->{VendRoot}/plugins",
-										   "$Vend::Cfg->{VendRoot}/local/plugins");
+	
+	$plref = WellWell::Plugin::plugin_scan($dbif, 'plugins', 'local/plugins');
 
-	for my $plugin (plugins()) {
+	# first pass for enabling plugins in the database from PLUGINS variable
+	for my $plugin (plugins_from_var()) {
 		if (exists $plref->{$plugin}) {
 			if ($plref->{$plugin}->{active} eq 0) {
-				Vend::Config::config_error("Plugin $plugin used in PLUGIN variable is explicitly disabled in plugins table.");
+				Vend::Config::config_error("Plugin $plugin used in PLUGINS variable is explicitly disabled in plugins table.");
 				return;
 			}
 			elsif (! defined($plref->{$plugin}->{active})) {
 				Vend::Config::config_warn("Enabling plugin $plugin in plugins table.");
 				plugin_enable($dbif, $plugin);
 			}
+		}
+	}
+
+	for my $plugin (keys %$plref) {
+		if ($plref->{$plugin}->{active}) {
+			# search path for components and pages
+			push(@{$Vend::Cfg->{TemplateDir}}, $plref->{$plugin}->{directory},
+				 "$plref->{$plugin}->{directory}/pages");
 		}
 	}
 }
