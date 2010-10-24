@@ -31,7 +31,7 @@ our @EXPORT_OK = qw/plugin_scan plugin_enable/;
 sub plugin_scan {
 	my ($dbif, @dirs) = @_;
 	my (@plugins, $dirname, $infofile, $plugininfo, $dbref);
-	my ($plugin, $pluginrec);
+	my ($plugin, $plugin_dir, $pluginrec);
 	my ($sth, $href);
 	my (%plugins);
 	
@@ -45,26 +45,31 @@ sub plugin_scan {
 	for my $dir (@dirs) {
 		opendir(PLUGINS, $dir);
 		while ($dirname = readdir(PLUGINS)) {
-			next unless -d "plugins/$dirname";
+			next unless -d "$dir/$dirname";
 			next if $dirname =~ /^\./;
 
 			# info file ?
-			$infofile = "plugins/$dirname/$dirname.info";
+			$plugin_dir = "$dir/$dirname";
+			$infofile = "$plugin_dir/$dirname.info";
+			
 			if (-f $infofile) {
 				$plugininfo = plugin_get_info($infofile);
 
 				if (exists $plugins{$dirname}) {
 					# existing plugin
+					$plugins{$dirname}->{directory} = $plugin_dir;
 				}
 				else {
 					# new plugin
 					$pluginrec = {name => $dirname,
+								  directory => "plugins/$dirname",
 								  version => $plugininfo->{version},
 								  label => $plugininfo->{label} || $dirname,
 								  active => undef};
 
 					$dbif->insert('plugins', %$pluginrec);
 					
+					$pluginrec->{directory} = $plugin_dir;
 					$plugins{$dirname} = $pluginrec;
 				}
 			}
