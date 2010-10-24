@@ -24,6 +24,7 @@ use warnings;
 
 use Vend::Tags;
 
+use WellWell::Core qw/plugin_search_component/;
 use WellWell::Compose::Component::ITL;
 
 sub new {
@@ -37,12 +38,21 @@ sub new {
 
 sub locate_component {
 	my ($self, $name) = @_;
-	my ($component);
+	my ($directory, $component, $pref);
 	
 	if (-f "$::Variable->{MV_COMPONENT_DIR}/$name") {
-		$component = new WellWell::Compose::Component::ITL(file => "$::Variable->{MV_COMPONENT_DIR}/$name", name => $name);
-		return $component;
+		$directory = $::Variable->{MV_COMPONENT_DIR};
 	}
+	elsif ($pref = plugin_search_component($name)) {
+		$directory = $pref->{directory};
+	}
+	else {
+		# component missing
+		return;
+	}
+
+	$component = new WellWell::Compose::Component::ITL(file => "$::Variable->{MV_COMPONENT_DIR}/$name", name => $name);
+	return $component;
 }
 
 1;
