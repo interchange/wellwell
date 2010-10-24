@@ -88,6 +88,12 @@ sub plugin_enable {
 	$dbif->update('plugins', 'name = ' . $dbif->quote($plugin), active => 1);
 }
 
+sub plugin_disable {
+	my ($dbif, $plugin) = @_;
+
+	$dbif->update('plugins', 'name = ' . $dbif->quote($plugin), active => 0);
+}
+
 sub plugin_get_info {
 	my ($infofile) = @_;
 	my %info;
