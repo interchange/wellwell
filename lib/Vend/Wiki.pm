@@ -486,7 +486,7 @@ sub load_store {
 		$class = 'Wiki::Toolkit::Store::MySQL';
 	}
 	elsif ($self->{backend} =~ /(pg|postgresql)/i) {
-		$class = 'Wiki::Toolkit::Store::PostgreSQL';
+		$class = 'Wiki::Toolkit::Store::Pg';
 	}
 	else {
 		die "Unknown Wiki store $self->{backend}.\n";
