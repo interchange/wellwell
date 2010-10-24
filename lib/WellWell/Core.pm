@@ -22,6 +22,12 @@ package WellWell::Core;
 use strict;
 use warnings;
 
+use vars qw/@ISA @EXPORT_OK/;
+
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw/plugin_search_component/;
+
 use Vend::Config;
 
 use WellWell::Cart;
@@ -77,6 +83,20 @@ sub plugin_scan_sub {
 			# search path for components and pages
 			push(@{$Vend::Cfg->{TemplateDir}}, $plref->{$plugin}->{directory},
 				 "$plref->{$plugin}->{directory}/pages");
+		}
+	}
+
+	# store in catalog configuration
+	$Vend::Cfg->{PluginRepository} = $plref;
+}
+
+sub plugin_search_component {
+	my ($name) = @_;
+	my ($plugin, $ref);
+	
+	while (($plugin, $ref) = each %{$Vend::Cfg->{PluginRepository}}) {
+		if (-f "$ref->{directory}/components/$name") {
+			return $ref;
 		}
 	}
 }
