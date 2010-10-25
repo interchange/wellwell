@@ -19,6 +19,9 @@
 
 package WellWell::Compose::Component::Zoom;
 
+use strict;
+use warnings;
+
 use Template::Zoom;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
@@ -41,7 +44,7 @@ sub process {
 	$xml_spec = new Template::Zoom::Specification::XML;
 
 	unless ($spec = $xml_spec->parse_file($self->{specification})) {
-		die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
+		die "$0: error parsing $self->{specification}: " . $xml_spec->error() . "\n";
 	}
 
 	$html_object = new Template::Zoom::HTML;
@@ -50,7 +53,7 @@ sub process {
 
 	for my $list_object ($html_object->lists()) {
 		# seed and check input
-		$list_object->input(\%input);
+		$list_object->input($attributes);
 	}
 
 	$zoom = new Template::Zoom ($html_object, $self->{dbh});
