@@ -38,7 +38,7 @@ sub new {
 
 sub process {
 	my ($self, $attributes) = @_;
-	my ($content, $xml_spec, $spec, $html_object, $zoom);
+	my ($content, $xml_spec, $spec, $iter_name, $html_object, $zoom);
 
 	# parse specification
 	$xml_spec = new Template::Zoom::Specification::XML;
@@ -47,6 +47,7 @@ sub process {
 		die "$0: error parsing $self->{specification}: " . $xml_spec->error() . "\n";
 	}
 
+	$spec->set_iterator('cart', $Vend::Items);
 	$html_object = new Template::Zoom::HTML;
 
 	$html_object->parse_template($self->{template}, $spec);
