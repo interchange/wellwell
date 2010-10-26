@@ -57,7 +57,7 @@ sub process {
 		$list_object->input($attributes);
 	}
 
-	$zoom = new Template::Zoom ($html_object, $self->{dbh});
+	$zoom = new Template::Zoom (template => $html_object, dbh => $self->{dbh});
 
 	return $zoom->process($attributes);
 
