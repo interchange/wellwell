@@ -26,6 +26,8 @@ use Template::Zoom;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
+use WellWell::Filter::Link;
+
 sub new {
 	my ($class, @parms) = @_;
 
@@ -39,6 +41,7 @@ sub new {
 sub process {
 	my ($self, $attributes) = @_;
 	my ($content, $xml_spec, $spec, $iter_name, $html_object, $zoom);
+	my (%filters);
 
 	# parse specification
 	$xml_spec = new Template::Zoom::Specification::XML;
@@ -57,10 +60,13 @@ sub process {
 		$list_object->input($attributes);
 	}
 
-	$zoom = new Template::Zoom (template => $html_object, dbh => $self->{dbh});
+	# filters
+	$filters{link} = \&WellWell::Filter::Link::filter;
+		
+	$zoom = new Template::Zoom (template => $html_object, filters => \%filters,
+								dbh => $self->{dbh});
 
 	return $zoom->process($attributes);
-
 }
-			
+
 1;
