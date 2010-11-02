@@ -28,6 +28,8 @@ sub new {
 	my $class = shift;
 	my $self = {@_};
 
+	$self->{database} = new Template::Zoom::Database::Rose(dbh => $self->{dbh});
+	
 	bless $self;
 	return $self;
 }	
@@ -38,7 +40,7 @@ sub locate_component {
 	
 	if (-f "$::Variable->{MV_COMPONENT_DIR}/$name.xml"
 		&& -f "$::Variable->{MV_COMPONENT_DIR}/$name.html") {
-		%component_hash = (dbh => $self->{dbh},
+		%component_hash = (database => $self->{database},
 						   name => $name,
 						   specification => "$::Variable->{MV_COMPONENT_DIR}/$name.xml",
 						   template => "$::Variable->{MV_COMPONENT_DIR}/$name.html");

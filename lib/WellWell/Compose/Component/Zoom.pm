@@ -26,6 +26,8 @@ use Template::Zoom;
 use Template::Zoom::Specification::XML;
 use Template::Zoom::HTML;
 
+use Template::Zoom::Database::Rose;
+
 use WellWell::Filter::Link;
 
 sub new {
@@ -64,7 +66,7 @@ sub process {
 	$filters{link} = \&WellWell::Filter::Link::filter;
 		
 	$zoom = new Template::Zoom (template => $html_object, filters => \%filters,
-								dbh => $self->{dbh});
+								database => $self->{database});
 
 	return $zoom->process($attributes);
 }
