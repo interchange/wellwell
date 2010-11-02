@@ -257,13 +257,15 @@ sub compose {
 						$component_content = $compobj->process($component_attributes);
 
 						unless (defined $component_content && $name ne 'local_body') {
-							::logError("Error processing component $name.");
+							::logError("Error processing component $name with $engine_name.");
 							Vend::Tags->error({name => 'component', set => "Error processing component $name."});
+							next;
 						}
 					}
 					elsif ($name ne 'local_body') {
-						::logError("Component $name not found");
+						::logError("Component $name not found for $engine_name.");
 						Vend::Tags->error({name => 'component', set => "Component $name not found."});
+						next;
 					}
 				}
 				
