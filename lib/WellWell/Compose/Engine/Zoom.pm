@@ -36,14 +36,21 @@ sub new {
 
 sub locate_component {
 	my ($self, $name) = @_;
-	my (%component_hash, $component);
-	
-	if (-f "$::Variable->{MV_COMPONENT_DIR}/$name.xml"
-		&& -f "$::Variable->{MV_COMPONENT_DIR}/$name.html") {
+	my (%component_hash, $component, $component_dir);
+
+	$component_dir = "$::Variable->{MV_COMPONENT_DIR}/$name";
+
+	if (-d "$component_dir/$name") {
+		# separate directory for component
+		$component_dir = "$component_dir/$name";
+	}
+
+	if (-f "$component_dir/$name.xml"
+		&& -f "$component_dir/$name.html") {
 		%component_hash = (database => $self->{database},
 						   name => $name,
-						   specification => "$::Variable->{MV_COMPONENT_DIR}/$name.xml",
-						   template => "$::Variable->{MV_COMPONENT_DIR}/$name.html");
+						   specification => "$component_dir/$name.xml",
+						   template => "$component_dir/$name.html");
 		
 		$component = new WellWell::Compose::Component::Zoom(%component_hash);
 		return $component;
