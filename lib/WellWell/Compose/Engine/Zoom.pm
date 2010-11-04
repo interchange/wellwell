@@ -38,7 +38,7 @@ sub locate_component {
 	my ($self, $name) = @_;
 	my (%component_hash, $component, $component_dir);
 
-	$component_dir = "$::Variable->{MV_COMPONENT_DIR}/$name";
+	$component_dir = "$::Variable->{MV_COMPONENT_DIR}";
 
 	if (-d "$component_dir/$name") {
 		# separate directory for component
