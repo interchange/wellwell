@@ -29,17 +29,24 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/plugin_scan plugin_enable/;
 	
 sub plugin_scan {
-	my ($dbif, @dirs) = @_;
-	my (@plugins, $dirname, $infofile, $plugininfo, $dbref);
+	my (@dirs) = @_;
+	my (@plugins, $dirname, $infofile, $plugininfo, $dbref, $catname);
 	my ($plugin, $plugin_dir, $pluginrec);
-	my ($sth, $href);
+	my ($results, $sth, $href);
 	my (%plugins);
 	
 	# read current plugins from database
-	$sth = $dbif->process('select * from plugins');
+	my $classname = 'Catalog::Database::' . ucfirst($Vend::Cfg->{CatalogName}) . '::Plugin::Manager';
+	eval "\$results = $classname->get_plugins();";
 
-	while ($href = $sth->fetchrow_hashref()) {
-		$plugins{$href->{name}} = $href;
+	if ($@) {
+		die "$@";
+	}
+
+	$classname = 'Catalog::Database::' . ucfirst($Vend::Cfg->{CatalogName}) . '::Plugin';
+
+	for $href (@$results) {
+		$plugins{$href->name} = $href;
 	}
 	
 	for my $dir (@dirs) {
@@ -57,17 +64,17 @@ sub plugin_scan {
 
 				if (exists $plugins{$dirname}) {
 					# existing plugin
-					$plugins{$dirname}->{directory} = $plugin_dir;
+					$plugins{$dirname}->directory($plugin_dir);
 				}
 				else {
 					# new plugin
-					$pluginrec = {name => $dirname,
+					$pluginrec = $classname->new (name => $dirname,
 								  directory => "plugins/$dirname",
 								  version => $plugininfo->{version},
 								  label => $plugininfo->{label} || $dirname,
-								  active => undef};
+								  active => undef);
 
-					$dbif->insert('plugins', %$pluginrec);
+					$pluginrec->save();
 					
 					$pluginrec->{directory} = $plugin_dir;
 					$plugins{$dirname} = $pluginrec;
@@ -91,15 +98,17 @@ sub plugin_scan {
 }
 
 sub plugin_enable {
-	my ($dbif, $plugin) = @_;
+	my ($plugin) = @_;
 
-	$dbif->update('plugins', 'name = ' . $dbif->quote($plugin), active => 1);
+	$plugin->active(1);
+	$plugin->save();
 }
 
 sub plugin_disable {
-	my ($dbif, $plugin) = @_;
+	my ($plugin) = @_;
 
-	$dbif->update('plugins', 'name = ' . $dbif->quote($plugin), active => 0);
+	$plugin->active(0);
+	$plugin->save();
 }
 
 sub plugin_get_info {
