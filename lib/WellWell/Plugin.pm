@@ -19,6 +19,9 @@
 
 package WellWell::Plugin;
 
+use strict;
+use warnings;
+
 use vars qw/@ISA @EXPORT_OK/;
 
 require Exporter;
