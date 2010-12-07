@@ -43,7 +43,7 @@ sub new {
 sub process {
 	my ($self, $attributes) = @_;
 	my ($content, $xml_spec, $spec, $iter_name, $html_object, $zoom);
-	my (%filters);
+	my (%filters, $subname, $subref);
 
 	# parse specification
 	$xml_spec = new Template::Zoom::Specification::XML;
@@ -68,6 +68,14 @@ sub process {
 	$zoom = new Template::Zoom (template => $html_object, filters => \%filters,
 								database => $self->{database});
 
+	# call component load subroutine
+	$subname = "component_$self->{name}_load";
+	$subref = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
+
+	if ($subref) {
+		$subref->($self->{name}, $spec, $html_object, $zoom);
+	}
+	
 	return $zoom->process($attributes);
 }
 
