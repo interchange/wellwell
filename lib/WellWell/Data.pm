@@ -82,9 +82,8 @@ sub make_classes {
 	if (@sqlparms == 1) {
 		push (@sqlparms, $::Variable->{SQLUSER}, $::Variable->{SQLPASS});
 	}
-	else {
-		($args{db_dsn}, $args{db_username}, $args{db_password}) = @sqlparms;
-	}
+
+	($args{db_dsn}, $args{db_username}, $args{db_password}) = @sqlparms;
 		
 	$args{class_prefix} = 'Catalog::Database::' . ucfirst($catalog);
 	$args{include_tables} = ['plugins'];
