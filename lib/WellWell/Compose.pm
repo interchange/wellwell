@@ -49,7 +49,7 @@ sub dots2hash {
 
 sub compose {
 	my ($template, $opt, $body) = @_;
-	my (%acl, %forms, %engines, $template_file, $container);
+	my (%acl, %forms, %engines, $default_engine, $template_file, $container);
 
 	if ($opt->{acl})  {
 		# check permissions first
@@ -91,8 +91,25 @@ sub compose {
 		}
 	}
 
-	if ($opt->{engine}) {
-		%engines = %{$opt->{engine}};
+	# template engine selection
+	if (exists $opt->{engine}) {
+		if (ref $opt->{engine} eq 'HASH') {
+			# engine by component
+			%engines = %{$opt->{engine}};
+
+			if (exists $engines{all}) {
+				$default_engine = delete $engines{all};
+			}
+			else {
+				$default_engine = 'itl';
+			}
+		}
+		else {
+			$default_engine = $opt->{engine};
+		}
+	}
+	else {
+		$default_engine = 'itl';
 	}
 	
 	$opt->{body} ||= $body;
@@ -238,7 +255,7 @@ sub compose {
 					$engine_name = $engines{$name};
 				}
 				else {
-					$engine_name = 'itl';
+					$engine_name = $default_engine;
 				}
 				delete $Vend::Session->{engine}->{$engine_name};
 				unless ($Vend::Session->{engine}->{$engine_name} ||= load_engine($engine_name, database_exists_ref('products')->dbh())) {
