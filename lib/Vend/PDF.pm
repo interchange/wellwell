@@ -93,7 +93,8 @@ sub pdf {
 	# finally generate PDF
 	my ($pdf);
 
-	$pdf = new Template::Zoom::PDF (template => $html_object);
+	$pdf = new Template::Zoom::PDF (template => $html_object,
+		import => $opt->{import});
 
 	$pdf->process($output);
 
