@@ -47,6 +47,10 @@ sub iterate {
 		die "Iterator not found\n";
 	}
 
+	if (! length($body)) {
+		return $iter;
+	}
+
 	while ($record = $iter->next()) {
 		# turn hash into array
 		my @keys = keys(%$record);
