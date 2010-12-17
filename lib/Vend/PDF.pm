@@ -24,10 +24,12 @@ use Template::Zoom::HTML;
 use Template::Zoom::Database::Rose;
 use Template::Zoom::Style::CSS;
 use Template::Zoom;
+use Template::Zoom::I18N;
 use Template::Zoom::PDF;
 
 use Vend::Config;
 use Vend::Data;
+use Vend::Tags;
 
 # define [pdf] tag
 Vend::Config::parse_tag('UserTag', 'pdf Order specification template output');
@@ -51,6 +53,20 @@ sub pdf {
 
 	unless ($spec = $xml_spec->parse_file($specification)) {
 		die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
+	}
+
+	# i18n
+	my ($i18n, $sub);
+
+	if ($opt->{locale}) {
+		$sub = sub {
+			my $text = shift;
+
+			return Vend::Tags->filter({op => "loc.$opt->{locale}", body => $text});
+
+		};
+		$i18n = new Template::Zoom::I18N ($sub);
+		
 	}
 
 	# parse template
@@ -84,6 +100,7 @@ sub pdf {
 	my ($zoom);
 
 	$zoom = new Template::Zoom (template => $html_object,
+		i18n => $i18n,
 		database => $rose,
 		filters => $opt->{filters},
 		values => $opt->{values},
