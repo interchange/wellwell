@@ -85,6 +85,7 @@ sub pdf {
 
 	$zoom = new Template::Zoom (template => $html_object,
 		database => $rose,
+		filters => $opt->{filters},
 		values => $opt->{values},
 	);
 
