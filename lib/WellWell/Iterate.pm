@@ -31,14 +31,22 @@ use Vend::Data;
 
 use WellWell::Engine qw/load_engine/;
 
+Vend::Config::parse_tag('UserTag', 'iterate Order name');
 Vend::Config::parse_tag('UserTag', 'iterate AddAttr');
 Vend::Config::parse_tag('UserTag', 'iterate HasEndTag');
 Vend::Config::parse_tag('UserTag', 'iterate MapRoutine WellWell::Iterate::iterate');
 
 sub iterate {
-	my ($opt, $body) = @_;
-	my ($engine, $iter, $record, @out);
+	my ($name, $opt, $body) = @_;
+	my ($prefix, $engine, $iter, $record, @out);
 
+	if ($name) {
+		# check for iterator registered in scratch space
+		unless ($iter = $::Scratch->{iterators}->{$name}) {
+			die ::errmsg('Missing iterator %s', $name);
+		}
+	}
+	
 	if (exists $opt->{query}) {
 		if (ref($opt->{query}) eq 'HASH') {
 			# use query builder
@@ -55,6 +63,23 @@ sub iterate {
 		return $iter;
 	}
 
+	if ($opt->{check_count}) {
+		if ($iter->count() >= $opt->{check_count}) {
+			return $body;
+		}
+
+		return;
+	}
+	
+	$prefix = $opt->{prefix} || 'item';
+
+	# skipping records at the top
+	if (exists $opt->{jump} && $opt->{jump} > 1) {
+		for (my $i = 1; $i < $opt->{jump}; $i++) {
+			$iter->next();
+		}
+	}
+	
 	while ($record = $iter->next()) {
 		# turn hash into array
 		my @keys = keys(%$record);
@@ -64,7 +89,7 @@ sub iterate {
 			push(@vals, $record->{$_});
 		}
 		
-		push (@out, Vend::Tags->loop({prefix => 'item', body => $body,
+		push (@out, Vend::Tags->loop({prefix => $prefix, body => $body,
 									  object => {mv_results => [\@vals],
 												 mv_field_names => \@keys}}));
 	}
