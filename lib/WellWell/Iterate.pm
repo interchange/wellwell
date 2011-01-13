@@ -22,6 +22,10 @@ package WellWell::Iterate;
 use strict;
 use warnings;
 
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw/load_zoom/;
+
 use Vend::Config;
 use Vend::Data;
 
