@@ -39,7 +39,7 @@ Vend::Config::parse_tag('UserTag', 'pdf MapRoutine Vend::PDF::pdf');
 # [pdf]
 sub pdf {
 	my ($specification, $template, $output, $opt) = @_;
-	my (%input);
+	my (%input, $locale);
 
 	# input for Zoom template
 	if (exists $opt->{input}) {
@@ -59,12 +59,20 @@ sub pdf {
 	my ($i18n, $sub);
 
 	if ($opt->{locale}) {
+		$locale = Vend::Tags->setlocale({get => 1});
+
+		Vend::Tags->setlocale($opt->{locale});
+
 		$sub = sub {
 			my $text = shift;
+			my $out;
 
-			return Vend::Tags->filter({op => "loc.$opt->{locale}", body => $text});
+			$out = ::errmsg($text);
+
+			return $out;
 
 		};
+		
 		$i18n = new Template::Zoom::I18N ($sub);
 		
 	}
@@ -115,6 +123,10 @@ sub pdf {
 		import => $opt->{import});
 
 	$pdf->process($output);
+
+	if ($opt->{locale}) {
+		Vend::Tags->setlocale($locale);
+	}
 
 	return;
 }
