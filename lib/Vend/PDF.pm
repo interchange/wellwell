@@ -67,7 +67,7 @@ sub pdf {
 			my $text = shift;
 			my $out;
 
-			$out = ::errmsg($text);
+			$out = Vend::Tags->filter({op => 'loc', body => $text});
 
 			return $out;
 
@@ -82,7 +82,7 @@ sub pdf {
 
 	$html_object = new Template::Zoom::HTML;
 
-	$html_object->parse_template($template, $spec);
+	$html_object->parse_file($template, $spec);
 
 	for $list_object ($html_object->lists()) {
 		# seed and check input
