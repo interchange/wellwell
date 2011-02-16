@@ -55,7 +55,7 @@ sub process {
 	$spec->set_iterator('cart', $Vend::Items);
 	$html_object = new Template::Zoom::HTML;
 
-	$html_object->parse_template($self->{template}, $spec);
+	$html_object->parse_file($self->{template}, $spec);
 
 	for my $list_object ($html_object->lists()) {
 		# seed and check input
