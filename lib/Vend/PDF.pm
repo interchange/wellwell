@@ -32,15 +32,20 @@ use Vend::Data;
 use Vend::Tags;
 
 # define [pdf] tag
-Vend::Config::parse_tag('UserTag', 'pdf Order specification template output');
+Vend::Config::parse_tag('UserTag', 'pdf Order function specification template output');
 Vend::Config::parse_tag('UserTag', 'pdf AddAttr');
 Vend::Config::parse_tag('UserTag', 'pdf MapRoutine Vend::PDF::pdf');
 
 # [pdf]
 sub pdf {
-	my ($specification, $template, $output, $opt) = @_;
-	my (%input, $locale);
+	my ($function, $specification, $template, $output, $opt) = @_;
+	my (%input, $locale, $ret);
 
+	if ($function eq 'combine') {
+		$ret = combine($output, $opt->{files});
+		return;
+	}
+	
 	# input for Zoom template
 	if (exists $opt->{input}) {
 		%input = %{$opt->{input}};
@@ -129,6 +134,23 @@ sub pdf {
 	}
 
 	return;
+}
+
+sub combine {
+	my ($output, $files) = @_;
+	my ($pdf, $import);
+
+	$pdf = new Template::Zoom::PDF (file => $output);
+
+	$import = new Template::Zoom::PDF::Import;
+
+	for my $pdf_file (@$files) {
+		$import->import(pdf => $pdf->{pdf}, file => $pdf_file);
+	}
+
+	$pdf->{pdf}->saveas();
+
+	return $output;
 }
 
 1;
