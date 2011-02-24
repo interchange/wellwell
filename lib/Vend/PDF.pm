@@ -42,7 +42,7 @@ sub pdf {
 	my (%input, $locale, $ret);
 
 	if ($function eq 'combine') {
-		$ret = combine($output, $opt->{files});
+		$ret = combine($output, $opt->{files}, $opt);
 		return;
 	}
 	
@@ -125,7 +125,8 @@ sub pdf {
 	my ($pdf);
 
 	$pdf = new Template::Zoom::PDF (template => $html_object,
-		import => $opt->{import});
+		import => $opt->{import},
+		page_size => $opt->{page_size});
 
 	$pdf->process($output);
 
@@ -137,10 +138,10 @@ sub pdf {
 }
 
 sub combine {
-	my ($output, $files) = @_;
+	my ($output, $files, $opt) = @_;
 	my ($pdf, $import);
 
-	$pdf = new Template::Zoom::PDF (file => $output);
+	$pdf = new Template::Zoom::PDF (file => $output, page_size => $opt->{page_size});
 
 	$import = new Template::Zoom::PDF::Import;
 
