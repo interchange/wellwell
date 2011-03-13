@@ -28,7 +28,7 @@ use Vend::Tags;
 use WellWell::Engine qw/load_engine/;
 
 use WellWell::Compose::Engine::ITL;
-use WellWell::Compose::Engine::Zoom;
+use WellWell::Compose::Engine::Flute;
 
 Vend::Config::parse_tag('UserTag', 'compose Order template');
 Vend::Config::parse_tag('UserTag', 'compose HasEndTag');

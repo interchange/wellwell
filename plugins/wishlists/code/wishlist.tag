@@ -233,7 +233,7 @@ sub {
 
 		my $sql = qq{select sku$fields from cart_products where cart = $wishlist_code order by position};
 
-		if ($opt->{zoom}) {
+		if ($opt->{flute}) {
 			my %build;
 
 			%build = (tables => ['cart_products', 'products'],
@@ -241,7 +241,7 @@ sub {
 				 clauses =>  ['T1.sku = T2.sku'],
 				 query => [cart => $wishlist_code]);
 
-			return $Tag->zoom({function => 'display', name => 'wishlist', build => \%build});
+			return $Tag->flute({function => 'display', name => 'wishlist', build => \%build});
 		}
 
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',

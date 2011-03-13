@@ -19,13 +19,13 @@
 
 package Vend::PDF;
 
-use Template::Zoom::Specification::XML;
-use Template::Zoom::HTML;
-use Template::Zoom::Database::Rose;
-use Template::Zoom::Style::CSS;
-use Template::Zoom;
-use Template::Zoom::I18N;
-use Template::Zoom::PDF;
+use Template::Flute::Specification::XML;
+use Template::Flute::HTML;
+use Template::Flute::Database::Rose;
+use Template::Flute::Style::CSS;
+use Template::Flute;
+use Template::Flute::I18N;
+use Template::Flute::PDF;
 
 use Vend::Config;
 use Vend::Data;
@@ -46,7 +46,7 @@ sub pdf {
 		return;
 	}
 	
-	# input for Zoom template
+	# input for Flute template
 	if (exists $opt->{input}) {
 		%input = %{$opt->{input}};
 	}
@@ -54,7 +54,7 @@ sub pdf {
 	# parse specification file
 	my ($xml_spec, $spec);
 
-	$xml_spec = new Template::Zoom::Specification::XML;
+	$xml_spec = new Template::Flute::Specification::XML;
 
 	unless ($spec = $xml_spec->parse_file($specification)) {
 		die "$0: error parsing $xml_file: " . $xml_spec->error() . "\n";
@@ -78,14 +78,14 @@ sub pdf {
 
 		};
 		
-		$i18n = new Template::Zoom::I18N ($sub);
+		$i18n = new Template::Flute::I18N ($sub);
 		
 	}
 
 	# parse template
 	my ($html_object);
 
-	$html_object = new Template::Zoom::HTML;
+	$html_object = new Template::Flute::HTML;
 
 	$html_object->parse_file($template, $spec);
 
@@ -102,29 +102,29 @@ sub pdf {
 	# create database object
 	my ($rose);
 
-	$rose =  new Template::Zoom::Database::Rose(dbh => database_exists_ref('products')->dbh());
+	$rose =  new Template::Flute::Database::Rose(dbh => database_exists_ref('products')->dbh());
 
 	# create CSS object
 	my ($css);
 
-	$css = new Template::Zoom::Style::CSS (template => $html_object);
+	$css = new Template::Flute::Style::CSS (template => $html_object);
 
-	# create Template::Zoom object and process template
-	my ($zoom);
+	# create Template::Flute object and process template
+	my ($flute);
 
-	$zoom = new Template::Zoom (template => $html_object,
+	$flute = new Template::Flute (template => $html_object,
 		i18n => $i18n,
 		database => $rose,
 		filters => $opt->{filters},
 		values => $opt->{values},
 	);
 
-	$zoom->process();
+	$flute->process();
 
 	# finally generate PDF
 	my ($pdf);
 
-	$pdf = new Template::Zoom::PDF (template => $html_object,
+	$pdf = new Template::Flute::PDF (template => $html_object,
 		import => $opt->{import},
 		page_size => $opt->{page_size});
 
@@ -141,9 +141,9 @@ sub combine {
 	my ($output, $files, $opt) = @_;
 	my ($pdf, $import);
 
-	$pdf = new Template::Zoom::PDF (file => $output, page_size => $opt->{page_size});
+	$pdf = new Template::Flute::PDF (file => $output, page_size => $opt->{page_size});
 
-	$import = new Template::Zoom::PDF::Import;
+	$import = new Template::Flute::PDF::Import;
 
 	for my $pdf_file (@$files) {
 		$import->import(pdf => $pdf->{pdf}, file => $pdf_file);

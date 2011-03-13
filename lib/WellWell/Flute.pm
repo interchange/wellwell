@@ -1,4 +1,4 @@
-# WellWell::Zoom - WellWell template parsing routines
+# WellWell::Flute - WellWell template parsing routines
 #
 # Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
@@ -17,7 +17,7 @@
 # Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 
-package WellWell::Zoom;
+package WellWell::Flute;
 
 use strict;
 use warnings;
@@ -25,29 +25,29 @@ use warnings;
 use XML::Twig;
 use Rose::DB::Object::QueryBuilder qw(build_select);
 
-use WellWell::Zoom::Increment;
+use WellWell::Flute::Increment;
 
 use Vend::Config;
 use Vend::Data;
 use Vend::Tags;
 
-Vend::Config::parse_tag('UserTag', 'zoom MapRoutine WellWell::Zoom::zoom');
-Vend::Config::parse_tag('UserTag', 'zoom Order function name');
-Vend::Config::parse_tag('UserTag', 'zoom AddAttr');
-Vend::Config::parse_tag('UserTag', 'zoom HasEndTag');
+Vend::Config::parse_tag('UserTag', 'flute MapRoutine WellWell::Flute::flute');
+Vend::Config::parse_tag('UserTag', 'flute Order function name');
+Vend::Config::parse_tag('UserTag', 'flute AddAttr');
+Vend::Config::parse_tag('UserTag', 'flute HasEndTag');
 
-# zoom - [zoom] tag
+# flute - [flute] tag
 
-sub zoom {
+sub flute {
 	my ($function, $name, $opt, $body) = @_;
 
 	if ($function eq 'init') {
-		unless (exists $::Scratch->{zoom}) {
-			Vend::Tags->tmp('zoom', {});
+		unless (exists $::Scratch->{flute}) {
+			Vend::Tags->tmp('flute', {});
 		}
 
-		$::Scratch->{zoom}->{$name}->{html} = $body;
-		$::Scratch->{zoom}->{$name}->{object} = parse_template($body, $opt->{specs});
+		$::Scratch->{flute}->{$name}->{html} = $body;
+		$::Scratch->{flute}->{$name}->{object} = parse_template($body, $opt->{specs});
 	}
 	
 	if ($function eq 'display') {
@@ -55,7 +55,7 @@ sub zoom {
 			$att_name, $att_spec, $att_tag_name, $att_tag_spec, %att_tags, $att_val,
 			$lel, %paste_pos, $rep_str);
 
-		unless ($sref = $::Scratch->{zoom}->{$name}->{object}) {
+		unless ($sref = $::Scratch->{flute}->{$name}->{object}) {
 			die "Missing template $name\n";
 		}
 
@@ -74,7 +74,7 @@ sub zoom {
 		}
 
 		unless (keys %tables) {
-			Vend::Tags->error({name => 'zoom', set => 'Missing tables in specification.'});
+			Vend::Tags->error({name => 'flute', set => 'Missing tables in specification.'});
 			return;
 		}
 		
@@ -114,17 +114,17 @@ sub zoom {
 				}
 				
 				for my $elt (@{$value->{elts}}) {
-					if ($elt->{zoom_rep_sub}) {
+					if ($elt->{flute_rep_sub}) {
 						# call subroutine to handle this element
-						$elt->{zoom_rep_sub}->($elt, $rep_str, $row);
+						$elt->{flute_rep_sub}->($elt, $rep_str, $row);
 					}
-					elsif ($elt->{zoom_rep_att}) {
+					elsif ($elt->{flute_rep_att}) {
 						# replace attribute instead of embedded text (e.g. for <input>)
-						$elt->set_att($elt->{zoom_rep_att}, $rep_str);
+						$elt->set_att($elt->{flute_rep_att}, $rep_str);
 					}
-					elsif ($elt->{zoom_rep_elt}) {
+					elsif ($elt->{flute_rep_elt}) {
 						# use provided text element for replacement
-						$elt->{zoom_rep_elt}->set_text($rep_str);
+						$elt->{flute_rep_elt}->set_text($rep_str);
 					}
 					else {
 						$elt->set_text($rep_str);
@@ -277,14 +277,14 @@ sub parse_handler {
 
 			if ($gi eq 'input') {
 				# replace value attribute instead of text
-				$elt->{zoom_rep_att} = 'value';
+				$elt->{flute_rep_att} = 'value';
 			} elsif ($gi eq 'select') {
-				$elt->{zoom_rep_sub} = \&set_selected;
+				$elt->{flute_rep_sub} = \&set_selected;
 			} elsif (! $elt->contains_only_text()) {
 				# contains real elements, so we have to be careful with
 				# set text and apply it only to the first PCDATA element
 				if ($elt_text = $elt->first_child('#PCDATA')) {
-					$elt->{zoom_rep_elt} = $elt_text;
+					$elt->{flute_rep_elt} = $elt_text;
 				}
 			}
 			
@@ -293,7 +293,7 @@ sub parse_handler {
 				my $subref = $Vend::Cfg->{Sub}{$sob->{sub}} || $Global::GlobalSub->{$sob->{sub}};
 
 				if (exists $sob->{scope} && $sob->{scope} eq 'element') {
-					$elt->{zoom_rep_sub} = $subref;
+					$elt->{flute_rep_sub} = $subref;
 				} else {
 					$sob->{subref} = $subref;
 				}
@@ -306,7 +306,7 @@ sub parse_handler {
 			push (@{$sob->{elts}}, $elt);
 
 			# create increment object and record it for increment updates
-			$sob->{increment} = new WellWell::Zoom::Increment;
+			$sob->{increment} = new WellWell::Flute::Increment;
 			push(@{$sref->{increments}->{$sob->{list}}->{array}}, $sob);
 
 			# record it for increment values

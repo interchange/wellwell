@@ -24,7 +24,7 @@ use warnings;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw/load_zoom/;
+our @EXPORT_OK = qw/load_flute/;
 
 use Vend::Config;
 use Vend::Data;
@@ -50,7 +50,7 @@ sub iterate {
 	if (exists $opt->{query}) {
 		if (ref($opt->{query}) eq 'HASH') {
 			# use query builder
-			$engine = load_zoom();
+			$engine = load_flute();
 			$iter = $engine->{database}->build($opt->{query});
 		}
 	}
@@ -97,17 +97,17 @@ sub iterate {
 	return join('', @out);
 }
 
-sub load_zoom {
+sub load_flute {
 	my ($engine);
 
-	if ($Vend::Session->{engine}->{zoomx}) {
-		# reuse existing zoom engine
-		$engine = $Vend::Session->{engine}->{zoom};
+	if ($Vend::Session->{engine}->{flutex}) {
+		# reuse existing flute engine
+		$engine = $Vend::Session->{engine}->{flute};
 	}
 	else {
-		# load zoom engine
-		$engine = load_engine('zoom', database_exists_ref('products')->dbh());
-		$Vend::Session->{engine}->{zoom} = $engine;
+		# load flute engine
+		$engine = load_engine('flute', database_exists_ref('products')->dbh());
+		$Vend::Session->{engine}->{flute} = $engine;
 	}
 
 	return $engine;

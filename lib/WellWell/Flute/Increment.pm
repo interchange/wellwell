@@ -1,4 +1,4 @@
-# WellWell::Zoom::Increment - WellWell increment objects
+# WellWell::Flute::Increment - WellWell increment objects
 #
 # Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
@@ -17,7 +17,7 @@
 # Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 
-package WellWell::Zoom::Increment;
+package WellWell::Flute::Increment;
 
 use strict;
 use warnings;

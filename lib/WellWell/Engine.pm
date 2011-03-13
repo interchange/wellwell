@@ -27,7 +27,7 @@ our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/load_engine/;
 
 our %engines = ('itl' => 'WellWell::Compose::Engine::ITL',
-				'zoom' => 'WellWell::Compose::Engine::Zoom');
+				'flute' => 'WellWell::Compose::Engine::Flute');
 
 use Vend::Config;
 
