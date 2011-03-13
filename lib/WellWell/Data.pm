@@ -22,6 +22,8 @@ package WellWell::Data;
 use strict;
 use warnings;
 
+use Rose::DB::Object::Loader;
+
 use Vend::Data;
 use DBIx::Easy;
 
@@ -72,15 +74,25 @@ sub prepare_database {
 	return;
 }
 
-sub easy_handle {
-	my ($dbh, $dbif);
+sub make_classes {
+	my ($catalog) = @_;
+	my (%args, $loader, @classes, @sqlparms);
 
-	$dbh = database_exists_ref('products')->dbh();
+	@sqlparms = split(/\s+/, $::Variable->{SQLDSN});
+
+	if (@sqlparms == 1) {
+		push (@sqlparms, $::Variable->{SQLUSER}, $::Variable->{SQLPASS});
+	}
+
+	($args{db_dsn}, $args{db_username}, $args{db_password}) = @sqlparms;
 		
-	$dbif = new DBIx::Easy ($dbh->{Driver}->{Name}, $dbh->{Name});
-	$dbif->{CONN} = $dbh->clone;
+	$args{class_prefix} = 'Catalog::Database::' . ucfirst($catalog);
+	$args{include_tables} = ['plugins'];
+	$loader = new Rose::DB::Object::Loader (%args);
 
-	return $dbif;
+	@classes = $loader->make_classes();
+
+	return @classes;
 }
 
 1;

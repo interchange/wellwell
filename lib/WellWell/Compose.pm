@@ -22,7 +22,13 @@ use strict;
 use warnings;
 
 use Vend::Config;
+use Vend::Data;
 use Vend::Tags;
+
+use WellWell::Engine qw/load_engine/;
+
+use WellWell::Compose::Engine::ITL;
+use WellWell::Compose::Engine::Flute;
 
 Vend::Config::parse_tag('UserTag', 'compose Order template');
 Vend::Config::parse_tag('UserTag', 'compose HasEndTag');
@@ -43,7 +49,7 @@ sub dots2hash {
 
 sub compose {
 	my ($template, $opt, $body) = @_;
-	my (%acl, %forms, $template_file, $container);
+	my (%acl, %forms, %engines, $default_engine, $template_file, $container);
 
 	if ($opt->{acl})  {
 		# check permissions first
@@ -85,6 +91,27 @@ sub compose {
 		}
 	}
 
+	# template engine selection
+	if (exists $opt->{engine}) {
+		if (ref $opt->{engine} eq 'HASH') {
+			# engine by component
+			%engines = %{$opt->{engine}};
+
+			if (exists $engines{all}) {
+				$default_engine = delete $engines{all};
+			}
+			else {
+				$default_engine = 'itl';
+			}
+		}
+		else {
+			$default_engine = $opt->{engine};
+		}
+	}
+	else {
+		$default_engine = 'itl';
+	}
+	
 	$opt->{body} ||= $body;
 	# preserve local body even after components.body=, as user might want it
 	$opt->{local_body} = $opt->{body};
@@ -221,8 +248,21 @@ sub compose {
 					$type = $attributes{$alias||$name}{css_type} || 'class';
 				}
 
-				# locate component
-				$components_file = "$::Variable->{MV_COMPONENT_DIR}/$name";
+				# locate component depending on the engine
+				my ($engine_name, $engine, $compobj);
+				
+				if (exists $engines{$name}) {
+					$engine_name = $engines{$name};
+				}
+				else {
+					$engine_name = $default_engine;
+				}
+				delete $Vend::Session->{engine}->{$engine_name};
+				unless ($Vend::Session->{engine}->{$engine_name} ||= load_engine($engine_name, database_exists_ref('products')->dbh())) {
+					die "Unknown template engine $engine_name\n";
+				}
+
+				$engine = $Vend::Session->{engine}->{$engine_name};
 
 				# add component	
 				my $component_content;
@@ -230,11 +270,19 @@ sub compose {
 				if ($_ eq 'body' and $name eq 'local_body' ) {
 					$component_content = $opt->{local_body};
 				} else {
-					$component_content =  Vend::Tags->include($components_file);
+					if ($compobj = $engine->locate_component($name)) {
+						$component_content = $compobj->process($component_attributes);
 
-					unless (defined $component_content && $name ne 'local_body') {
-						Log("Component $name from $components_file not found");
+						unless (defined $component_content && $name ne 'local_body') {
+							::logError("Error processing component $name with $engine_name.");
+							Vend::Tags->error({name => 'component', set => "Error processing component $name."});
+							next;
+						}
+					}
+					elsif ($name ne 'local_body') {
+						::logError("Component $name not found for $engine_name.");
 						Vend::Tags->error({name => 'component', set => "Component $name not found."});
+						next;
 					}
 				}
 				

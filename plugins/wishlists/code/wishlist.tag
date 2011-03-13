@@ -233,6 +233,17 @@ sub {
 
 		my $sql = qq{select sku$fields from cart_products where cart = $wishlist_code order by position};
 
+		if ($opt->{flute}) {
+			my %build;
+
+			%build = (tables => ['cart_products', 'products'],
+				 columns => {cart_products => ['cart']},
+				 clauses =>  ['T1.sku = T2.sku'],
+				 query => [cart => $wishlist_code]);
+
+			return $Tag->flute({function => 'display', name => 'wishlist', build => \%build});
+		}
+
 		return $Tag->query ({sql => $sql, list => 1, prefix => 'item',
 				body => $body});
 	}

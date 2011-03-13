@@ -22,11 +22,18 @@ package WellWell::Core;
 use strict;
 use warnings;
 
+use vars qw/@ISA @EXPORT_OK/;
+
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw/plugin_search_component/;
+
 use Vend::Config;
 
 use WellWell::Cart;
 use WellWell::Data;
 use WellWell::Plugin qw/plugin_scan plugin_enable/;
+use WellWell::Engine;
 
 # setup configuration directives
 Vend::Config::parse_directive('Hook', 'Hook hook');
@@ -53,29 +60,43 @@ sub plugins_from_var {
 sub plugin_scan_sub {
 	my ($dbif, $plref, $active);
 
-	$dbif = WellWell::Data::easy_handle();
-	
-	$plref = WellWell::Plugin::plugin_scan($dbif, 'plugins', 'local/plugins');
+	WellWell::Data::make_classes($Vend::Config::C->{CatalogName});
+
+	$plref = WellWell::Plugin::plugin_scan('plugins', 'local/plugins');
 
 	# first pass for enabling plugins in the database from PLUGINS variable
 	for my $plugin (plugins_from_var()) {
 		if (exists $plref->{$plugin}) {
-			if ($plref->{$plugin}->{active} eq 0) {
+			if ($plref->{$plugin}->active eq 0) {
 				Vend::Config::config_error("Plugin $plugin used in PLUGINS variable is explicitly disabled in plugins table.");
 				return;
 			}
-			elsif (! defined($plref->{$plugin}->{active})) {
+			elsif (! defined($plref->{$plugin}->active)) {
 				Vend::Config::config_warn("Enabling plugin $plugin in plugins table.");
-				plugin_enable($dbif, $plugin);
+				plugin_enable($plref->{$plugin});
 			}
 		}
 	}
 
 	for my $plugin (keys %$plref) {
-		if ($plref->{$plugin}->{active}) {
+		if ($plref->{$plugin}->active) {
 			# search path for components and pages
 			push(@{$Vend::Cfg->{TemplateDir}}, $plref->{$plugin}->{directory},
 				 "$plref->{$plugin}->{directory}/pages");
+		}
+	}
+
+	# store in catalog configuration
+	$Vend::Cfg->{PluginRepository} = $plref;
+}
+
+sub plugin_search_component {
+	my ($name) = @_;
+	my ($plugin, $ref);
+	
+	while (($plugin, $ref) = each %{$Vend::Cfg->{PluginRepository}}) {
+		if (-f "$ref->{directory}/components/$name") {
+			return $ref;
 		}
 	}
 }
