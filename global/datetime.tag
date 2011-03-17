@@ -266,6 +266,9 @@ sub {
 	} elsif ($function eq 'year') {
 		return $from_dt->year();
 	}
+
+	# just return DateTime object when called without function
+	return $from_dt;
 }
 EOR
 
