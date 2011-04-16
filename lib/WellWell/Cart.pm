@@ -23,14 +23,17 @@ package WellWell::Cart;
 use strict;
 use warnings;
 
+use constant CART_DEFAULT => 'main';
+
 use Vend::Config;
 use Vend::Tags;
 use Vend::Data;
 
-Vend::Config::parse_tag('UserTag', 'cart_add Order sku quantity');
+Vend::Config::parse_tag('UserTag', 'cart_add Order sku quantity cart');
 Vend::Config::parse_tag('UserTag', 'cart_add AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_add MapRoutine WellWell::Cart::cart_add');
 
+Vend::Config::parse_tag('UserTag', 'cart_clear Order cart');
 Vend::Config::parse_tag('UserTag', 'cart_clear AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_clear MapRoutine WellWell::Cart::cart_clear');
 
@@ -38,6 +41,7 @@ Vend::Config::parse_tag('UserTag', 'cart_item Order sku quantity');
 Vend::Config::parse_tag('UserTag', 'cart_item AddAttr');
 Vend::Config::parse_tag('UserTag', 'cart_item MapRoutine WellWell::Cart::cart_item');
 
+Vend::Config::parse_tag('UserTag', 'cart_refresh Order cart');
 Vend::Config::parse_tag('UserTag', 'cart_refresh MapRoutine WellWell::Cart::cart_refresh');
 
 Vend::Config::parse_subroutine('GlobalSub', 'cart_refresh WellWell::Cart::cart_refresh_form_action');
@@ -85,12 +89,14 @@ sub cart_item {
 # [cart-add] - add item to cart
 
 sub cart_add {
-	my ($sku, $quantity, $opt) = @_;
+	my ($sku, $quantity, $cart, $opt) = @_;
 	my ($itemref, $subname, $sub, $separate_item, $combref);
+
+	$cart ||= CART_DEFAULT;
 	
 	$itemref = cart_item($sku, $quantity, $opt);
 	
-    WellWell::Core::hooks('run', 'cart', 'add', 'main', $itemref);
+    WellWell::Core::hooks('run', 'cart', 'add', $cart, $itemref);
 
 	if ($itemref->{error}) {
 		# one of the hooks denied the item
@@ -104,6 +110,11 @@ sub cart_add {
 		return;
 	}
 
+	if ($itemref->{cart}) {
+		# hook overrided cart name
+		$cart = delete $itemref->{cart};
+	}
+	
 	# now check whether the item is active
 	if (exists $itemref->{inactive}
 		&& $itemref->{inactive}) {
@@ -120,8 +131,8 @@ sub cart_add {
 		$separate_item = $Vend::Cfg{SeparateItems};
 	}
 
-	if (!$separate_item && ($combref = combine_items($itemref))){
-		WellWell::Core::hooks('run', 'cart', 'combine', 'main', $itemref, {quantity => $combref->{quantity}});
+	if (!$separate_item && ($combref = combine_items($itemref, $cart))){
+		WellWell::Core::hooks('run', 'cart', 'combine', $cart, $itemref, {quantity => $combref->{quantity}});
 		return $combref;
 	}
 	
@@ -132,7 +143,7 @@ sub cart_add {
 		return;
 	}
 	
-    push(@$Vend::Items, $itemref);
+    push(@{$::Carts->{$cart}}, $itemref);
 
     return $itemref;
 }
@@ -140,12 +151,14 @@ sub cart_add {
 # [cart-clear] - clear cart
 
 sub cart_clear {
-	my ($opt) = @_;
+	my ($cart, $opt) = @_;
 	my (@new_cart, $sku);
 
-	for my $itemref (@$Vend::Items) {
+	$cart ||= CART_DEFAULT;
+	
+	for my $itemref (@{$::Carts->{$cart}}) {
 		$sku = $itemref->{code};
-		WellWell::Core::hooks('run', 'cart', 'delete', 'main', $itemref);
+		WellWell::Core::hooks('run', 'cart', 'delete', $cart, $itemref);
 	
 		if ($itemref->{error}) {
 			# one of the hooks denied the item
@@ -161,7 +174,7 @@ sub cart_clear {
 		}
 	}
 
-    if (@$Vend::Items = @new_cart) {
+    if (@{$::Carts->{$cart}} = @new_cart) {
 		return 0;
 	}
 
@@ -169,9 +182,12 @@ sub cart_clear {
 }
 
 sub cart_refresh {
+	my ($cart_name) = @_;
 	my ($cart, $new_cart, $quantity, $itemref, $sku, $modifiers);
 
-	$cart = $Vend::Items;
+	$cart_name ||= CART_DEFAULT;
+
+	$cart = $::Carts->{$cart_name};
 	$new_cart = [];
 
 	if ($CGI::values{mv_order_item}) {
@@ -195,6 +211,7 @@ sub cart_refresh {
 
 			return cart_add($sku,
 				 $CGI::values{mv_order_quantity} || 1,
+							CART_DEFAULT,
 				 $modifiers);
 
 		}
@@ -207,6 +224,7 @@ sub cart_refresh {
 
 				cart_add($sku,
 						 $CGI::values_array{mv_order_quantity}->[$i] || 1,
+						 CART_DEFAULT,
 						 $modifiers);
 			}
 	
@@ -230,7 +248,7 @@ sub cart_refresh {
 		if (defined $quantity) {
 			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
 				if ($quantity == 0) {
-					WellWell::Core::hooks('run', 'cart', 'delete', 'main', $itemref);
+					WellWell::Core::hooks('run', 'cart', 'delete', CART_DEFAULT, $itemref);
 
 					if ($itemref->{error}) {
 						if ($itemref->{log_error}) {
@@ -262,7 +280,7 @@ sub cart_refresh {
 		}
 
 		if (keys %$modref) {
-		    WellWell::Core::hooks('run', 'cart', 'modify', 'main', $itemref, $modref);
+		    WellWell::Core::hooks('run', 'cart', 'modify', CART_DEFAULT, $itemref, $modref);
 
 			if ($itemref->{error}) {
 				if ($itemref->{log_error}) {
@@ -304,9 +322,9 @@ sub cart_refresh_form_action {
 }
 
 sub combine_items {
-	my $item = shift;
+	my ($item, $cart) = @_;
 	
-	ITEMS: for my $cartitem (@$Vend::Items){
+ 	ITEMS: for my $cartitem (@{$::Carts->{$cart}}) {
 		if ($item->{'code'} eq $cartitem ->{'code'}){
 			if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY'){
 				for my $mod (@{$Vend::Cfg->{UseModifier}}){
