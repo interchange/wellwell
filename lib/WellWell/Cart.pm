@@ -1,6 +1,6 @@
 # WellWell::Cart - WellWell cart routines
 #
-# Copyright (C) 2009,2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2009,2010,2011 Stefan Hornburg (Racke) <racke@linuxia.de>.
 # Copyright (C) 2010 Rok Ružič <rok.ruzic@informa.si>.
 #
 # This program is free software; you can redistribute it and/or modify
