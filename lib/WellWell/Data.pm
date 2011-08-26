@@ -25,7 +25,6 @@ use warnings;
 use Rose::DB::Object::Loader;
 
 use Vend::Data;
-use DBIx::Easy;
 
 sub prepare_database {
 	my ($userdb_ref, $users_table, %dbif);
