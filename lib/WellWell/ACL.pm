@@ -22,6 +22,8 @@ package WellWell::ACL;
 use strict;
 use warnings;
 
+use ACL::Lite 0.0001;
+
 use Vend::Config;
 use Vend::Data;
 
@@ -75,16 +77,26 @@ sub acl {
 	unless ($db_perms = database_exists_ref('permissions')) {
 		die errmsg("Database missing in [acl] tag: %s", 'permissions');
 	}
+
+	my ($acl_lite, $acl_lite_sub);
+
+	$acl_lite_sub = sub {
+		my ($set, %granted);
 		
-	for my $perm (@permissions) {
-		$set = $db_perms->query(qq{select count(*) from permissions where perm = '%s' and $qual}, $perm);
+		$set = $db_perms->query(qq{select perm from permissions where $qual});
 
-		if ($set->[0]->[0]) {
-			$ret = $perm;
-			last;
+		for (@$set) {
+			$granted{$_->[0]} = 1;
 		}
-	}
 
+		return \%granted;
+	};
+
+	$acl_lite = ACL::Lite->new(permissions => $acl_lite_sub,
+							   uid => $Vend::Session->{username});
+
+	$ret = $acl_lite->check($permission);
+	
 	if ($opt->{reverse}) {
 		$ret = ! $ret;
 	}
