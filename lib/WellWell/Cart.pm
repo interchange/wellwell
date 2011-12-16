@@ -191,10 +191,9 @@ sub cart_refresh {
 	$new_cart = [];
 
 	if ($CGI::values{mv_order_item}) {
-		my (@oi, $sku);
+		my (@oi, @qi, $sku);
 
-		@oi = @{$CGI::values_array{mv_order_item}};
-
+		@oi = @{$CGI::values_array{mv_order_item} || [split(/\0/, $CGI::values{mv_order_item})]};
 		if (@oi == 1) {
 			# Adding single item from product order link/button
 
@@ -211,21 +210,20 @@ sub cart_refresh {
 
 			return cart_add($sku,
 				 $CGI::values{mv_order_quantity} || 1,
-							CART_DEFAULT,
+				 $cart_name,
 				 $modifiers);
 
 		}
 		else {
 			# Adding multiple items from result lists
-			for (my $i = 0; $i < @{$CGI::values_array{mv_order_item}}; $i++) {
-				$sku = $CGI::values_array{mv_order_item}->[$i];
+			@qi = @{$CGI::values_array{mv_order_quantity} || [split(/\0/, $CGI::values{mv_order_quantity})]};
 
-				next unless $CGI::values_array{mv_order_quantity}->[$i];
+			for (my $i = 0; $i < @oi; $i++) {
+				$sku = $oi[$i];
 
-				cart_add($sku,
-						 $CGI::values_array{mv_order_quantity}->[$i] || 1,
-						 CART_DEFAULT,
-						 $modifiers);
+				next unless $qi[$i];
+
+				cart_add($sku, $qi[$i], $cart_name, $modifiers);
 			}
 	
 			return;
@@ -248,7 +246,7 @@ sub cart_refresh {
 		if (defined $quantity) {
 			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
 				if ($quantity == 0) {
-					WellWell::Core::hooks('run', 'cart', 'delete', CART_DEFAULT, $itemref);
+					WellWell::Core::hooks('run', 'cart', 'delete', $cart_name, $itemref);
 
 					if ($itemref->{error}) {
 						if ($itemref->{log_error}) {
@@ -280,7 +278,7 @@ sub cart_refresh {
 		}
 
 		if (keys %$modref) {
-		    WellWell::Core::hooks('run', 'cart', 'modify', CART_DEFAULT, $itemref, $modref);
+		    WellWell::Core::hooks('run', 'cart', 'modify', $cart_name, $itemref, $modref);
 
 			if ($itemref->{error}) {
 				if ($itemref->{log_error}) {
@@ -306,7 +304,7 @@ sub cart_refresh {
 
 sub cart_refresh_form_action {
 	# let [cart-refresh] deal with that
-	cart_refresh();
+	cart_refresh($CGI::values{mv_cartname});
 	
 	if ($CGI::values{mv_nextpage} eq $Vend::Cfg->{ProcessPage}) {
 		# skip virtual pages for determing shopping cart page
