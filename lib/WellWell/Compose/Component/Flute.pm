@@ -66,7 +66,8 @@ sub process {
 	$filters{link} = \&WellWell::Filter::Link::filter;
 		
 	$flute = new Template::Flute (template => $html_object, filters => \%filters,
-								database => $self->{database});
+				      values => $attributes,
+				      database => $self->{database});
 
 	# call component load subroutine
 	$subname = "component_$self->{name}_load";
