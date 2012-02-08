@@ -13,6 +13,9 @@ sub {
 			else {
 				Log("coupon_log code missing for coupon $coupon_number and order $Values->{mv_order_number}");
 			}
+
+			# Deduct 1 from count so we know coupon has been used
+			$Db{coupon_log}->query({ sql => "update coupons set count = count-1 where code = '$repo->{code}'" });
 		}
 	}
 
