@@ -3,9 +3,7 @@ sub {
 	my ($next, $prev, $page, $border, $border_selected, $opt, $r) = @_;
 	my ($q, $pages, $first, $curpage, $url, @links, @labels, @more, $base_url, 
 	    $prefix, $suffix, $session, $form_arg, $nav, $ml, $matches, $replace, 
-            $out, $link_prefix, $link_suffix);
-
-    	my $q;
+            $out, $link_prefix, $link_suffix, $redux, %active, %indirect);
 	
 	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
 	return '' unless $q->{matches} > $q->{mv_matchlimit}
@@ -37,9 +35,13 @@ sub {
 	if ($curpage) {
 		$first = ($curpage - 1) * $ml;
 	}
-	else {
+	elsif ($q->{mv_first_match}) {
 		$first = $q->{mv_first_match} || 1;
+                $curpage = (int($q->{mv_first_match} / 20)) + 1;
 	}
+	else {
+                $first = $curpage = 1;
+        }
 
 	if ($r =~ /\[more\]/) {
 		# check for [more] replacement
@@ -68,7 +70,29 @@ sub {
 	for my $anchor qw(first prev next last) {
 	    if ($r =~ s:\[$anchor[-_]anchor\](.*?)\[/$anchor[-_]anchor\]::i) {
 	       $anchor_labels{$anchor} = $1;
+
+	       if ($anchor eq 'first') {
+                   $indirect{1} = 1;
+               }
+	       elsif ($anchor eq 'prev') {
+                   $indirect{$curpage - 1} = 1;
+	       }
+	       elsif ($anchor eq 'next') {
+                   $indirect{$curpage + 1} = 1;
+               }
+	       elsif ($anchor eq 'last') {
+                   $indirect{$pages} = 1;
+               }
             }
+        }
+
+	%active = %indirect;
+
+	# extract decade(s)
+	my (%decade_labels, %decade_links);
+
+	while ($r =~ s:\[decade[-_](next|prev)\](.*?)\[/decade[-_]\1\]::i) {
+            $decade_labels{$1} = $2;
         }
 
         # link prefix / link suffix
@@ -98,7 +122,40 @@ sub {
 	$base_url =~ s%^/%%;
 	$base_url =~ s%(/\d+)?(\.html)?$%%;
 
+	if (keys %decade_labels && $pages > 10) {
+	    # calculating pages to be displayed
+	    my ($range_start, $range_end);
+
+            $start = int(($first + 1) / $ml) + 1;
+	    $range_start = (int(($start - 1) / 10) * 10) + 1;
+	    $range_end = $range_start + 9;
+
+	    if ($range_end > $pages) {
+	        $range_end = $pages;
+            }
+
+	    for my $pos ($range_start .. $range_end) {
+	    	$active{$pos} = 1;
+                delete $indirect{$pos};
+            }  
+
+	    if ($range_start > 1) {
+	    	 $nav = join(':', $session, ($range_start - 11) * $ml, 
+                                            ($range_start - 10) * $ml - 1, $ml);
+	         $decade_links{prev} = $Tag->area({href => "scan/MM=$nav", form => $form_arg});
+            }
+
+ 	    $nav = join(':', $session, $range_end * $ml, 
+                                       ($range_end + 1) * $ml - 1, $ml);
+	         $decade_links{next} = $Tag->area({href => "scan/MM=$nav", form => $form_arg});
+
+	    $redux = 1;
+	}
+
 	for (my $i = 1; $i <= $pages; $i++) {
+	    	# inside paging ranges?
+		next if $redux && ! $active{$i};
+
     		$start = ($i - 1) * $ml;
 		if ($start eq $first) {
 			# current page
@@ -126,6 +183,8 @@ sub {
 	$labels[$curpage] = $curpage;	
 
 	for (my $i = 1; $i <= $pages; $i++) {
+	        next if $redux && exists $indirect{$i};
+
     		if ($links[$i]) {
 			push(@more, qq{$link_prefix<a href="$links[$i]">$labels[$i]</a>$link_suffix});
 		}
@@ -134,8 +193,25 @@ sub {
 		}
     	}
 
+	if ($decade_labels{prev} && $curpage > 10) {
+            $url = $decade_links{prev};
+   
+	    unshift(@more, qq{$link_prefix<a href="$url">$decade_labels{prev}</a>$link_suffix});
+	}
+
 	unless ($curpage == 1) {	
+                # previous page
 		$url = $links[$curpage-1];
+
+	        if ($anchor_labels{prev}) {
+		    unshift(@more, qq{$link_prefix<a href="$url">$anchor_labels{prev}</a>$link_suffix});
+                }
+		else {
+		    unshift(@more, qq{$link_prefix<a href="$url">previous &lt;</a>$link_suffix});
+                }
+
+                # first page
+                $url = $links[1];
 
 		if ($anchor_labels{first}) {
 		    unshift(@more, qq{$link_prefix<a href="$url">$anchor_labels{first}</a>$link_suffix});
@@ -143,16 +219,16 @@ sub {
 		else {
 		    unshift(@more, qq{$link_prefix<a href="$url">first</a>$link_suffix});
                 }
+	}
 
-		if ($anchor_labels{prev}) {
-		    unshift(@more, qq{$link_prefix<a href="$url">$anchor_labels{prev}</a>$link_suffix});
-                }
-		else {
-		    unshift(@more, qq{$link_prefix<a href="$url">previous &lt;</a>$link_suffix});
-                }
+	if ($decade_labels{next} && int(($curpage - 1) / 10) < int(($pages - 1) / 10)) {
+            $url = $decade_links{next};
+   
+	    push(@more, qq{$link_prefix<a href="$url">$decade_labels{next}</a>$link_suffix});
 	}
 
 	unless ($curpage == int($pages)) {
+                # next page
 		$url = $links[$curpage+1];
 
                 if ($anchor_labels{next}) {
@@ -161,6 +237,9 @@ sub {
                 else {
 		    push(@more, qq{$link_prefix<a href="$url">next &gt;</a>$link_suffix});
                 }
+
+                # last page
+                $url = $links[$pages];
 
 		if ($anchor_labels{last}) {
 		    push(@more, qq{$link_prefix<a href="$url">$anchor_labels{last}</a>$link_suffix});
