@@ -33,11 +33,11 @@ sub {
         $curpage = $opt->{paging_page} || $CGI->{category_page};
 
 	if ($curpage) {
-		$first = ($curpage - 1) * $ml;
+		$first = ($curpage - 1) * $ml + 1;
 	}
-	elsif ($q->{mv_first_match}) {
-		$first = $q->{mv_first_match} || 1;
+	elsif ($q->{mv_first_match} >= $ml) {
                 $curpage = (int($q->{mv_first_match} / 20)) + 1;
+		$first = ($curpage - 1) * $ml;
 	}
 	else {
                 $first = $curpage = 1;
@@ -51,8 +51,14 @@ sub {
 	if ($r =~ /\[match/) {
 		my ($range_start, $range_end);
 
-		$range_start = $first;
-		$range_end = $first + $ml - 1;
+                if ($first > 1) {
+                    $range_start = $first + 1;
+		    $range_end = $first + $ml;
+                }
+		else {
+		    $range_start = $first;
+		    $range_end = $first + $ml - 1;
+                }
 
 		if ($range_end > $matches) {
 			$range_end = $matches;
@@ -99,8 +105,13 @@ sub {
 	$link_prefix = (exists $opt->{link_prefix}) ? $opt->{link_prefix} : '<li>';
 	$link_suffix = (exists $opt->{link_suffix}) ? $opt->{link_suffix} : '</li>';
 
-	$first = $q->{mv_first_match} || 0;
-	$Scratch->{paging_first_match} = $first;
+	# $first = $q->{mv_first_match} || 0;
+        if ($first > 1) {
+	    $Scratch->{paging_first_match} = $first + 1;
+        }
+        else {
+	    $Scratch->{paging_first_match} = $first;
+        }
 
 	$session = $q->{mv_cache_key};
 
