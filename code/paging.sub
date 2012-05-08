@@ -3,8 +3,9 @@ sub {
 	my ($next, $prev, $page, $border, $border_selected, $opt, $r) = @_;
 	my ($q, $pages, $first, $curpage, $url, @links, @labels, @more, $base_url, 
 	    $prefix, $suffix, $session, $form_arg, $nav, $ml, $matches, $replace, 
-            $out, $link_prefix, $link_suffix, $redux, %active, %indirect);
-	
+        $out, $link_prefix, $link_suffix, $redux, %active, %indirect,
+        $search_page, $start, $end, $more);
+
 	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
 	return '' unless $q->{matches} > $q->{mv_matchlimit}
 		and $q->{mv_matchlimit} > 0;
@@ -176,7 +177,7 @@ sub {
 		}
 		$end = $start + $ml - 1;
 		if ($end > $matches) {
-			$end = matches;
+			$end = $matches;
 		}
 	    	$nav = join(':', $session, $start, $start + ($ml-1), $ml);
 		if ($form{category}) {
