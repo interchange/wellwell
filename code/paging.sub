@@ -180,7 +180,16 @@ sub {
 			$end = $matches;
 		}
 	    	$nav = join(':', $session, $start, $start + ($ml-1), $ml);
-		if ($form{category}) {
+
+               if ($Scratch->{subject} eq 'category' || $form{category}) {
+			if ($i > 1) {
+				$url = $Tag->area({href => "$base_url/$i"});
+			}
+			else {
+				$url = $Tag->area({href => "$base_url"});
+			}
+                }
+		elsif ($form{category}) {
 			$url = $Tag->area({href => "$base_url/$i"});
 		}
 		else {
