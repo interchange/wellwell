@@ -3,8 +3,8 @@ sub {
 	my ($next, $prev, $page, $border, $border_selected, $opt, $r) = @_;
 	my ($q, $pages, $first, $curpage, $url, @links, @labels, @more, $base_url, 
 	    $prefix, $suffix, $session, $form_arg, $nav, $ml, $matches, $replace, 
-        $out, $link_prefix, $link_suffix, $redux, %active, %indirect,
-        $search_page, $start, $end, $more);
+        $out, $link_prefix, $link_suffix, $link_template, $link_sub, $redux, %active, %indirect,
+        $search_page, $start, $end);
 
 	$q = $opt->{object} || $::Instance->{SearchObject}{$opt->{label}};
 	return '' unless $q->{matches} > $q->{mv_matchlimit}
@@ -72,26 +72,30 @@ sub {
 	}
 
 	# extract anchor labels
-	my %anchor_labels;
+	my %anchor_labels = (first => 'first',
+                         prev => 'previous &lt;',
+                         next => 'next &gt;',
+                         last => 'last',
+                         );
 
 	for my $anchor qw(first prev next last) {
 	    if ($r =~ s:\[$anchor[-_]anchor\](.*?)\[/$anchor[-_]anchor\]::i) {
-	       $anchor_labels{$anchor} = $1;
+            $anchor_labels{$anchor} = $1;
 
-	       if ($anchor eq 'first') {
-                   $indirect{1} = 1;
-               }
-	       elsif ($anchor eq 'prev') {
-                   $indirect{$curpage - 1} = 1;
-	       }
-	       elsif ($anchor eq 'next') {
-                   $indirect{$curpage + 1} = 1;
-               }
-	       elsif ($anchor eq 'last') {
-                   $indirect{$pages} = 1;
-               }
+            if ($anchor eq 'first') {
+                $indirect{1} = 1;
+            }
+            elsif ($anchor eq 'prev') {
+                $indirect{$curpage - 1} = 1;
+            }
+            elsif ($anchor eq 'next') {
+                $indirect{$curpage + 1} = 1;
+            }
+            elsif ($anchor eq 'last') {
+                $indirect{$pages} = 1;
             }
         }
+    }
 
 	%active = %indirect;
 
@@ -105,6 +109,25 @@ sub {
         # link prefix / link suffix
 	$link_prefix = (exists $opt->{link_prefix}) ? $opt->{link_prefix} : '<li>';
 	$link_suffix = (exists $opt->{link_suffix}) ? $opt->{link_suffix} : '</li>';
+
+    # extract link template
+    if ($r =~ s:\[link[-_]template\](.*?)\[/link[-_]template\]::i) {
+        $link_template = $1;
+    }
+    else {
+        $link_template = '<a href="$URL$">$ANCHOR$</a>';
+    }
+
+    $link_sub = sub {
+        my ($url, $anchor) = @_;
+        my ($out);
+
+        $out = $link_template;
+        $out =~  s/\$URL\$/$url/g;
+        $out =~ s/\$ANCHOR\$/$anchor/g;
+
+        return $link_prefix . $out . $link_suffix;
+    };
 
 	# $first = $q->{mv_first_match} || 0;
         if ($first > 1) {
@@ -181,7 +204,7 @@ sub {
 		}
 	    	$nav = join(':', $session, $start, $start + ($ml-1), $ml);
 
-               if ($Scratch->{subject} eq 'category' || $form{category}) {
+                if ($Scratch->{subject} eq 'category' || $form{category}) {
 			if ($i > 1) {
 				$url = $Tag->area({href => "$base_url/$i"});
 			}
@@ -204,70 +227,50 @@ sub {
 	$labels[$curpage] = $curpage;	
 
 	for (my $i = 1; $i <= $pages; $i++) {
-	        next if $redux && exists $indirect{$i};
+	    next if $redux && exists $indirect{$i};
 
-    		if ($links[$i]) {
-			push(@more, qq{$link_prefix<a href="$links[$i]">$labels[$i]</a>$link_suffix});
+        if ($links[$i]) {
+            push(@more, $link_sub->($links[$i], $labels[$i]));
 		}
 		else {
 			push(@more, qq{$link_prefix$labels[$i]$link_suffix});
 		}
-    	}
+    }
 
 	if ($decade_labels{prev} && $curpage > 10) {
-            $url = $decade_links{prev};
-   
-	    unshift(@more, qq{$link_prefix<a href="$url">$decade_labels{prev}</a>$link_suffix});
+        $url = $decade_links{prev};
+
+	    unshift(@more, $link_sub->($url, $decade_labels{prev}));
 	}
 
-	unless ($curpage == 1) {	
-                # previous page
+	unless ($curpage == 1) {
+        # previous page
 		$url = $links[$curpage-1];
 
-	        if ($anchor_labels{prev}) {
-		    unshift(@more, qq{$link_prefix<a href="$url">$anchor_labels{prev}</a>$link_suffix});
-                }
-		else {
-		    unshift(@more, qq{$link_prefix<a href="$url">previous &lt;</a>$link_suffix});
-                }
+        unshift(@more, $link_sub->($url, $anchor_labels{prev}));
 
-                # first page
-                $url = $links[1];
+        # first page
+        $url = $links[1];
 
-		if ($anchor_labels{first}) {
-		    unshift(@more, qq{$link_prefix<a href="$url">$anchor_labels{first}</a>$link_suffix});
-                }
-		else {
-		    unshift(@more, qq{$link_prefix<a href="$url">first</a>$link_suffix});
-                }
+        unshift(@more, $link_sub->($url, $anchor_labels{first}));
 	}
 
 	if ($decade_labels{next} && int(($curpage - 1) / 10) < int(($pages - 1) / 10)) {
-            $url = $decade_links{next};
-   
-	    push(@more, qq{$link_prefix<a href="$url">$decade_labels{next}</a>$link_suffix});
-	}
+        $url = $decade_links{next};
 
-	unless ($curpage == int($pages)) {
-                # next page
+	    push(@more, $link_sub->($url, $decade_labels{next}));
+    }
+
+    unless ($curpage == int($pages)) {
+        # next page
 		$url = $links[$curpage+1];
 
-                if ($anchor_labels{next}) {
-		    push(@more, qq{$link_prefix<a href="$url">$anchor_labels{next}</a>$link_suffix});
-                }
-                else {
-		    push(@more, qq{$link_prefix<a href="$url">next &gt;</a>$link_suffix});
-                }
+        push (@more, $link_sub->($url, $anchor_labels{next}));
 
-                # last page
-                $url = $links[$pages];
+        # last page
+        $url = $links[$pages];
 
-		if ($anchor_labels{last}) {
-		    push(@more, qq{$link_prefix<a href="$url">$anchor_labels{last}</a>$link_suffix});
-                }
-		else {
-		    push(@more, qq{$link_prefix<a href="$url">$more</a>$link_suffix});
-                }
+        push(@more, $link_sub->($url, $anchor_labels{last}));
 	}
 
 	$out = $prefix . join(' ', @more) . $suffix;
