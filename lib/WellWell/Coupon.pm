@@ -143,6 +143,78 @@ sub coupons {
 
 		return;
 	}
+
+	# Add a coupon to list of active coupons
+	if ($function eq 'add'){	
+		my ($dbif, $dbif_discounts,  %rec, %rec_discounts);
+
+		unless ($dbif = database_exists_ref('coupons')) {
+			die ::errmsg('Database missing: %s', 'coupons');
+   	}
+		
+		unless ($dbif_discounts = database_exists_ref('coupon_discounts')) {
+			die ::errmsg('Database missing: %s', 'coupon_discounts');
+   	}
+
+		# Check if coupon already exists
+		my $set = $dbif->query(q{select coupon_number from coupons where coupon_number = '%s'}, $code);
+		for (@$set) {
+			my ($dbcode) = @$_;
+
+			if($dbcode eq $code){
+				die ::errmsg("Coupon '$code' already exists");
+			}
+		}
+
+		if (! $code ) {
+			die ::errmsg('code must be defined if you want to add coupons');
+		}
+
+		if (! $opt->{subject} ) {
+			die ::errmsg('subject has to be defined (ie subtotal)');
+		}
+
+		if (! $opt->{mode} ) {
+			die ::errmsg('mode has to be defined (ie percents or amount)');
+		}
+	
+		if (! $opt->{value} ) {
+			die ::errmsg('value has to be defined (ie 10 or 20)');
+		}
+
+		# user number of the coupon to add
+		$rec{coupon_number} = $code;
+		
+		# used for writing in good for returns - amount to return
+		if ($opt->{amount}) { 
+			$rec{amount} = $opt->{amount};
+		}
+		# is coupon active?
+		if ($opt->{inactive}) { 
+			$rec{inactive} = $opt->{inactive};
+		}	
+		if ($opt->{count}) {
+			$rec{count} = $opt->{count};
+		}
+		if ($opt->{comment}) {
+			$rec{comment} = $opt->{comment};
+		}
+		if ($opt->{comment}) {
+			$rec{comment} = $opt->{comment};
+		}
+
+		my $coupons_code = $dbif->set_slice(undef, \%rec);
+
+		$rec_discounts{coupon_code}= $coupons_code;
+		$rec_discounts{subject}= $opt->{subject};
+		$rec_discounts{mode}= $opt->{mode};
+		$rec_discounts{value}= $opt->{value};
+
+		$dbif_discounts->set_slice(undef, \%rec_discounts);
+		
+
+		return "Coupon added with code: ".$code;
+	}
 	
 	return;
 }
