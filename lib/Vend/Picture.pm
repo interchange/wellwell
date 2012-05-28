@@ -1,6 +1,6 @@
 # Vend::Picture - Interchange image helper functions
 #
-# Copyright (C) 2004-2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2004-2012 Stefan Hornburg (Racke) <racke@linuxia.de>.
 # Copyright (C) 2010 Rok Ružič <rok.ruzic@informa.si>.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -407,6 +407,10 @@ sub magick {
 	elsif ($name) {
 		@args = (filename => $name);
 	}
+    elsif (ref($name) eq 'SCALAR') {
+        tie *IMG, 'IO::Scalar', $name;
+        @args = (file => \*IMG);
+    } 
 	else {
 		# missing parameter
 		$Tag->error({name => 'picture',
