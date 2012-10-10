@@ -244,7 +244,7 @@ sub cart_refresh {
 		$quantity =~ s/\s+$//;
 		
 		if (defined $quantity) {
-			if ($quantity =~ /^(\d+)$/ && $quantity != $itemref->{quantity}) {
+			if ($quantity =~ /^(\d+)$/) {
 				if ($quantity == 0) {
 					WellWell::Core::hooks('run', 'cart', 'delete', $cart_name, $itemref);
 
@@ -263,7 +263,9 @@ sub cart_refresh {
 						next;
 					}
 				}
-				$modref->{quantity} = $quantity;
+                elsif ($quantity != $itemref->{quantity}) {
+				    $modref->{quantity} = $quantity;
+                }
 			}
 		}
 
