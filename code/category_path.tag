@@ -3,15 +3,17 @@ UserTag category_path AddAttr
 UserTag category_path Routine <<EOR
 sub {
     my ($code, $opt) = @_;
-    my ($parent, @path, $joiner);
+    my ($parent, @path, $joiner, $table);
 
     return () unless $code;
 
-    $Tag->perl({tables => 'categories'});
+    $table = $Variable->{CATEGORY_TABLE} || 'categories';
+
+    $Tag->perl({tables => $table});
 
     $path[0] = $code;
 
-    while ($parent = $Db{categories}->field($code, 'parent')) {
+    while ($parent = $Db{$table}->field($code, 'parent')) {
 		unshift(@path, $parent);
 		$code = $parent;
 		
@@ -23,7 +25,7 @@ sub {
    		my @names;
 
 		for (@path) {
-			push(@names, $Db{categories}->field($_, 'name'));
+			push(@names, $Db{$table}->field($_, 'name'));
 		}
 
 		if (ref $opt->{filter} eq 'ARRAY') {
@@ -43,7 +45,7 @@ sub {
 			for (my $i = 0; $i < @path; $i++) {
 				my $uri;
 
-				$uri = $Tag->area($Db{categories}->field($path[$i], 'uri'));
+				$uri = $Tag->area($Db{$table}->field($path[$i], 'uri'));
 				
 				$names[$i] = qq{<a href="$uri">$names[$i]</a>};
 			}
