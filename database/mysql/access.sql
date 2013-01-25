@@ -18,6 +18,7 @@ CREATE TABLE access (
   files varchar(255) default NULL,
   config int(1) default NULL,
   reconfig int(1) default NULL,
+  groups varchar(255) default NULL,
   meta int(1) default NULL,
   no_functions text,
   yes_functions text,
