@@ -227,14 +227,15 @@ sub {
 		my ($out, $url, $action, $sid, $series, $body, $page);
 
 		# read template
-		my ($t_name, $t_file, $t_template);
+		my ($t_name, $t_file, $t_template, $t_msg);
 
 		$t_name = $opt->{template} || 'form';
 		$t_file = "$Variable->{MV_TEMPLATE_DIR}/$t_name";
-		
+
 		unless ($t_template = $Tag->file($t_file)) {
 			$Tag->error({name => 'form_template',
-				set => "Invalid template $t_name"});
+				set => "Missing form template $t_name"});
+                        Log("Form template $t_name not found as $t_file");
 			return;
 		}
 
