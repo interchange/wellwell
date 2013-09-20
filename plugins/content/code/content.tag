@@ -9,13 +9,14 @@ sub {
 
 	$Tag->perl({tables => 'content'});
 
-	if ($function eq 'add') {
-		my %content;
+	my $add_sub = sub {
+        my $add_body = shift;
+	    my %content;
 
 		# created timestamp
 		$content{type} = $opt->{type} || 'page';
-		$content{title} = $opt->{title};
-		$content{body} = $opt->{body};
+		$content{title} = $opt->{title} || '';
+		$content{body} = $add_body || $opt->{body};
 		$content{uid} = $opt->{uid} || $Session->{username};
 		$content{uri} = $opt->{uri};
 		$content{created} = $opt->{created} || $Tag->time({format => '%s'});
@@ -23,6 +24,10 @@ sub {
 		$code = $Db{content}->set_slice([{dml => 'insert'}], \%content);
 
 		return $code;
+    };
+
+	if ($function eq 'add') {
+	    $add_sub->();
 	}
 
 	if ($opt->{uri}) {
@@ -68,6 +73,7 @@ sub {
 		}
 
 		$content{body} = $ctref->{body};
+	        $body = '';
 	} 
 	else {
 		if ($opt->{create_link}) {
@@ -94,6 +100,10 @@ sub {
 				$content{$_} = $opt->{params}->{$_};
 			}
 		}
+		elsif ($opt->{uri} && ! $ctref) {
+            # push content to database
+            $add_sub->($body);
+        }
 
 		return $Tag->uc_attr_list({hash => \%content, body => $body});
 	}
