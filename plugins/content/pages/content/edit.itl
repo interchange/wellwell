@@ -1,6 +1,7 @@
+[acl check edit_content]
 [compose 
     components.body="content_edit"
     forms.content_edit.name="content_edit"
 ]
-
+[/acl]
 
