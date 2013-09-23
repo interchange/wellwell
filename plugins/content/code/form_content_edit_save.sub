@@ -51,6 +51,6 @@ sub {
 
 	$code = $Db{content}->set_slice($CGI->{code}, %content);
 
-	return {code => $code, page => $page};
+	return {code => $code, page => $page, redirect => 1};
 }
 EOS
