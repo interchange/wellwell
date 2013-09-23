@@ -1,5 +1,6 @@
 [acl check edit_content]
 [compose 
+    attributes.htmlhead.title="[L]Edit Content[/L]"
     components.body="content_edit"
     forms.content_edit.name="content_edit"
 ]
