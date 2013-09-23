@@ -81,7 +81,7 @@ sub {
 						$Session->{form_series}->{$name} -= 1;
 						$Tag->tmp('series_part', $_->{part});
 						return $Tag->form({series => $name, 
-							label => $_->{label},
+							label => errmsg($_->{label}),
 							part => $_->{part}, 
 							template => $opt->{template} || $_->{template}});
 					}
@@ -142,7 +142,7 @@ sub {
 				}
 
 				$Tag->tmp('series_part', $_->{part});
-				return $Tag->form({series => $name, label => $_->{label},
+				return $Tag->form({series => $name, label => errmsg($_->{label}),
 					part => $_->{part},
 					template => $opt->{template} || $_->{template}});
 			}
@@ -152,7 +152,7 @@ sub {
 		return;
 	}
 
-		push(@out_title, theme('form_title', $opt->{part}, $opt->{label}, $opt));
+		push(@out_title, theme('form_title', $opt->{part}, errmsg($opt->{label}), $opt));
 
 		if ($opt->{prepend}) {
 			push(@out_title, $opt->{prepend});
@@ -201,7 +201,7 @@ sub {
 			}
 
 			if ($elref->{label} =~ /\S/) {
-				$label = "$elref->{label}$append$opt->{appendlabel}";
+				$label = errmsg($elref->{label}) . "$append$opt->{appendlabel}";
 			}
 
 			my $error = $Tag->error({name => $elref->{name},
