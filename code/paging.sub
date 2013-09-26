@@ -78,7 +78,7 @@ sub {
                          last => 'last',
                          );
 
-	for my $anchor qw(first prev next last) {
+	for my $anchor (qw(first prev next last)) {
 	    if ($r =~ s:\[$anchor[-_]anchor\](.*?)\[/$anchor[-_]anchor\]::i) {
             $anchor_labels{$anchor} = $1;
 
