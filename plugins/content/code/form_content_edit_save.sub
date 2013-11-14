@@ -7,13 +7,6 @@ sub {
 		return {jump => 'content_edit'};
 	}
 
-	# determine page to show after edit
-	if ($Variable->{CONTENT_OVERVIEW_TYPE} eq 'panel') {
-		$page = 'content/list';
-	} else {
-		$page = 'content/recent';
-	}
-
 	$Tag->perl({tables => 'content'});
 
 	for (qw/title body uri/) {
@@ -21,6 +14,16 @@ sub {
 	}
 	$content{uid} = $Session->{username} || 0;
 	$content{type} = 'page';
+
+    # determine page to show after edit
+    if ($content{uri} && $Variable->{CONTENT_EDIT_URI_RETURN}) {
+        $page = $content{uri};
+    }
+	elsif ($Variable->{CONTENT_OVERVIEW_TYPE} eq 'panel') {
+		$page = 'content/list';
+	} else {
+		$page = 'content/recent';
+	}
 
 	# store timestamp
 	if ($CGI->{code}) {
