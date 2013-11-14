@@ -25,6 +25,20 @@ use Captcha::reCAPTCHA;
 
 Vend::reCAPTCHA - Interchange 5 implementation of reCAPTCHA
 
+=head1 VARIABLES
+
+=over 4
+
+=item RECAPTCHA_PUBLIC_KEY
+
+Public key for reCAPTCHA API.
+
+=item RECAPTCHA_PRIVATE_KEY
+
+Private key for reCAPTCHA API.
+
+=back
+
 =head1 ATTENTION
 
 Check that you haven't placed your input <form> in a <table>
