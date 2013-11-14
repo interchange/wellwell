@@ -50,7 +50,10 @@ sub recaptcha {
     $var_ref = recaptcha_variables();
 
     if ($function eq 'get_html') {
-        return $recaptcha->get_html($var_ref->{public_key});
+        return $recaptcha->get_html($var_ref->{public_key},
+                                    undef,
+                                    # use SSL based API ?
+                                    $CGI::secure);
     }
     elsif ($function eq 'check_answer') {
         my @values = ($var_ref->{private_key},
