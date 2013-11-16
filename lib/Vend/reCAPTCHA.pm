@@ -19,11 +19,20 @@
 
 package Vend::reCAPTCHA;
 
+use strict;
+use warnings;
+
 use Captcha::reCAPTCHA;
 
 =head1 NAME
 
 Vend::reCAPTCHA - Interchange 5 implementation of reCAPTCHA
+
+=head1 DESCRIPTION
+
+Display the reCAPTCHA widget in your form:
+
+    [recaptcha get_html]
 
 =head1 VARIABLES
 
@@ -31,11 +40,18 @@ Vend::reCAPTCHA - Interchange 5 implementation of reCAPTCHA
 
 =item RECAPTCHA_PUBLIC_KEY
 
-Public key for reCAPTCHA API.
+Your public key for reCAPTCHA API (mandatory).
 
 =item RECAPTCHA_PRIVATE_KEY
 
-Private key for reCAPTCHA API.
+Your private key for reCAPTCHA API (mandatory).
+
+=item RECAPTCHA_THEME
+
+Select your recaptcha theme from the four standard themes:
+red (default), white, blackglass, clean.
+
+See L<https://developers.google.com/recaptcha/docs/customization#Standard_Themes>.
 
 =back
 
@@ -48,6 +64,26 @@ L<https://code.google.com/p/recaptcha/wiki/FAQ#I_keep_getting_%22incorrect-captc
 
 =cut
 
+our %recaptcha_vars = (public_key => {required => 1,
+                                      option => 0,
+                                     },
+                       private_key => {required => 1,
+                                      option => 0,
+                                      },
+                       theme => {required => 0,
+                                 option => 1,
+                                },
+                       lang => {required => 0,
+                                option => 1,
+                               },
+                       custom_theme_widget => {required => 0,
+                                               option => 1,
+                                              },
+                       tabindex => {required => 0,
+                                    option => 1,
+                                   },
+                       );
+
 # define [recaptcha] tag
 
 Vend::Config::parse_tag('UserTag', 'recaptcha Order function');
@@ -57,17 +93,19 @@ Vend::Config::parse_tag('UserTag', 'recaptcha MapRoutine Vend::reCAPTCHA::recapt
 # [recaptcha] function
 
 sub recaptcha {
-    my ($function) = @_;
+    my ($function, $opt) = @_;
 
     my $recaptcha = recaptcha_object();
 
-    $var_ref = recaptcha_variables();
+    my $var_ref = recaptcha_variables();
 
     if ($function eq 'get_html') {
         return $recaptcha->get_html($var_ref->{public_key},
                                     undef,
                                     # use SSL based API ?
-                                    $CGI::secure);
+                                    $CGI::secure,
+                                    recaptcha_options({%{$var_ref}, %$opt}),
+                                    );
     }
     elsif ($function eq 'check_answer') {
         my @values = ($var_ref->{private_key},
@@ -88,21 +126,35 @@ sub recaptcha_object {
     return Captcha::reCAPTCHA->new;
 }
 
-sub recaptcha_variables {
-    my (%vars, $full_name);
+sub recaptcha_options {
+    my ($input_ref) = @_;
+    my (%options);
 
-    for my $name ('public_key', 'private_key') {
+    for my $name (keys %recaptcha_vars) {
+        next if ! $recaptcha_vars{$name}->{option};
+        next if ! exists $input_ref->{$name};
+
+        $options{$name} = $input_ref->{$name};
+    }
+
+    return \%options;
+}
+
+sub recaptcha_variables {
+    my (%our_vars, $full_name);
+
+    for my $name (keys %recaptcha_vars) {
         $full_name = "RECAPTCHA_" . uc($name);
 
         if ($::Variable->{$full_name}) {
-            $vars{$name} = $::Variable->{$full_name};
+            $our_vars{$name} = $::Variable->{$full_name};
         }
-        else {
+        elsif ($recaptcha_vars{$name}->{required}) {
             die "[recaptcha]: Missing variable $full_name.";
         }
     }
 
-    return \%vars;
+    return \%our_vars;
 }
 
 1;
