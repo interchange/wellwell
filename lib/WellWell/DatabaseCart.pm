@@ -42,7 +42,8 @@ sub cart_hook {
 		$cartname = $Vend::Cfg->{DatabaseCart};
 	}
 
-	$cart = get_cart_by_name($cartname, 'cart', $Vend::Session->{username}, 1);
+    my $uid = $Vend::Session->{username} || $Vend::Session->{id};
+	$cart = get_cart_by_name($cartname, 'cart', $uid, 1);
 	
 	if ($op eq 'add') {
 		$cart->add_item($item);
@@ -59,7 +60,8 @@ sub cart_hook {
 sub cart_restore {
 	my $cart;
 
-	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $Vend::Session->{username});
+    my $uid = $Vend::Session->{username} || $Vend::Session->{id};
+	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $uid);
 
 	if ($cart) {
 		$cart->restore();
@@ -70,7 +72,8 @@ sub cart_restore {
 sub cart_clear {
 	my $cart;
 
-	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $Vend::Session->{username});
+    my $uid = $Vend::Session->{username} || $Vend::Session->{id};
+	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $uid);
 
 	if ($cart) {
 		$cart->clear();
@@ -80,8 +83,9 @@ sub cart_clear {
 # Comparing database cart with session cart
 sub cart_compare {
 	my ($cart, $cart_products, $session_products, $cart_item, $session_item, $max_count, @diff);
-	
-	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $Vend::Session->{username});
+
+    my $uid = $Vend::Session->{username} || $Vend::Session->{id};
+	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $uid);
 
 	if ($cart) {
 		$cart_products = $cart->item_list();
@@ -142,6 +146,7 @@ sub get_cart_by_name {
 
 		$code = $db_carts->set_slice($code, uid => $uid,
 								  created => Vend::Tags->time({format => '%s'}),
+                                  session_id => $Vend::Session->{id},
 								  type => $type,
 								  name => $name);
 	}
@@ -222,6 +227,13 @@ sub restore {
 	
 	# empty session cart first
 	@$Vend::Items = ();
+    # take over the cart, if it exits with the same session
+    if (my $sid = $Vend::Session->{id}) {
+        $set = $self->{db_carts}->query(qq{select code from carts where session_id = '%s' and uid = session_id}, $sid);
+        for my $cart (@$set) {
+            $self->{db_carts}->query(qq{update cart_products set cart = $self->{code} where cart = $cart->[0]});
+        }
+    }
 
 	$set = $self->{db_carts}->query(qq{select sku,quantity from cart_products where cart = $self->{code}});
 
@@ -230,6 +242,8 @@ sub restore {
 		push (@$Vend::Items, $item);
 	}
 
+    # update the session id of the cart
+    $self->{db_carts}->set_field($self->{code}, session_id => $Vend::Session->{id});
 	return;
 }
 
