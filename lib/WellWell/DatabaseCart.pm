@@ -131,7 +131,7 @@ sub get_cart_by_name {
 
 	$db_carts = database_exists_ref('carts');
 
-	$set = $db_carts->query(q{select code from carts where name = '%s' and uid = %s},
+	$set = $db_carts->query(q{select code from carts where name = '%s' and uid = '%s'},
 							$name, $uid);
 
 	if (@$set) {
