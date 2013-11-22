@@ -178,7 +178,9 @@ sub add_item {
 	my ($self, $item) = @_;
 
 	unless (exists $item->{inactive} && $item->{inactive}) {
-		$self->{db_products}->set_slice([$self->{code}, $item->{code}], quantity => $item->{quantity},
+        my $opts = item_options_string($item);
+		$self->{db_products}->set_slice([$self->{code}, $item->{code}, $opts],
+                                        quantity => $item->{quantity},
 										position => 0);
 		$self->touch();
 	}
@@ -186,18 +188,35 @@ sub add_item {
 
 sub delete_item {
 	my ($self, $item) = @_;
-
-	$self->{db_products}->delete_record([$self->{code}, $item->{code}]);
+    my $opts = item_options_string($item);
+	$self->{db_products}->delete_record([$self->{code}, $item->{code}, $opts]);
 	
 	$self->touch();
 }
 
 sub modify_item {
 	my ($self, $item, $changes) = @_;
+    my $opts_str = item_options_string($item);
+
+    # do a copy to avoid disasters
+    my $item_copy = { %$item };
+
+    foreach my $k (keys %$item_copy) {
+        if (exists $changes->{$k}) {
+            $item_copy->{$k} = $changes->{$k};
+        }
+    }
+    my $new_opts_string = item_options_string($item_copy);
 
 	if ($changes->{quantity}) {
-		$self->{db_products}->set_slice([$self->{code}, $item->{code}], quantity => $changes->{quantity});
+		$self->{db_products}->set_slice([$self->{code}, $item->{code}, $opts_str],
+                                        quantity => $changes->{quantity});
 	}
+
+    if ($new_opts_string ne $opts_str) {
+		$self->{db_products}->set_slice([$self->{code}, $item->{code}, $opts_str],
+                                        options => $new_opts_string);
+    }
 
 	$self->touch();
 }
@@ -235,10 +254,17 @@ sub restore {
         }
     }
 
-	$set = $self->{db_carts}->query(qq{select sku,quantity from cart_products where cart = $self->{code}});
-
+	$set = $self->{db_carts}->query(qq{select sku,quantity,options from cart_products where cart = $self->{code}});
 	for (@$set) {
-		$item = WellWell::Cart::cart_item(@$_);
+        my ($sku, $quantity, $opts) = @$_;
+        my @args;
+        if ($opts) {
+            @args = ($sku, $quantity, item_options_string_to_hashref($opts));
+        }
+        else {
+            @args = ($sku, $quantity);
+        }
+		$item = WellWell::Cart::cart_item(@args);
 		push (@$Vend::Items, $item);
 	}
 
@@ -270,6 +296,35 @@ sub item_list {
 	return \@list;
 }
 	
+sub item_options_string {
+    my $itemref = shift;
+    my $modifiers = "";
+    my @mods;
+    if (ref($Vend::Cfg->{UseModifier}) eq 'ARRAY') {
+        for (@{$Vend::Cfg->{UseModifier}}) {
+            if (exists $itemref->{$_} and defined $itemref->{$_}) {
+                push @mods, $_ . "\0:\0" . $itemref->{$_};
+            }
+        }
+    }
+    if (@mods) {
+         $modifiers = join("\0;\0", @mods);
+    }
+    return $modifiers;
+}
+
+sub item_options_string_to_hashref {
+    my $item_string = shift;
+    return unless $item_string;
+    my @fields = split(/\0;\0/, $item_string);
+    my %out;
+    foreach my $f (@fields) {
+        my ($k, $v) = split(/\0:\0/, $f);
+        $out{$k} = $v;
+    }
+    return \%out;
+}
+
 package Vend::Config;
 
 sub parse_database_cart {
