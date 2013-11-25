@@ -61,7 +61,7 @@ sub cart_restore {
 	my $cart;
 
     my $uid = $Vend::Session->{username} || $Vend::Session->{id};
-	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $uid);
+	$cart = get_cart_by_name($Vend::Cfg->{DatabaseCart}, 'cart', $uid, 1);
 
 	if ($cart) {
 		$cart->restore();
