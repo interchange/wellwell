@@ -1,8 +1,10 @@
 CREATE TABLE cart_products (
-  cart integer NOT NULL,
+  carts_id integer NOT NULL,
   sku varchar(32) NOT NULL,
-  position integer NOT NULL,
-  options varchar(500) NOT NULL,
-  quantity integer NOT NULL DEFAULT 1
+  cart_position integer NOT NULL,
+  options varchar(500) NOT NULL, -- extra field
+  quantity integer NOT NULL DEFAULT 1,
+  when_added datetime NOT NULL
 );
-CREATE UNIQUE INDEX cart_products_idx ON cart_products (cart, sku, options);
+-- IC6 would have just carts_id, sku
+CREATE UNIQUE INDEX cart_products_idx ON cart_products (carts_id, sku, options);

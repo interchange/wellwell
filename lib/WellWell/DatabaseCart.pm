@@ -135,7 +135,7 @@ sub get_cart_by_name {
 
 	$db_carts = database_exists_ref('carts');
 
-	$set = $db_carts->query(q{select code from carts where name = '%s' and uid = '%s'},
+	$set = $db_carts->query(q{select carts_id from carts where name = '%s' and username = '%s'},
 							$name, $uid);
 
 	if (@$set) {
@@ -143,12 +143,14 @@ sub get_cart_by_name {
 	}
 	elsif ($create) {
 		$code = $db_carts->autosequence();
-
-		$code = $db_carts->set_slice($code, uid => $uid,
-								  created => Vend::Tags->time({format => '%s'}),
-                                  session_id => $Vend::Session->{id},
-								  type => $type,
-								  name => $name);
+        my $now = Vend::Tags->time({format => '%Y-%m-%d %H:%M:%S'});
+		$code = $db_carts->set_slice($code,
+                                     name => $name,
+                                     username => $uid,
+                                     sessions_id => $Vend::Session->{id},                                     
+                                     created => $now,
+                                     last_modified => $now,
+                                    );
 	}
 
 	if ($code) {
@@ -179,9 +181,11 @@ sub add_item {
 
 	unless (exists $item->{inactive} && $item->{inactive}) {
         my $opts = item_options_string($item);
+        my $now = Vend::Tags->time({format => '%Y-%m-%d %H:%M:%S'});
 		$self->{db_products}->set_slice([$self->{code}, $item->{code}, $opts],
                                         quantity => $item->{quantity},
-										position => 0);
+                                        when_added => $now,
+										cart_position => 0);
 		$self->touch();
 	}
 }
@@ -226,7 +230,7 @@ sub touch {
 	my ($self) = @_;
 	my ($last_modified);
 
-	$last_modified = Vend::Tags->time({format => '%s'});
+	$last_modified = Vend::Tags->time({format => '%Y-%m-%d %H:%M:%S'});
 	
 	$self->{db_carts}->set_field($self->{code}, 'last_modified', $last_modified);
 }
@@ -234,8 +238,7 @@ sub touch {
 # clear cart (usually after order has been finished)
 sub clear {
 	my ($self) = @_;
-
-	$self->{db_products}->query(qq{delete from cart_products where cart = $self->{code}});
+	$self->{db_products}->query(qq{delete from cart_products where carts_id = $self->{code}});
 
 	$self->touch();
 }
@@ -243,18 +246,17 @@ sub clear {
 # restore cart from database into session cart
 sub restore {
 	my ($self, $set, $item) = @_;
-	
 	# empty session cart first
 	@$Vend::Items = ();
     # take over the cart, if it exits with the same session
     if (my $sid = $Vend::Session->{id}) {
-        $set = $self->{db_carts}->query(qq{select code from carts where session_id = '%s' and uid = session_id}, $sid);
+        $set = $self->{db_carts}->query(qq{select carts_id from carts where sessions_id = '%s' and username = sessions_id}, $sid);
         for my $cart (@$set) {
-            $self->{db_carts}->query(qq{update cart_products set cart = $self->{code} where cart = $cart->[0]});
+            $self->{db_carts}->query(qq{update cart_products set carts_id = $self->{code} where carts_id = $cart->[0]});
         }
     }
 
-	$set = $self->{db_carts}->query(qq{select sku,quantity,options from cart_products where cart = $self->{code}});
+	$set = $self->{db_carts}->query(qq{select sku,quantity,options from cart_products where carts_id = $self->{code}});
 	for (@$set) {
         my ($sku, $quantity, $opts) = @$_;
         my @args;
@@ -269,7 +271,7 @@ sub restore {
 	}
 
     # update the session id of the cart
-    $self->{db_carts}->set_field($self->{code}, session_id => $Vend::Session->{id});
+    $self->{db_carts}->set_field($self->{code}, sessions_id => $Vend::Session->{id});
 	return;
 }
 
@@ -278,7 +280,7 @@ sub item_list {
 	my ($self, $complete) = @_;
 	my ($set, @list);
 	
-	$set = $self->{db_products}->query(qq{select sku,quantity from cart_products where cart = $self->{code}});
+	$set = $self->{db_products}->query(qq{select sku,quantity from cart_products where carts_id = $self->{code}});
 
 	for (@$set) {
 		my $item;
