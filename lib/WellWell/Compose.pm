@@ -118,12 +118,12 @@ sub compose {
 
 	if( !$::Variable->{MV_TEMPLATE_DIR} ){
 		::logError("MV_TEMPLATE_DIR is not set. [compose] cannot function properly without this variable.");
-		return errmsg('Templates not found, please contact site administrator.');
+		return ::errmsg('Templates not found, please contact site administrator.');
 	}
 
 	if( !$::Variable->{MV_COMPONENT_DIR} ){
 		::logError("MV_COMPONENT_DIR is not set. [compose] cannot function properly without this variable.");
-		return errmsg('Components not found, please contact site administrator.');
+		return ::errmsg('Components not found, please contact site administrator.');
 	}
 
 	unless( $template_file = $opt->{template_file} ) {
