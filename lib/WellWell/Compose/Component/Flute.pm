@@ -40,41 +40,30 @@ sub new {
 
 sub process {
 	my ($self, $attributes) = @_;
-	my ($content, $xml_spec, $spec, $iter_name, $html_object, $flute);
+	my ($content, $spec, $flute);
 	my (%filters, $subname, $subref);
-
-	# parse specification
-	$xml_spec = new Template::Flute::Specification::XML;
-
-	unless ($spec = $xml_spec->parse_file($self->{specification})) {
-		die "$0: error parsing $self->{specification}: " . $xml_spec->error() . "\n";
-	}
-
-	$spec->set_iterator('cart', $Vend::Items);
-	$html_object = new Template::Flute::HTML;
-
-	$html_object->parse_file($self->{template}, $spec);
-
-	for my $list_object ($html_object->lists()) {
-		# seed and check input
-		$list_object->input($attributes);
-	}
 
 	# filters
 	$filters{link} = \&WellWell::Filter::Link::filter;
-		
-	$flute = new Template::Flute (template => $html_object, filters => \%filters,
-				      values => $attributes,
-				      database => $self->{database});
+
+    my %args = ( template_file => $self->{template},
+                 filters => \%filters,
+                 values => $attributes,
+                 iterators => {
+                     cart => $Vend::Items,
+                 }
+             );
+
+	$flute = Template::Flute->new(%args);
 
 	# call component load subroutine
 	$subname = "component_$self->{name}_load";
 	$subref = $Vend::Cfg->{Sub}{$subname} || $Global::GlobalSub->{$subname};
 
 	if ($subref) {
-		$subref->($self->{name}, $spec, $html_object, $flute);
+		$subref->($self->{name}, $flute->specification, $flute->template, $flute);
 	}
-	
+
 	return $flute->process($attributes);
 }
 
