@@ -26,8 +26,6 @@ use Template::Flute;
 use Template::Flute::Specification::XML;
 use Template::Flute::HTML;
 
-use Template::Flute::Database::Rose;
-
 use WellWell::Filter::Link;
 
 sub new {

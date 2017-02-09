@@ -28,8 +28,6 @@ sub new {
 	my $class = shift;
 	my $self = {@_};
 
-	$self->{database} = new Template::Flute::Database::Rose(dbh => $self->{dbh});
-	
 	bless $self;
 	return $self;
 }	
