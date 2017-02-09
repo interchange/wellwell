@@ -229,10 +229,17 @@ sub compose {
 
 				# TODO support multiple aliases
 				my ($name, $alias) = split(/=/, $comp, 2);
+                my ($name_lookup, $alias_lookup) = ($name, $alias);
+
+                # dash will be mangled by Interchange in
+                # [compose components.sidebar="sidebar-menu" attributes.sidebar-menu.topnav="..."]
+
+                $name_lookup =~ s/-/_/g;
+                $alias_lookup =~ s/-/_/g;
 
 				$component_attributes = { 
-					$attributes{$name} ? %{$attributes{$name}} : (),
-					$attributes{$alias} ? %{$attributes{$alias}} : (),
+					$attributes{$name_lookup} ? %{$attributes{$name_lookup}} : (),
+					$attributes{$alias_lookup} ? %{$attributes{$alias_lookup}} : (),
 				};
 
 				# temporarily assign variables for component attributes
