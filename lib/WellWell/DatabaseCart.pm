@@ -147,7 +147,7 @@ sub get_cart_by_name {
 		$code = $db_carts->set_slice($code,
                                      name => $name,
                                      username => $uid,
-                                     sessions_id => $Vend::Session->{id},                                     
+                                     sessions_id => $Vend::SessionName,
                                      created => $now,
                                      last_modified => $now,
                                     );
