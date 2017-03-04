@@ -42,7 +42,7 @@ sub cart_hook {
 		$cartname = $Vend::Cfg->{DatabaseCart};
 	}
 
-    my $uid = $Vend::Session->{username} || $Vend::Session->{id};
+    my $uid = $Vend::Session->{username};
 	$cart = get_cart_by_name($cartname, 'cart', $uid, 1);
 	
 	if ($op eq 'add') {
