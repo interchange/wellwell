@@ -267,6 +267,11 @@ sub {
 		return $from_dt->year();
 	}
 
+    # apply format if provided
+    if ($fmt) {
+        return $from_dt->strftime($fmt);
+    }
+
 	# just return DateTime object when called without function
 	return $from_dt;
 }
