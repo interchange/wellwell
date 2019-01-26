@@ -45,8 +45,15 @@ sub {
 	my ($function, $scope, $from, $to, $fmt, $opt) = @_;
 	my ($from_dt, $to_dt, $from_now, $tz, %now_hash);
 
+    # locale
+    my $locale = $opt->{locale} || $Scratch->{mv_locale};
+
+    if ($locale) {
+        $now_hash{locale} = $locale;
+    }
+
 	if ($tz = $Tag->var('DATETIME_TIMEZONE', 1)) {
-		%now_hash = (time_zone => $tz);
+		$now_hash{time_zone} = $tz;
 	}
 
 	if (ref($from)) {
@@ -56,9 +63,12 @@ sub {
 		} elsif ($from->isa('DateTime::Duration') && $function eq 'dump') {
 			$from_dt = $from;
 		}
+        if ($locale) {
+            $from_dt->set_locale($locale);
+        }
 	} elsif ($from =~ /\S/) {
 		eval {
-			$from_dt = new DateTime(%{$Tag->filter('datetime',$from)});
+			$from_dt = DateTime->new(%{$Tag->filter('datetime', $from, $locale)});
 		};
 
 		if ($@) {
@@ -91,7 +101,7 @@ sub {
 			$to_dt = $to;
 		} elsif ($to =~ /\S/) {
 			eval {
-				$to_dt = new DateTime(%{$Tag->filter('datetime', $to)});
+				$to_dt = DateTime->new( %{$Tag->filter( 'datetime', $to, $locale )} );
 			};	
 			if ($@) {
 				$Tag->error({name => 'to',
@@ -105,7 +115,7 @@ sub {
 		return DateTime->compare_ignore_floating($from_dt, $to_dt);
 	} elsif ($function eq 'compose') {
 		# build date time object out of individual parameters
-		my %dthash = ();
+		my %dthash = ( locale => $locale );
 
 		for (qw(year month day hour minute second)) {
 			if (exists $opt->{$_}) {
