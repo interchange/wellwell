@@ -1,6 +1,6 @@
 # WellWell::Compose - WellWell compose routines
 #
-# Copyright (C) 2010 Stefan Hornburg (Racke) <racke@linuxia.de>.
+# Copyright (C) 2010-2020 Stefan Hornburg (Racke) <racke@linuxia.de>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -278,10 +278,12 @@ sub compose {
 					$component_content = $opt->{local_body};
 				} else {
 					if ($compobj = $engine->locate_component($name)) {
-						$component_content = $compobj->process($component_attributes);
+                        eval {
+                            $component_content = $compobj->process($component_attributes);
+                        };
 
 						unless (defined $component_content && $name ne 'local_body') {
-							::logError("Error processing component $name with $engine_name.");
+							::logError("Error processing component $name with $engine_name: $@");
 							Vend::Tags->error({name => 'component', set => "Error processing component $name."});
 							next;
 						}
