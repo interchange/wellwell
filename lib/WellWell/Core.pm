@@ -31,7 +31,6 @@ our @EXPORT_OK = qw/plugin_search_component/;
 use Vend::Config;
 
 use WellWell::Cart;
-use WellWell::Data;
 use WellWell::Plugin qw/plugin_scan plugin_enable/;
 use WellWell::Engine;
 
