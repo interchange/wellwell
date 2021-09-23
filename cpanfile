@@ -1,2 +1,2 @@
 # -*- mode: cperl -*-
-requires 'Rose::DB::Object::Loader' => 0;
+requires 'DateTime' => 0;
